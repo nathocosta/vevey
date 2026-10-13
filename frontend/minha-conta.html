@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Minha Conta &amp; Meus Pedidos — Vevey Doces</title>
+  
+  <!-- Fontes Oficiais -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#b80035",
+            "primary-container": "#e11d48",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#fffaf9",
+            "secondary": "#855300",
+            "secondary-container": "#fea619",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#684000",
+            "secondary-fixed": "#ffddb8",
+            "tertiary": "#6a37d3",
+            "tertiary-container": "#8354ee",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#fffafd",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "surface-bright": "#f8f9ff",
+            "surface-dim": "#d0dbed",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e6eeff",
+            "surface-container-high": "#dee9fc",
+            "surface-container-highest": "#d9e3f6",
+            "on-surface": "#121c2a",
+            "on-surface-variant": "#5c3f40",
+            "outline": "#906f70",
+            "outline-variant": "#e5bdbe"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-2xs": "0.25rem",
+            "space-xs": "0.5rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-3xl": "4rem",
+            "gutter-mobile": "1rem",
+            "gutter-desktop": "1.5rem",
+            "container-max": "80rem"
+          },
+          fontFamily: {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "title-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-sm": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Estilos Globais -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- Script Centralizado da Aplicação -->
+  <script src="js/app.js" defer></script>
+</head>
+
+<body class="bg-surface font-body-md text-on-surface">
+
+  <!-- ==========================================================================
+       HEADER & BARRA DE NAVEGAÇÃO
+       ========================================================================== -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_4px_20px_-2px_rgba(225,29,72,0.06)]">
+    
+    <!-- Topbar Institucional -->
+    <div class="bg-primary text-on-primary text-center py-space-xs px-gutter-mobile">
+      <div class="max-w-container-max mx-auto flex flex-wrap items-center justify-center gap-space-xs font-label-sm text-label-sm">
+        <span>🎉 Frete Grátis acima de R$ 199,00 para todo o Brasil</span>
+        <span class="opacity-50">|</span>
+        <span>Parcele em até 6x sem juros</span>
+        <span class="opacity-50">|</span>
+        <span>Atendimento WhatsApp: (11) 98765-4321</span>
+      </div>
+    </div>
+
+    <!-- Barra Principal -->
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop h-20 flex items-center justify-between gap-space-md">
+      
+      <!-- Marca / Logo -->
+      <a href="index.html" class="flex items-center gap-space-sm shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-[22px]">cake</span>
+        </div>
+        <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold hidden sm:inline-block">Vevey Doces</span>
+      </a>
+
+      <!-- Barra de Busca Global -->
+      <div class="flex-1 max-w-2xl mx-space-md hidden md:block">
+        <div class="relative flex items-center">
+          <input 
+            class="w-full h-12 pl-space-md pr-12 rounded-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 font-body-sm text-body-sm outline-none transition-all shadow-inner focus:ring-2 focus:ring-primary/40 focus:bg-white" 
+            placeholder="Buscar em meus pedidos ou catálogo..." 
+            type="text"
+          >
+          <button class="absolute right-1 w-10 h-10 rounded-full bg-primary-container hover:bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-105" title="Buscar">
+            <span class="material-symbols-outlined text-[20px]">search</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ações do Cabeçalho -->
+      <div class="flex items-center gap-space-md shrink-0">
+        
+        <!-- WhatsApp -->
+        <a class="hidden xl:flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-colors" href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined text-secondary-container">chat</span>
+          <div class="text-left leading-tight">
+            <p class="font-label-sm text-label-sm opacity-80">Tire Dúvidas</p>
+            <p class="font-label-md text-label-md text-on-surface font-semibold">WhatsApp</p>
+          </div>
+        </a>
+
+        <!-- Conta Ativa -->
+        <a href="minha-conta.html" class="flex items-center gap-space-xs border-b-2 border-primary pb-1">
+          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm">N</div>
+          <div class="hidden sm:block text-left leading-tight">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
+            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+          </div>
+        </a>
+
+        <!-- Botão do Carrinho -->
+        <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+          </div>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 184,70</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTEÚDO PRINCIPAL (TELA 7: PAINEL DO CLIENTE & MEUS PEDIDOS)
+       ========================================================================== -->
+  <main class="w-full pt-32 bg-surface min-h-screen pb-space-3xl">
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
+      
+      <!-- Saudação e Banner Superior -->
+      <div class="bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-low p-space-lg rounded-2xl border border-surface-container shadow-sm mb-space-lg flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+        <div>
+          <span class="bg-primary/10 text-primary font-label-sm text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Painel do Cliente</span>
+          <h1 class="font-headline-lg text-headline-lg font-extrabold text-on-surface mt-2">
+            Olá, Nathan Costa Santos! 👋
+          </h1>
+          <p class="text-on-surface-variant text-sm mt-1">
+            Acompanhe o status dos seus pedidos, prazos de entrega e histórico de compras na Vevey Doces.
+          </p>
+        </div>
+
+        <!-- Card Alerta de Pedido a Caminho -->
+        <div class="bg-surface-container-lowest p-space-md rounded-xl border border-primary/20 shadow-sm flex items-center gap-space-sm shrink-0">
+          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+          </div>
+          <div class="text-xs">
+            <span class="font-bold text-on-surface block">1 Pedido em Andamento</span>
+            <span class="text-primary font-semibold">Previsão: Amanhã até às 18h</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estrutura Principal: Menu Lateral (3 Colunas) + Conteúdo (9 Colunas) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+        
+        <!-- SIDEBAR DO PERFIL (3 Colunas) -->
+        <aside class="lg:col-span-4 space-y-space-md">
+          
+          <!-- Card de Dados do Usuário -->
+          <div class="bg-surface-container-lowest p-space-md rounded-2xl border border-surface-container shadow-sm flex items-center gap-space-md">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center font-headline-sm font-bold shadow-md">
+              NC
+            </div>
+            <div class="flex-1 overflow-hidden">
+              <h2 class="font-title-md text-sm font-bold text-on-surface truncate">Nathan Costa Santos</h2>
+              <p class="font-body-sm text-xs text-on-surface-variant truncate">natahncosta@gmail.com</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold">Cliente VIP</span>
+                <span class="text-[10px] text-on-surface-variant/80">Desde 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Menu de Navegação da Conta -->
+          <nav class="bg-surface-container-lowest rounded-2xl border border-surface-container p-2 shadow-sm space-y-1">
+            <a href="minha-conta.html" class="flex items-center justify-between p-space-sm rounded-xl bg-primary text-on-primary font-label-md font-bold transition-colors">
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">package_2</span> Meus Pedidos
+              </span>
+              <span class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">3</span>
+            </a>
+            <a href="#dados" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">person</span> Meus Dados &amp; Senha
+            </a>
+            <a href="#enderecos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">home_pin</span> Endereços de Entrega (2)
+            </a>
+            <a href="#pagamentos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">credit_card</span> Formas de Pagamento
+            </a>
+            <a href="#favoritos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">favorite</span> Lista de Desejos (5)
+            </a>
+            <hr class="border-surface-container my-1">
+            <a href="index.html" class="flex items-center gap-2 p-space-sm rounded-xl text-red-600 hover:bg-red-50 font-label-md font-semibold transition-colors">
+              <span class="material-symbols-outlined text-[20px]">logout</span> Sair da Conta
+            </a>
+          </nav>
+
+          <!-- Banner de Suporte WhatsApp Dedicado -->
+          <div class="bg-emerald-50 rounded-2xl p-space-md border border-emerald-200 text-emerald-900 space-y-2">
+            <div class="flex items-center gap-2 font-bold text-sm">
+              <span class="material-symbols-outlined text-emerald-700">support_agent</span>
+              <span>Precisa de ajuda com uma entrega?</span>
+            </div>
+            <p class="text-xs text-emerald-800 leading-relaxed">
+              Nossa equipe de atendimento da loja física está disponível para tirar dúvidas sobre seus pedidos em tempo real.
+            </p>
+            <a href="https://wa.me/5511987654321?text=Ol%C3%A1!%20Sou%20o%20Nathan%20e%20preciso%20de%20ajuda%20com%20meu%20pedido%20na%20Vevey." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:underline">
+              Falar com Juliana no WhatsApp <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+
+        </aside>
+
+        <!-- ÁREA PRINCIPAL: LISTA DE PEDIDOS COM STEPTRACKER (9 Colunas) -->
+        <section class="lg:col-span-8 space-y-space-md">
+          
+          <!-- Filtros de Status & Busca de Pedidos -->
+          <div class="bg-surface-container-lowest p-space-md rounded-2xl border border-surface-container shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md">
+            
+            <!-- Abas de Filtros -->
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+              <button data-status-filter="todos" class="px-space-md py-1.5 rounded-full bg-primary text-white font-label-md text-xs font-bold shadow-sm whitespace-nowrap">
+                Todos os Pedidos (3)
+              </button>
+              <button data-status-filter="andamento" class="px-space-md py-1.5 rounded-full border border-surface-container text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-medium whitespace-nowrap">
+                Em Andamento (1)
+              </button>
+              <button data-status-filter="entregue" class="px-space-md py-1.5 rounded-full border border-surface-container text-on-surface-variant hover:bg-surface-container-low font-label-md text-xs font-medium whitespace-nowrap">
+                Entregues (2)
+              </button>
+            </div>
+
+            <!-- Busca por Número do Pedido -->
+            <div class="relative w-full sm:w-64">
+              <input id="order-search-input" type="text" placeholder="Buscar por nº #VV..." class="w-full h-10 pl-9 pr-3 rounded-full bg-surface-container-low border border-surface-container text-xs font-body-sm outline-none focus:ring-2 focus:ring-primary/30">
+              <span class="material-symbols-outlined text-[18px] text-on-surface-variant absolute left-2.5 top-2.5">search</span>
+            </div>
+
+          </div>
+
+          <!-- PEDIDO 1 (EM ANDAMENTO - STEPTRACKER COMPLETO) -->
+          <article data-order-status="andamento" class="bg-surface-container-lowest rounded-2xl border-2 border-primary/30 shadow-md p-space-md md:p-space-lg space-y-space-md relative overflow-hidden">
+            
+            <div class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+              Pedido Recente
+            </div>
+
+            <!-- Cabeçalho do Card -->
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-surface-container pb-space-sm pt-2 sm:pt-0">
+              <div>
+                <span class="text-xs text-on-surface-variant font-mono">Pedido:</span>
+                <h3 class="order-id font-title-md text-base font-extrabold text-primary">#VV-2026-9812</h3>
+                <p class="text-xs text-on-surface-variant">Realizado hoje, 13/10/2026 às 14:32 • Pagamento via <strong>PIX</strong></p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-on-surface-variant">Valor Total:</span>
+                <p class="font-headline-sm text-lg font-black text-on-surface">R$ 184,70</p>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Em Separação no Estoque
+                </span>
+              </div>
+            </div>
+
+            <!-- LINHA DO TEMPO VISUAL (STEPTRACKER DE RASTREIO - CONFORME DOCUMENTO FATEC) -->
+            <div class="py-space-sm">
+              <span class="text-xs font-bold text-on-surface block mb-3">Progresso do Envio:</span>
+              
+              <div class="grid grid-cols-5 gap-1 text-center relative">
+                
+                <!-- Linha Conectora de Fundo -->
+                <div class="absolute top-4 left-6 right-6 h-1 bg-surface-container -z-0"></div>
+                <div class="absolute top-4 left-6 w-[50%] h-1 bg-emerald-600 -z-0 transition-all"></div>
+
+                <!-- Step 1: Realizado -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">check</span>
+                  </div>
+                  <span class="text-[11px] font-bold text-on-surface mt-1.5">Realizado</span>
+                  <span class="text-[9px] text-on-surface-variant">14:32</span>
+                </div>
+
+                <!-- Step 2: Pago -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">check</span>
+                  </div>
+                  <span class="text-[11px] font-bold text-on-surface mt-1.5">Pago</span>
+                  <span class="text-[9px] text-on-surface-variant">14:35</span>
+                </div>
+
+                <!-- Step 3: Em Separação (Ativo) -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-xs shadow-md ring-4 ring-amber-100">
+                    <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+                  </div>
+                  <span class="text-[11px] font-extrabold text-amber-700 mt-1.5">Em Separação</span>
+                  <span class="text-[9px] text-amber-600 font-semibold">Hoje</span>
+                </div>
+
+                <!-- Step 4: Enviado -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                  </div>
+                  <span class="text-[11px] text-on-surface-variant mt-1.5">A Caminho</span>
+                  <span class="text-[9px] text-on-surface-variant">Amanhã</span>
+                </div>
+
+                <!-- Step 5: Entregue -->
+                <div class="flex flex-col items-center relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold text-xs">
+                    <span class="material-symbols-outlined text-[16px]">home</span>
+                  </div>
+                  <span class="text-[11px] text-on-surface-variant mt-1.5">Entregue</span>
+                  <span class="text-[9px] text-on-surface-variant">Prev. 15/10</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Dados de Envio e Rastreio -->
+            <div class="bg-surface-container-low p-space-sm rounded-xl border border-surface-container flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">pin_drop</span>
+                <div>
+                  <span class="font-bold text-on-surface">Endereço de Entrega:</span>
+                  <p class="text-on-surface-variant">Av. Paulista, 1000 - Apto 42 - Bela Vista, São Paulo - SP</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono bg-white px-2.5 py-1 rounded border border-surface-container font-bold text-primary">
+                  Rastreio: BR829381928BR
+                </span>
+                <button class="bg-primary hover:bg-primary-container text-white px-3 py-1 rounded-full font-bold text-[11px] shadow-sm">
+                  Copiar Código
+                </button>
+              </div>
+            </div>
+
+            <!-- Itens Comprados no Pedido -->
+            <div class="space-y-2 pt-2">
+              <span class="text-xs font-bold text-on-surface block">Itens deste Pedido (3):</span>
+              
+              <div class="divide-y divide-surface-container">
+                <div class="py-2 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center text-primary">
+                      <span class="material-symbols-outlined text-[20px]">celebration</span>
+                    </div>
+                    <div>
+                      <p class="font-bold text-on-surface">Kit Balões Metalizados Rose Gold &amp; Cereja (50 unid.)</p>
+                      <p class="text-on-surface-variant">Qtd: 1 • Cód: BL-9921</p>
+                    </div>
+                  </div>
+                  <span class="font-bold text-on-surface">R$ 64,90</span>
+                </div>
+
+                <div class="py-2 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-secondary">
+                      <span class="material-symbols-outlined text-[20px]">cake</span>
+                    </div>
+                    <div>
+                      <p class="font-bold text-on-surface">Jogo de Bicos de Confeitar Inox (12 Peças)</p>
+                      <p class="text-on-surface-variant">Qtd: 1 • Cód: CF-4402</p>
+                    </div>
+                  </div>
+                  <span class="font-bold text-on-surface">R$ 79,90</span>
+                </div>
+
+                <div class="py-2 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center text-primary">
+                      <span class="material-symbols-outlined text-[20px]">palette</span>
+                    </div>
+                    <div>
+                      <p class="font-bold text-on-surface">Pasta Americana Vermelho Rubi Tradicional 800g</p>
+                      <p class="text-on-surface-variant">Qtd: 1 • Cód: PA-1029</p>
+                    </div>
+                  </div>
+                  <span class="font-bold text-on-surface">R$ 39,90</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação do Card -->
+            <div class="border-t border-surface-container pt-3 flex flex-wrap items-center justify-between gap-2">
+              <a href="https://wa.me/5511987654321?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20o%20pedido%20VV-2026-9812." target="_blank" class="text-xs text-emerald-700 font-bold hover:underline flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">chat</span> Ajuda com este pedido no WhatsApp
+              </a>
+              <div class="flex gap-2">
+                <button class="px-4 py-1.5 rounded-full border border-surface-container hover:bg-surface-container font-label-md text-xs font-semibold">
+                  Ver Comprovante / PDF
+                </button>
+                <a href="catalogo.html" class="px-4 py-1.5 rounded-full bg-primary-container hover:bg-primary text-white font-label-md text-xs font-bold shadow-sm">
+                  Comprar Novamente
+                </a>
+              </div>
+            </div>
+
+          </article>
+
+          <!-- PEDIDO 2 (ENTREGUE ANTERIORMENTE) -->
+          <article data-order-status="entregue" class="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-sm p-space-md space-y-space-sm opacity-90 hover:opacity-100 transition-opacity">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-surface-container pb-2">
+              <div>
+                <span class="text-xs text-on-surface-variant font-mono">Pedido:</span>
+                <h3 class="order-id font-title-md text-sm font-bold text-on-surface">#VV-2026-8431</h3>
+                <p class="text-xs text-on-surface-variant">Entregue em 28/09/2026 • Pagamento via Cartão de Crédito</p>
+              </div>
+              <div class="text-right">
+                <p class="font-headline-sm text-sm font-black text-on-surface">R$ 94,80</p>
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <span class="material-symbols-outlined text-[14px]">done_all</span> Entregue no Prazo
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-1">
+              <span class="text-on-surface-variant">2x Balão Bubble Cristal Transparente 24 pol.</span>
+              <a href="catalogo.html" class="text-primary font-bold hover:underline">Repetir Pedido</a>
+            </div>
+          </article>
+
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       RODAPÉ OFICIAL (FOOTER)
+       ========================================================================== -->
+  <footer class="bg-surface-container-lowest border-t border-surface-container py-space-2xl text-on-surface-variant font-body-sm text-xs">
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop grid grid-cols-1 md:grid-cols-4 gap-space-xl">
+      <div class="space-y-space-xs">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">cake</span>
+          </div>
+          <span class="font-headline-sm text-sm text-primary font-extrabold">Vevey Doces</span>
+        </div>
+        <p class="text-on-surface-variant/80 leading-relaxed">
+          Sua loja completa de confeitaria artística, descartáveis nobres, balões premium e artigos de celebração.
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-title-md text-sm font-bold text-on-surface">Canais de Atendimento</h4>
+        <p class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-emerald-600">chat</span> WhatsApp: (11) 98765-4321</p>
+        <p class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">mail</span> contato@veveydoces.com.br</p>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-title-md text-sm font-bold text-on-surface">Navegação Rápida</h4>
+        <ul class="space-y-1">
+          <li><a href="index.html" class="hover:text-primary transition-colors">Página Inicial</a></li>
+          <li><a href="catalogo.html" class="hover:text-primary transition-colors">Catálogo de Produtos</a></li>
+          <li><a href="carrinho.html" class="hover:text-primary transition-colors">Carrinho</a></li>
+          <li><a href="admin.html" class="text-primary font-bold hover:underline">Painel do Lojista / Atendente (FATEC)</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-title-md text-sm font-bold text-on-surface">Segurança</h4>
+        <p class="text-[11px] text-on-surface-variant/70">
+          Dados protegidos conforme a LGPD e criptografia SSL de ponta a ponta.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

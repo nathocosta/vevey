@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Painel Administrativo &amp; Atendimento WhatsApp — Vevey Doces (FATEC)</title>
+  
+  <!-- Fontes Oficiais -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#b80035",
+            "primary-container": "#e11d48",
+            "on-primary": "#ffffff",
+            "secondary": "#855300",
+            "secondary-container": "#fea619",
+            "on-secondary-container": "#684000",
+            "tertiary": "#6a37d3",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e6eeff",
+            "surface-container-high": "#dee9fc",
+            "surface-container-highest": "#d9e3f6",
+            "on-surface": "#121c2a",
+            "on-surface-variant": "#5c3f40"
+          },
+          fontFamily: {
+            "body": ["Inter", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+
+  <!-- ==========================================================================
+       HEADER DO BACKOFFICE / PAINEL ADMINISTRATIVO
+       ========================================================================== -->
+  <header class="bg-surface-container-lowest border-b border-surface-container shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Marca & Indicador de Ambiente -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2" title="Voltar para a Loja Pública">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center font-bold shadow">
+            <span class="material-symbols-outlined text-[20px]">cake</span>
+          </div>
+          <span class="font-display font-extrabold text-primary text-base tracking-tight">Vevey Co.</span>
+        </a>
+        <span class="text-xs bg-slate-900 text-white font-mono px-2 py-0.5 rounded font-bold uppercase">Backoffice</span>
+        <span class="hidden md:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sistema Online (Supabase / FastAPI)
+        </span>
+      </div>
+
+      <!-- Perfis de Acesso Simulado (Juliana / Miriam) -->
+      <div class="flex items-center gap-3">
+        <div class="text-right hidden sm:block">
+          <p id="operator-name" class="text-xs font-bold text-on-surface">Juliana (Atendente WhatsApp)</p>
+          <p id="operator-role" class="text-[10px] text-on-surface-variant font-mono">Cargo: OPERADOR • Loja Física + Online</p>
+        </div>
+
+        <select id="role-selector" onchange="switchRole(this.value)" class="text-xs bg-surface-container-low border border-surface-container rounded-lg px-2 py-1.5 font-semibold text-on-surface outline-none cursor-pointer">
+          <option value="juliana">Juliana (Atendente WhatsApp)</option>
+          <option value="miriam">Miriam (Sócia / Administradora)</option>
+        </select>
+
+        <a href="index.html" class="text-xs text-primary font-bold hover:underline border-l border-surface-container pl-3">
+          Ver Loja Virtual
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       BARRA DE NAVEGAÇÃO DE ABAS DO PAINEL
+       ========================================================================== -->
+  <div class="bg-surface-container-low border-b border-surface-container">
+    <div class="max-w-7xl mx-auto px-4 flex items-center gap-2 overflow-x-auto py-2">
+      <button onclick="openTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-primary text-white shadow-sm flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[18px]">dashboard</span>
+        Dashboard &amp; Métricas
+      </button>
+
+      <button onclick="openTab('tab-pedido-manual')" id="btn-tab-pedido-manual" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[18px] text-emerald-600">add_shopping_cart</span>
+        Novo Pedido Manual (WhatsApp)
+        <span class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">UC03</span>
+      </button>
+
+      <button onclick="openTab('tab-estoque')" id="btn-tab-estoque" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[18px] text-amber-600">inventory</span>
+        Ajuste de Estoque Unificado
+        <span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">UC04</span>
+      </button>
+
+      <button onclick="openTab('tab-pedidos')" id="btn-tab-pedidos" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span>
+        Gestão de Pedidos &amp; Rastreio
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       CONTEÚDO DAS ABAS
+       ========================================================================== -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+
+    <!-- ======================================================================
+         ABA 1: DASHBOARD & MÉTRICAS (VISÃO DA MIRIAM / SÓCIA)
+         ====================================================================== -->
+    <section id="tab-dashboard" class="tab-content active space-y-6">
+      
+      <!-- Linha de Cards de Métricas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Faturamento Hoje -->
+        <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Vendas Hoje</span>
+            <p class="font-display text-2xl font-black text-on-surface mt-1">R$ 2.450,80</p>
+            <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-[14px]">trending_up</span> +18% vs ontem
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">payments</span>
+          </div>
+        </div>
+
+        <!-- Pedidos Pendentes de Envio -->
+        <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">A Separar no Estoque</span>
+            <p class="font-display text-2xl font-black text-primary mt-1">4 pedidos</p>
+            <span class="text-[11px] text-amber-600 font-bold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-[14px]">schedule</span> 2 com Sedex Expresso
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">inventory_2</span>
+          </div>
+        </div>
+
+        <!-- Pedidos via WhatsApp -->
+        <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Vendas WhatsApp</span>
+            <p class="font-display text-2xl font-black text-emerald-700 mt-1">9 atendimentos</p>
+            <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-[14px]">chat</span> 6 convertidos com link
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">chat</span>
+          </div>
+        </div>
+
+        <!-- Alerta de Estoque Baixo -->
+        <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Estoque Crítico</span>
+            <p class="font-display text-2xl font-black text-amber-600 mt-1">2 produtos</p>
+            <span class="text-[11px] text-red-600 font-bold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-[14px]">warning</span> Menos de 5 unidades
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">warning</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Resumo Operacional: Pedidos Recentes para Despacho -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-surface-container p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-base font-extrabold text-on-surface">Fila de Separação de Pedidos (Hoje)</h2>
+            <p class="text-xs text-on-surface-variant">Priorize pedidos com pagamento Pix aprovado e envio Sedex.</p>
+          </div>
+          <button onclick="openTab('tab-pedidos')" class="text-xs font-bold text-primary hover:underline">
+            Ver Todos os Pedidos &rarr;
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-surface-container-low text-on-surface-variant font-bold uppercase text-[10px]">
+              <tr>
+                <th class="p-3">ID Pedido</th>
+                <th class="p-3">Cliente</th>
+                <th class="p-3">Origem</th>
+                <th class="p-3">Total</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-right">Ação Rápida</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container">
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9812</td>
+                <td class="p-3">Nathan Costa Santos (São Paulo - SP)</td>
+                <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">Site Online</span></td>
+                <td class="p-3 font-bold">R$ 184,70 (Pix)</td>
+                <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">Em Separação</span></td>
+                <td class="p-3 text-right">
+                  <button onclick="alert('Comanda #VV-2026-9812 enviada para impressora de etiquetas térmica!')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container">
+                    Imprimir Comanda
+                  </button>
+                </td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9813</td>
+                <td class="p-3">Carla Organizadora (Campinas - SP)</td>
+                <td class="p-3"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">WhatsApp Juliana</span></td>
+                <td class="p-3 font-bold">R$ 340,00 (Link Pago)</td>
+                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Pago</span></td>
+                <td class="p-3 text-right">
+                  <button onclick="alert('Comanda #VV-2026-9813 enviada para impressora!')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container">
+                    Imprimir Comanda
+                  </button>
+                </td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9814</td>
+                <td class="p-3">Doceria Doce Sonho (São Bernardo - SP)</td>
+                <td class="p-3"><span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-bold">Retirada Loja</span></td>
+                <td class="p-3 font-bold">R$ 119,80 (Cartão)</td>
+                <td class="p-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-bold">Pronto p/ Retirada</span></td>
+                <td class="p-3 text-right">
+                  <button onclick="alert('Notificação enviada no WhatsApp da cliente!')" class="bg-emerald-600 text-white px-3 py-1 rounded-full font-bold hover:bg-emerald-700">
+                    Avisar no WhatsApp
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         ABA 2: NOVO PEDIDO MANUAL - ATENDENTE WHATSAPP (FEATURE 4 / UC03)
+         ====================================================================== -->
+    <section id="tab-pedido-manual" class="tab-content space-y-6">
+      
+      <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 p-4 rounded-2xl border border-emerald-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">chat</span>
+          </div>
+          <div>
+            <h2 class="font-display text-sm font-extrabold text-emerald-950">Atendente Juliana — Criação de Pedido Manual (WhatsApp)</h2>
+            <p class="text-xs text-emerald-800">Monte o carrinho pelo cliente, verifique o estoque em tempo real e gere o link de pagamento do gateway.</p>
+          </div>
+        </div>
+        <span class="text-xs bg-emerald-200 text-emerald-900 font-mono px-3 py-1 rounded-full font-bold">Caso de Uso: UC03 / RF006</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Formulário do Cliente e Itens (8 Colunas) -->
+        <div class="lg:col-span-8 bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm space-y-5">
+          
+          <!-- Bloco 1: Dados do Cliente WhatsApp -->
+          <div>
+            <span class="font-display text-xs font-bold text-on-surface uppercase tracking-wider block mb-2">
+              1. Identificação do Cliente WhatsApp
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Nome Completo:</label>
+                <input id="manual-client-name" type="text" value="Carla Silva (Organizadora)" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">WhatsApp (com DDD):</label>
+                <input id="manual-client-phone" type="text" value="(11) 97123-4567" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">CPF (Nota Fiscal):</label>
+                <input id="manual-client-cpf" type="text" value="382.910.482-19" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloco 2: Adicionar Produtos do Catálogo -->
+          <div>
+            <span class="font-display text-xs font-bold text-on-surface uppercase tracking-wider block mb-2">
+              2. Consulta de Estoque &amp; Inserção de Itens
+            </span>
+            <div class="flex gap-2 mb-3">
+              <select id="select-product-manual" class="flex-1 h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none font-semibold">
+                <option value="BL-9921|Kit Balões Metalizados Rose Gold & Cereja|64.90|15">Kit Balões Metalizados Rose Gold &amp; Cereja (Estoque: 15 un) - R$ 64,90</option>
+                <option value="CF-4402|Jogo de Bicos de Confeitar em Inox 12 Pçs|79.90|8">Jogo de Bicos de Confeitar em Inox (Estoque: 8 un) - R$ 79,90</option>
+                <option value="PA-1029|Pasta Americana Tradicional Vermelho Rubi 800g|39.90|22">Pasta Americana Tradicional Vermelho Rubi (Estoque: 22 un) - R$ 39,90</option>
+                <option value="BB-1024|Balão Bubble Cristal Transparente 24 pol.|29.90|30">Balão Bubble Cristal Transparente 24 pol. (Estoque: 30 un) - R$ 29,90</option>
+              </select>
+              <input id="manual-item-qty" type="number" min="1" max="99" value="2" class="w-16 h-10 text-center rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold">
+              <button onclick="addManualItem()" type="button" class="px-4 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">add</span> Adicionar
+              </button>
+            </div>
+
+            <!-- Tabela dos Itens Adicionados -->
+            <div class="rounded-xl border border-surface-container overflow-hidden">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase">
+                  <tr>
+                    <th class="p-2.5">Item</th>
+                    <th class="p-2.5">Qtd</th>
+                    <th class="p-2.5">Preço Unit.</th>
+                    <th class="p-2.5">Subtotal</th>
+                    <th class="p-2.5 text-center">Remover</th>
+                  </tr>
+                </thead>
+                <tbody id="manual-items-table" class="divide-y divide-surface-container">
+                  <tr>
+                    <td class="p-2.5 font-semibold">Kit Balões Metalizados Rose Gold &amp; Cereja</td>
+                    <td class="p-2.5 font-bold">2</td>
+                    <td class="p-2.5">R$ 64,90</td>
+                    <td class="p-2.5 font-bold text-primary">R$ 129,80</td>
+                    <td class="p-2.5 text-center">
+                      <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold">Balão Bubble Cristal Transparente 24 pol.</td>
+                    <td class="p-2.5 font-bold">1</td>
+                    <td class="p-2.5">R$ 29,90</td>
+                    <td class="p-2.5 font-bold text-primary">R$ 29,90</td>
+                    <td class="p-2.5 text-center">
+                      <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bloco 3: Modalidade de Entrega -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div>
+              <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Modalidade de Envio:</label>
+              <select id="manual-shipping-type" onchange="recalculateManualTotal()" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none font-semibold">
+                <option value="18.90">Sedex Expresso (+ R$ 18,90)</option>
+                <option value="11.50">PAC Econômico (+ R$ 11,50)</option>
+                <option value="0.00">Retirada na Loja Física (Grátis)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Endereço de Entrega:</label>
+              <input type="text" value="Rua das Acácias, 142 - Campinas - SP" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Resumo & Geração de Link (4 Colunas) -->
+        <div class="lg:col-span-4 bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm space-y-4">
+          <h3 class="font-display text-sm font-extrabold text-on-surface">Resumo do Pedido Manual</h3>
+          
+          <div class="space-y-2 text-xs border-b border-surface-container pb-3">
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Produtos:</span>
+              <strong id="manual-subtotal" class="text-on-surface">R$ 159,70</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Frete:</span>
+              <strong id="manual-shipping" class="text-on-surface">R$ 18,90</strong>
+            </div>
+            <div class="flex justify-between text-base font-black pt-2 border-t border-surface-container">
+              <span class="text-on-surface">Total:</span>
+              <span id="manual-total" class="text-primary">R$ 178,60</span>
+            </div>
+          </div>
+
+          <!-- Ação Principal: Gerar Link de Pagamento -->
+          <button onclick="generatePaymentLink()" type="button" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[18px]">link</span>
+            <span>Gerar Link de Pagamento (Gateway)</span>
+          </button>
+
+          <!-- Bloco do Link Gerado -->
+          <div id="generated-link-box" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2 hidden">
+            <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px] text-emerald-700">check_circle</span>
+                Link Gerado com Sucesso!
+              </span>
+              <span class="font-mono text-[10px]">#VV-MANUAL-781</span>
+            </div>
+            <input id="payment-url-input" type="text" readonly value="https://pagamento.veveydoces.com.br/pay/vv-manual-781" class="w-full text-[11px] p-2 bg-white rounded-lg border border-emerald-300 font-mono text-emerald-800">
+            <div class="flex gap-2">
+              <button onclick="copyPaymentLink()" class="flex-1 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800">
+                Copiar Link
+              </button>
+              <button onclick="openWhatsAppChat()" class="flex-1 py-1.5 bg-white text-emerald-800 border border-emerald-400 rounded-lg text-xs font-bold hover:bg-emerald-100 flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">send</span> Enviar no Zap
+              </button>
+            </div>
+          </div>
+
+          <button onclick="alert('Comanda impressa com sucesso para a equipe de separação do estoque!')" type="button" class="w-full py-2.5 rounded-xl border border-surface-container hover:bg-surface-container text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">print</span> Imprimir Comanda de Separação
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         ABA 3: GESTÃO DE ESTOQUE UNIFICADO (FEATURE 5 / UC04)
+         ====================================================================== -->
+    <section id="tab-estoque" class="tab-content space-y-5">
+      
+      <div class="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 p-4 rounded-2xl border border-amber-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">inventory</span>
+          </div>
+          <div>
+            <h2 class="font-display text-sm font-extrabold text-amber-950">Ajuste de Estoque Integrado (Loja Física + Online)</h2>
+            <p class="text-xs text-amber-800">Atualize quantidades em tempo real após vendas de balcão para evitar conflito de estoque no e-commerce.</p>
+          </div>
+        </div>
+        <span class="text-xs bg-amber-200 text-amber-900 font-mono px-3 py-1 rounded-full font-bold">Caso de Uso: UC04 / RF008</span>
+      </div>
+
+      <!-- Tabela de Produtos com Estoque -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-surface-container p-5 shadow-sm space-y-4">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="relative flex-1 max-w-sm">
+            <input type="text" placeholder="Buscar por código SKU ou nome..." class="w-full h-10 pl-9 pr-3 rounded-full bg-surface-container-low border border-surface-container text-xs outline-none">
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant absolute left-2.5 top-2.5">search</span>
+          </div>
+          <button onclick="saveAllStock()" class="px-5 py-2.5 rounded-full bg-primary hover:bg-primary-container text-white font-bold text-xs flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">save</span> Salvar Alterações de Estoque
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase">
+              <tr>
+                <th class="p-3">Código</th>
+                <th class="p-3">Produto</th>
+                <th class="p-3">Categoria</th>
+                <th class="p-3">Preço Unit.</th>
+                <th class="p-3">Estoque Físico</th>
+                <th class="p-3">Estoque Disponível</th>
+                <th class="p-3 text-center">Status no Site</th>
+                <th class="p-3 text-right">Ajuste Rápido (Balcão)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container">
+              
+              <!-- Produto 1 -->
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">BL-9921</td>
+                <td class="p-3 font-semibold">Kit Balões Metalizados Rose Gold &amp; Cereja (50 unid.)</td>
+                <td class="p-3"><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Balões</span></td>
+                <td class="p-3 font-bold">R$ 64,90</td>
+                <td class="p-3 font-mono">15 un</td>
+                <td class="p-3"><span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">15 unidades</span></td>
+                <td class="p-3 text-center">
+                  <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Ativo</span>
+                </td>
+                <td class="p-3 text-right">
+                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                    <button onclick="decrementStock('qty-bl9921')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
+                    <input id="qty-bl9921" type="number" value="15" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
+                    <button onclick="incrementStock('qty-bl9921')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Produto 2 -->
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">CF-4402</td>
+                <td class="p-3 font-semibold">Jogo de Bicos de Confeitar em Inox (12 Peças)</td>
+                <td class="p-3"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Confeitaria</span></td>
+                <td class="p-3 font-bold">R$ 79,90</td>
+                <td class="p-3 font-mono">8 un</td>
+                <td class="p-3"><span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">8 unidades</span></td>
+                <td class="p-3 text-center">
+                  <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Ativo</span>
+                </td>
+                <td class="p-3 text-right">
+                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                    <button onclick="decrementStock('qty-cf4402')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
+                    <input id="qty-cf4402" type="number" value="8" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
+                    <button onclick="incrementStock('qty-cf4402')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Produto 3 (Estoque Crítico) -->
+              <tr class="hover:bg-surface-container-low/50 bg-amber-50/30">
+                <td class="p-3 font-mono font-bold text-primary">PA-1029</td>
+                <td class="p-3 font-semibold">Pasta Americana Tradicional Vermelho Rubi 800g</td>
+                <td class="p-3"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Confeitaria</span></td>
+                <td class="p-3 font-bold">R$ 39,90</td>
+                <td class="p-3 font-mono">3 un</td>
+                <td class="p-3"><span class="text-amber-700 font-bold bg-amber-100 px-2 py-0.5 rounded-full">3 unidades (Baixo)</span></td>
+                <td class="p-3 text-center">
+                  <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Alerta</span>
+                </td>
+                <td class="p-3 text-right">
+                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                    <button onclick="decrementStock('qty-pa1029')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
+                    <input id="qty-pa1029" type="number" value="3" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
+                    <button onclick="incrementStock('qty-pa1029')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         ABA 4: GESTÃO DE PEDIDOS & RASTREIO (FEATURE 6 / UC02)
+         ====================================================================== -->
+    <section id="tab-pedidos" class="tab-content space-y-5">
+      
+      <div class="bg-surface-container-lowest rounded-2xl border border-surface-container p-5 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="font-display text-base font-extrabold text-on-surface">Todos os Pedidos do Sistema</h2>
+            <p class="text-xs text-on-surface-variant">Altere o status operacional e insira códigos de rastreamento para notificar os clientes.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold">Filtrar:</span>
+            <select class="text-xs bg-surface-container-low border border-surface-container rounded-lg px-2.5 py-1.5 font-semibold">
+              <option>Todos os Status</option>
+              <option>Pendente / Aguardando Pagamento</option>
+              <option>Pago</option>
+              <option>Em Separação</option>
+              <option>Enviado</option>
+              <option>Entregue</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase">
+              <tr>
+                <th class="p-3">Pedido</th>
+                <th class="p-3">Data / Hora</th>
+                <th class="p-3">Cliente</th>
+                <th class="p-3">Valor Total</th>
+                <th class="p-3">Status do Pedido</th>
+                <th class="p-3">Código de Rastreio</th>
+                <th class="p-3 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container">
+              
+              <!-- Pedido 1 -->
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9812</td>
+                <td class="p-3 text-on-surface-variant">13/10 - 14:32</td>
+                <td class="p-3 font-semibold">Nathan Costa Santos</td>
+                <td class="p-3 font-bold">R$ 184,70</td>
+                <td class="p-3">
+                  <select onchange="updateOrderStatus('#VV-2026-9812', this.value)" class="bg-amber-50 border border-amber-300 text-amber-800 font-bold rounded px-2 py-1 text-xs">
+                    <option>Pago</option>
+                    <option selected>Em Separação</option>
+                    <option>Enviado</option>
+                    <option>Entregue</option>
+                  </select>
+                </td>
+                <td class="p-3">
+                  <input type="text" value="BR829381928BR" class="w-32 bg-surface-container-low border border-surface-container px-2 py-1 rounded font-mono text-[11px]">
+                </td>
+                <td class="p-3 text-right">
+                  <button onclick="alert('Status do Pedido #VV-2026-9812 atualizado e e-mail disparado para o cliente!')" class="bg-primary hover:bg-primary-container text-white px-3 py-1 rounded font-bold">
+                    Salvar
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Pedido 2 -->
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9813</td>
+                <td class="p-3 text-on-surface-variant">13/10 - 15:10</td>
+                <td class="p-3 font-semibold">Carla Silva</td>
+                <td class="p-3 font-bold">R$ 340,00</td>
+                <td class="p-3">
+                  <select onchange="updateOrderStatus('#VV-2026-9813', this.value)" class="bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold rounded px-2 py-1 text-xs">
+                    <option selected>Pago</option>
+                    <option>Em Separação</option>
+                    <option>Enviado</option>
+                    <option>Entregue</option>
+                  </select>
+                </td>
+                <td class="p-3">
+                  <input type="text" placeholder="Inserir rastreio..." class="w-32 bg-surface-container-low border border-surface-container px-2 py-1 rounded font-mono text-[11px]">
+                </td>
+                <td class="p-3 text-right">
+                  <button onclick="alert('Status do Pedido #VV-2026-9813 salvo!')" class="bg-primary hover:bg-primary-container text-white px-3 py-1 rounded font-bold">
+                    Salvar
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       RODAPÉ DO ADMIN
+       ========================================================================== -->
+  <footer class="bg-surface-container-lowest border-t border-surface-container py-3 text-center text-xs text-on-surface-variant">
+    <p>Painel de Controle Vevey Co. — Módulo Acadêmico FATEC (Engenharia de Software) • RBAC Ativado</p>
+  </footer>
+
+  <!-- SCRIPT DE INTERAÇÃO DO PAINEL -->
+  <script>
+    function openTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-surface-container', 'text-on-surface');
+      });
+
+      const target = document.getElementById(tabId);
+      const btn = document.getElementById('btn-' + tabId);
+      if (target) target.classList.add('active');
+      if (btn) {
+        btn.classList.add('bg-primary', 'text-white', 'shadow-sm');
+        btn.classList.remove('bg-surface-container', 'text-on-surface');
+      }
+    }
+
+    function switchRole(role) {
+      const nameEl = document.getElementById('operator-name');
+      const roleEl = document.getElementById('operator-role');
+      if (role === 'miriam') {
+        nameEl.textContent = 'Miriam (Sócia / Administradora)';
+        roleEl.textContent = 'Cargo: ADMIN • Gestão Geral & Relatórios';
+      } else {
+        nameEl.textContent = 'Juliana (Atendente WhatsApp)';
+        roleEl.textContent = 'Cargo: OPERADOR • Loja Física + Online';
+      }
+    }
+
+    function recalculateManualTotal() {
+      let subtotal = 0;
+      document.querySelectorAll('#manual-items-table tr').forEach(row => {
+        const text = row.querySelector('td:nth-child(4)')?.textContent?.replace('R$', '').replace(',', '.').trim();
+        subtotal += parseFloat(text) || 0;
+      });
+
+      const shipping = parseFloat(document.getElementById('manual-shipping-type').value) || 0;
+      const total = subtotal + shipping;
+
+      document.getElementById('manual-subtotal').textContent = 'R$ ' + subtotal.toFixed(2).replace('.', ',');
+      document.getElementById('manual-shipping').textContent = 'R$ ' + shipping.toFixed(2).replace('.', ',');
+      document.getElementById('manual-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+    }
+
+    function addManualItem() {
+      const select = document.getElementById('select-product-manual');
+      const qtyInput = document.getElementById('manual-item-qty');
+      const qty = parseInt(qtyInput.value) || 1;
+      const [sku, name, priceStr] = select.value.split('|');
+      const price = parseFloat(priceStr);
+      const subtotal = price * qty;
+
+      const tbody = document.getElementById('manual-items-table');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="p-2.5 font-semibold">${name}</td>
+        <td class="p-2.5 font-bold">${qty}</td>
+        <td class="p-2.5">R$ ${price.toFixed(2).replace('.', ',')}</td>
+        <td class="p-2.5 font-bold text-primary">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+        <td class="p-2.5 text-center">
+          <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      recalculateManualTotal();
+    }
+
+    function generatePaymentLink() {
+      const linkBox = document.getElementById('generated-link-box');
+      linkBox.classList.remove('hidden');
+      linkBox.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyPaymentLink() {
+      const input = document.getElementById('payment-url-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      alert('Link de pagamento copiado para a área de transferência!');
+    }
+
+    function openWhatsAppChat() {
+      const phone = document.getElementById('manual-client-phone').value.replace(/\D/g, '');
+      const url = document.getElementById('payment-url-input').value;
+      const name = document.getElementById('manual-client-name').value;
+      const total = document.getElementById('manual-total').textContent;
+      const msg = encodeURIComponent(`Olá ${name}! Segue o link de pagamento do seu pedido na Vevey Doces no valor de ${total}:\n\n${url}\n\nAssim que o pagamento for confirmado, seu pedido entrará em separação no estoque!`);
+      window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
+    }
+
+    function incrementStock(id) {
+      const input = document.getElementById(id);
+      input.value = parseInt(input.value || 0) + 1;
+    }
+
+    function decrementStock(id) {
+      const input = document.getElementById(id);
+      const val = parseInt(input.value || 0);
+      if (val > 0) input.value = val - 1;
+    }
+
+    function saveAllStock() {
+      alert('Estoque físico sincronizado com sucesso! Alterações refletidas em tempo real no banco PostgreSQL/Supabase e no catálogo online.');
+    }
+
+    function updateOrderStatus(id, newStatus) {
+      alert(`Status do pedido ${id} atualizado para "${newStatus}". Notificação disparada.`);
+    }
+  </script>
+
+</body>
+</html>

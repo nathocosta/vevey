@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Pedido Confirmado — Vevey Doces</title>
+  
+  <!-- Fontes Oficiais -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#b80035",
+            "primary-container": "#e11d48",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#fffaf9",
+            "secondary": "#855300",
+            "secondary-container": "#fea619",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#684000",
+            "secondary-fixed": "#ffddb8",
+            "tertiary": "#6a37d3",
+            "tertiary-container": "#8354ee",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#fffafd",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "surface-bright": "#f8f9ff",
+            "surface-dim": "#d0dbed",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e6eeff",
+            "surface-container-high": "#dee9fc",
+            "surface-container-highest": "#d9e3f6",
+            "on-surface": "#121c2a",
+            "on-surface-variant": "#5c3f40",
+            "outline": "#906f70",
+            "outline-variant": "#e5bdbe"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-2xs": "0.25rem",
+            "space-xs": "0.5rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-3xl": "4rem",
+            "gutter-mobile": "1rem",
+            "gutter-desktop": "1.5rem",
+            "container-max": "80rem"
+          },
+          fontFamily: {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "title-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-sm": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Estilos Globais -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Script Principal -->
+  <script src="js/app.js" defer></script>
+</head>
+
+<body class="bg-surface font-body-md text-on-surface">
+
+  <!-- ==========================================================================
+       HEADER & BARRA DE NAVEGAÇÃO
+       ========================================================================== -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_4px_20px_-2px_rgba(225,29,72,0.06)]">
+    <div class="bg-primary text-on-primary text-center py-space-xs px-gutter-mobile">
+      <div class="max-w-container-max mx-auto flex flex-wrap items-center justify-center gap-space-xs font-label-sm text-label-sm">
+        <span>🎉 Frete Grátis acima de R$ 199 para todo o Brasil</span>
+        <span class="opacity-50">|</span>
+        <span>Parcele em até 6x sem juros</span>
+        <span class="opacity-50">|</span>
+        <span>Atendimento WhatsApp: (11) 98765-4321</span>
+      </div>
+    </div>
+
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop h-20 flex items-center justify-between gap-space-md">
+      <a href="index.html" class="flex items-center gap-space-sm shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-[22px]">cake</span>
+        </div>
+        <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold hidden sm:inline-block">Vevey Doces</span>
+      </a>
+
+      <div class="flex-1 max-w-2xl mx-space-md hidden md:block">
+        <div class="relative flex items-center">
+          <input 
+            class="w-full h-12 pl-space-md pr-12 rounded-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 font-body-sm text-body-sm outline-none transition-all shadow-inner focus:ring-2 focus:ring-primary/40 focus:bg-white" 
+            placeholder="O que você precisa para sua festa hoje? (ex: balões metalizados, kit confeitaria...)" 
+            type="text"
+          >
+          <button class="absolute right-1 w-10 h-10 rounded-full bg-primary-container hover:bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-105" title="Buscar produtos">
+            <span class="material-symbols-outlined text-[20px]">search</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-space-md shrink-0">
+        <a class="hidden xl:flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-colors" href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined text-secondary-container">chat</span>
+          <div class="text-left leading-tight">
+            <p class="font-label-sm text-label-sm opacity-80">Tire Dúvidas</p>
+            <p class="font-label-md text-label-md text-on-surface font-semibold">WhatsApp</p>
+          </div>
+        </a>
+
+        <a href="minha-conta.html" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity">
+          <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-label-sm text-label-sm font-bold">N</div>
+          <div class="hidden sm:block text-left leading-tight">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
+            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+          </div>
+        </a>
+
+        <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </div>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 0,00</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Menu de Categorias -->
+    <div class="bg-surface-container-low/60 border-t border-surface-container">
+      <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop overflow-x-auto">
+        <nav class="flex items-center gap-space-xs py-space-xs whitespace-nowrap">
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=baloes">🎈 Balões</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=decoracao">✨ Decoração</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=confeitaria">🧁 Confeitaria</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=descartaveis">🍽️ Descartáveis</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=cursos">🎓 Cursos</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=promocoes">🏷️ Promoções &amp; Kits</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=novidades">🎉 Novidades</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTEÚDO PRINCIPAL (CONFIRMAÇÃO DO PEDIDO)
+       ========================================================================== -->
+  <main class="w-full pt-36 bg-surface min-h-screen">
+    <div class="flex flex-col w-full">
+      <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-xl w-full">
+        
+        <!-- Breadcrumb do Topo -->
+        <div class="mb-space-lg flex items-center justify-between flex-wrap gap-space-xs bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-surface-container">
+          <div class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant">
+            <a class="hover:text-primary transition-colors font-medium" href="carrinho.html">Carrinho</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <a class="hover:text-primary transition-colors font-medium" href="checkout.html">Checkout</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-primary font-bold">Confirmação do Pedido</span>
+          </div>
+
+          <div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm bg-surface-container-low px-space-md py-space-2xs rounded-full border border-surface-container">
+            <span class="inline-block w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+            <span class="font-semibold">Aguardando liquidação bancária via Pix</span>
+          </div>
+        </div>
+
+        <!-- 1. Card Hero de Celebração e Sucesso -->
+        <div class="relative overflow-hidden rounded-3xl bg-surface-container-lowest p-space-lg md:p-space-2xl shadow-md mb-space-xl border border-surface-container">
+          <div class="absolute -top-16 -right-16 w-64 h-64 bg-primary-fixed/40 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-20 -left-12 w-72 h-72 bg-secondary-fixed/50 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-space-xl">
+            <div class="flex items-start gap-space-md">
+              <div class="relative shrink-0 flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-secondary-container text-on-secondary-container shadow-lg">
+                <span class="material-symbols-outlined text-[36px] md:text-[44px]">celebration</span>
+              </div>
+              
+              <div class="space-y-space-2xs">
+                <div class="inline-flex items-center gap-space-2xs px-space-sm py-space-2xs rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm tracking-wider uppercase font-bold">
+                  <span class="material-symbols-outlined text-[14px]">stars</span>
+                  <span>Pedido Gerado com Sucesso</span>
+                </div>
+                <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-extrabold">
+                  Oba! Seu pedido foi confirmado com sucesso! 🎉
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+                  Obrigado por celebrar com a <strong class="text-on-surface">Vevey Doces</strong>, Nathan! Já começamos a reservar os seus itens com muito carinho e cuidado.
+                </p>
+              </div>
+            </div>
+
+            <!-- Identificador do Pedido -->
+            <div class="w-full md:w-auto bg-surface-container-low p-space-md rounded-2xl flex flex-col gap-space-xs shrink-0 border border-surface-container">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Identificador Único</span>
+              <div class="flex items-center justify-between gap-space-md">
+                <span class="font-headline-sm text-headline-sm text-primary font-extrabold tracking-tight" id="orderNumber">#VV-2025-98412</span>
+                <button 
+                  class="p-space-xs rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-all flex items-center justify-center border border-surface-container" 
+                  onclick="navigator.clipboard.writeText('#VV-2025-98412'); this.classList.add('bg-primary', 'text-on-primary'); setTimeout(() => this.classList.remove('bg-primary', 'text-on-primary'), 1800);" 
+                  title="Copiar Número do Pedido"
+                >
+                  <span class="material-symbols-outlined text-[20px]">content_copy</span>
+                </button>
+              </div>
+              <div class="flex items-center gap-space-2xs text-on-surface-variant font-label-sm text-label-sm pt-space-2xs">
+                <span class="material-symbols-outlined text-[16px] text-secondary">timer</span>
+                <span>QR Code Pix expira em <span class="font-bold text-secondary" id="countdownTimer">29:45</span> min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade Principal: Pix e Detalhes da Compra -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+          
+          <!-- Coluna Esquerda: Bloco de Pagamento Pix & Logística -->
+          <div class="lg:col-span-7 flex flex-col gap-space-xl">
+            
+            <!-- Cartão Pix -->
+            <div class="bg-surface-container-lowest p-space-lg md:p-space-xl rounded-3xl shadow-md border border-surface-container">
+              <div class="flex items-center justify-between flex-wrap gap-space-sm pb-space-md border-b border-surface-container">
+                <div class="flex items-center gap-space-sm">
+                  <div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[24px]">qr_code_2</span>
+                  </div>
+                  <div>
+                    <h2 class="font-title-md text-title-md text-on-surface font-bold">Pagamento Imediato via Pix</h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Aprovação instantânea para liberar o envio rápido</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="font-label-sm text-label-sm text-on-surface-variant block font-medium">Total a transferir:</span>
+                  <span class="font-headline-md text-headline-md text-primary font-extrabold">R$ 157,92</span>
+                </div>
+              </div>
+
+              <!-- Layout do Pix (QR Code + Copia e Cola) -->
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-space-lg items-center my-space-lg bg-surface-container-low/70 p-space-md md:p-space-lg rounded-2xl border border-surface-container">
+                
+                <!-- QR Code Vetorial Limpo -->
+                <div class="sm:col-span-5 flex flex-col items-center justify-center bg-surface-container-lowest p-space-md rounded-2xl shadow-sm border border-surface-container">
+                  <div class="relative w-44 h-44 bg-surface-container-lowest flex items-center justify-center p-2">
+                    <svg class="w-full h-full text-on-surface" fill="currentColor" viewBox="0 0 160 160">
+                      <path d="M10 10 h50 v50 h-50 Z M20 20 v30 h30 v-30 Z M28 28 h14 v14 h-14 Z"></path>
+                      <path d="M100 10 h50 v50 h-50 Z M110 20 v30 h30 v-30 Z M118 28 h14 v14 h-14 Z"></path>
+                      <path d="M10 100 h50 v50 h-50 Z M20 110 v30 h30 v-30 Z M28 118 h14 v14 h-14 Z"></path>
+                      <rect height="8" width="8" x="70" y="15"></rect>
+                      <rect height="18" width="8" x="85" y="15"></rect>
+                      <rect height="8" width="16" x="70" y="32"></rect>
+                      <rect height="20" width="8" x="70" y="50"></rect>
+                      <rect height="8" width="18" x="85" y="60"></rect>
+                      <rect height="8" width="20" x="15" y="70"></rect>
+                      <rect height="15" width="8" x="45" y="70"></rect>
+                      <rect height="8" width="25" x="30" y="85"></rect>
+                      <rect height="20" width="20" x="70" y="80"></rect>
+                      <rect height="12" width="12" x="100" y="75"></rect>
+                      <rect height="8" width="20" x="125" y="70"></rect>
+                      <rect height="8" width="30" x="115" y="90"></rect>
+                      <rect height="8" width="15" x="70" y="110"></rect>
+                      <rect height="25" width="8" x="95" y="105"></rect>
+                      <rect height="8" width="25" x="70" y="130"></rect>
+                      <rect height="20" width="15" x="110" y="125"></rect>
+                      <rect height="30" width="12" x="135" y="115"></rect>
+                    </svg>
+                    
+                    <div class="absolute inset-0 m-auto w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md text-white">
+                      <span class="material-symbols-outlined text-[20px]">cake</span>
+                    </div>
+                  </div>
+
+                  <span class="font-label-sm text-[11px] text-on-surface-variant mt-space-2xs text-center flex items-center gap-1 font-semibold">
+                    <span class="material-symbols-outlined text-[14px] text-secondary">lock</span>
+                    Pix Banco Central Seguro
+                  </span>
+                </div>
+
+                <!-- Copia e Cola & Instruções -->
+                <div class="sm:col-span-7 flex flex-col gap-space-sm">
+                  <span class="font-label-md text-label-md text-on-surface font-bold">Código Pix Copia e Cola:</span>
+                  <div class="relative flex items-center bg-surface-container-lowest rounded-xl p-space-xs shadow-inner border border-surface-container">
+                    <input 
+                      class="w-full bg-transparent font-mono font-body-sm text-[12px] text-on-surface-variant truncate outline-none px-space-xs font-semibold" 
+                      id="pixCodeInput" 
+                      readonly 
+                      type="text" 
+                      value="00020126580014br.gov.bcb.pix0136veveydoces-pagamentos@banco.com.br5204000053039865406157.925802BR5915VEVEY DOCES LTDA6009SAO PAULO62070503***6304E8A1"
+                    >
+                    <button 
+                      class="shrink-0 bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md px-space-md py-space-xs rounded-lg transition-colors font-bold shadow-sm" 
+                      id="copyPixBtn" 
+                      onclick="const code = document.getElementById('pixCodeInput'); code.select(); navigator.clipboard.writeText(code.value); this.innerText = 'Copiado!'; this.classList.add('bg-secondary-container', 'text-on-secondary-container'); setTimeout(() => { this.innerText = 'Copiar'; this.classList.remove('bg-secondary-container', 'text-on-secondary-container'); }, 2000);"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+
+                  <!-- Lista de Passos -->
+                  <div class="space-y-space-xs pt-space-xs">
+                    <div class="flex items-start gap-space-xs">
+                      <span class="w-5 h-5 rounded-full bg-surface-container-high text-primary font-label-sm text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Abra o app do seu banco ou carteira digital favorita.</p>
+                    </div>
+                    <div class="flex items-start gap-space-xs">
+                      <span class="w-5 h-5 rounded-full bg-surface-container-high text-primary font-label-sm text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Selecione <strong class="text-on-surface">Pagar via Pix &gt; Copia e Cola</strong> ou aponte a câmera pro QR Code.</p>
+                    </div>
+                    <div class="flex items-start gap-space-xs">
+                      <span class="w-5 h-5 rounded-full bg-surface-container-high text-primary font-label-sm text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Confira o destinatário <strong class="text-on-surface">Vevey Doces Ltda</strong> e o valor exato de <strong class="text-primary font-bold">R$ 157,92</strong>.</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Indicador de Status -->
+              <div class="bg-surface-container-low p-space-md rounded-2xl flex items-center justify-between flex-wrap gap-space-sm border border-surface-container">
+                <div class="flex items-center gap-space-sm">
+                  <span class="material-symbols-outlined text-secondary-container text-[24px]">sync</span>
+                  <div class="text-left">
+                    <span class="font-label-md text-label-md text-on-surface block font-bold">Checagem de pagamento automática</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant text-xs">Assim que transferir, atualizaremos esta tela e seu e-mail em segundos.</span>
+                  </div>
+                </div>
+                <span class="font-label-sm text-label-sm bg-surface-container-lowest text-secondary px-space-sm py-1 rounded-full font-bold shadow-sm border border-surface-container">
+                  Status: Pendente
+                </span>
+              </div>
+            </div>
+
+            <!-- Detalhes da Entrega e Prazos -->
+            <div class="bg-surface-container-lowest p-space-lg md:p-space-xl rounded-3xl shadow-md space-y-space-md border border-surface-container">
+              <div class="flex items-center gap-space-sm">
+                <div class="w-10 h-10 rounded-xl bg-surface-container-high text-primary flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+                </div>
+                <div>
+                  <h2 class="font-title-md text-title-md text-on-surface font-bold">Logística &amp; Detalhes da Entrega</h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">Rastreio e endereço de destinatário cadastrado</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+                <div class="bg-surface-container-low p-space-md rounded-2xl flex items-start gap-space-sm border border-surface-container">
+                  <span class="material-symbols-outlined text-primary text-[24px]">calendar_month</span>
+                  <div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block font-bold">Previsão Estimada</span>
+                    <p class="font-title-md text-title-md text-on-surface mt-space-2xs font-bold">2 a 3 dias úteis</p>
+                    <p class="font-body-sm text-[12px] text-on-surface-variant">Envio via Sedex Express com seguro contra avarias em confeitos</p>
+                  </div>
+                </div>
+
+                <div class="bg-surface-container-low p-space-md rounded-2xl flex items-start gap-space-sm border border-surface-container">
+                  <span class="material-symbols-outlined text-primary text-[24px]">pin_drop</span>
+                  <div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block font-bold">Endereço de Entrega</span>
+                    <p class="font-body-md text-body-md text-on-surface font-bold mt-space-2xs leading-snug">
+                      Avenida Paulista, 1000 - Apto 42
+                    </p>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">Bela Vista, São Paulo - SP, CEP 01311-000</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barra de Etapas do Pedido -->
+              <div class="pt-space-sm">
+                <div class="relative flex items-center justify-between mb-space-xs">
+                  <div class="flex flex-col items-center text-center">
+                    <span class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-md">
+                      <span class="material-symbols-outlined text-[18px]">check</span>
+                    </span>
+                    <span class="font-label-sm text-label-sm text-on-surface font-bold mt-1">Pedido Feito</span>
+                  </div>
+
+                  <div class="flex-1 h-1 bg-surface-container mx-2 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary w-1/3"></div>
+                  </div>
+
+                  <div class="flex flex-col items-center text-center">
+                    <span class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold shadow-md animate-bounce">
+                      <span class="material-symbols-outlined text-[18px]">paid</span>
+                    </span>
+                    <span class="font-label-sm text-label-sm text-secondary font-bold mt-1">Aguardando Pix</span>
+                  </div>
+
+                  <div class="flex-1 h-1 bg-surface-container mx-2 rounded-full"></div>
+
+                  <div class="flex flex-col items-center text-center opacity-40">
+                    <span class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold">
+                      <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                    </span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Separação</span>
+                  </div>
+
+                  <div class="flex-1 h-1 bg-surface-container mx-2 rounded-full"></div>
+
+                  <div class="flex flex-col items-center text-center opacity-40">
+                    <span class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold">
+                      <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                    </span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant mt-1">A Caminho</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação Principais -->
+            <div class="flex flex-col sm:flex-row items-center gap-space-md pt-space-xs">
+              <a class="w-full sm:w-auto flex-1 h-12 rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold" href="minha-conta.html">
+                <span class="material-symbols-outlined text-[20px]">assignment</span>
+                <span>Acompanhar Pedido na Minha Conta</span>
+              </a>
+              <a class="w-full sm:w-auto h-12 px-space-xl rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-lg text-label-lg flex items-center justify-center gap-space-xs transition-colors font-bold border border-surface-container" href="index.html">
+                <span class="material-symbols-outlined text-[20px]">storefront</span>
+                <span>Voltar para a Loja</span>
+              </a>
+            </div>
+
+            <!-- Ajuda WhatsApp -->
+            <div class="bg-surface-container-lowest p-space-md rounded-2xl shadow-sm flex items-center justify-between flex-wrap gap-space-sm border border-surface-container">
+              <div class="flex items-center gap-space-sm">
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-secondary flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[22px]">support_agent</span>
+                </div>
+                <div>
+                  <p class="font-label-md text-label-md text-on-surface font-bold">Precisa alterar o endereço ou tem urgência para a festa?</p>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant text-xs">Nosso time de confeitaria e atendimento está online para auxiliar.</p>
+                </div>
+              </div>
+              <a class="w-full sm:w-auto px-space-md py-space-xs rounded-full bg-surface-container-high hover:bg-surface-container text-primary font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors font-bold border border-surface-container" href="https://wa.me/5511987654321?text=Ol%C3%A1!%20Acabei%20de%20fazer%20o%20pedido%20%23VV-2025-98412%20e%20gostaria%20de%20tirar%20uma%20d%C3%BAvida." target="_blank" rel="noopener noreferrer">
+                <span class="material-symbols-outlined text-[18px]">chat</span>
+                <span>Falar sobre este Pedido no WhatsApp</span>
+              </a>
+            </div>
+
+          </div>
+
+          <!-- Coluna Direita: Resumo dos Itens Comprados -->
+          <div class="lg:col-span-5 flex flex-col gap-space-xl">
+            <div class="bg-surface-container-lowest p-space-lg md:p-space-xl rounded-3xl shadow-md sticky top-40 border border-surface-container">
+              <div class="flex items-center justify-between pb-space-md border-b border-surface-container">
+                <div>
+                  <h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold">Resumo dos Itens</h2>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">3 produtos embalados com proteção</p>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[28px]">shopping_bag</span>
+              </div>
+
+              <!-- Lista de 3 Produtos Leves -->
+              <div class="divide-y divide-surface-container-low">
+                
+                <div class="py-space-md flex items-center gap-space-md">
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-rose-50 to-pink-100 flex items-center justify-center text-primary shrink-0 border border-rose-200/60">
+                    <span class="material-symbols-outlined text-[20px]">celebration</span>
+                    <span class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] w-5 h-5 rounded-bl-lg flex items-center justify-center font-bold">1x</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-label-sm text-[11px] text-primary uppercase font-bold tracking-wider">Balões &amp; Festas</span>
+                    <h3 class="font-title-md text-title-md text-on-surface truncate font-bold">Kit Balões Metalizados Rose Gold</h3>
+                    <p class="font-body-sm text-[12px] text-on-surface-variant">50 unid. com acabamento espelhado</p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="font-title-md text-title-md text-on-surface font-bold">R$ 64,90</span>
+                  </div>
+                </div>
+
+                <div class="py-space-md flex items-center gap-space-md">
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center text-tertiary shrink-0 border border-purple-200/60">
+                    <span class="material-symbols-outlined text-[20px]">skillet</span>
+                    <span class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] w-5 h-5 rounded-bl-lg flex items-center justify-center font-bold">1x</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-label-sm text-[11px] text-tertiary uppercase font-bold tracking-wider">Confeitaria</span>
+                    <h3 class="font-title-md text-title-md text-on-surface truncate font-bold">Jogo Bicos de Confeitar em Inox</h3>
+                    <p class="font-body-sm text-[12px] text-on-surface-variant">12 Peças + Adaptador Profissional</p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="font-title-md text-title-md text-on-surface font-bold">R$ 79,90</span>
+                  </div>
+                </div>
+
+                <div class="py-space-md flex items-center gap-space-md">
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center text-secondary shrink-0 border border-amber-200/60">
+                    <span class="material-symbols-outlined text-[20px]">cookie</span>
+                    <span class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] w-5 h-5 rounded-bl-lg flex items-center justify-center font-bold">1x</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="font-label-sm text-[11px] text-secondary uppercase font-bold tracking-wider">Confeitaria</span>
+                    <h3 class="font-title-md text-title-md text-on-surface truncate font-bold">Pasta Americana Vermelho Rubi</h3>
+                    <p class="font-body-sm text-[12px] text-on-surface-variant">800g tradicional para bolos finos</p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <span class="font-title-md text-title-md text-on-surface font-bold">R$ 39,90</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Discriminação de Valores -->
+              <div class="bg-surface-container-low p-space-md rounded-2xl mt-space-md space-y-space-xs font-body-sm text-body-sm border border-surface-container">
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Subtotal dos produtos (3)</span>
+                  <span class="text-on-surface font-medium">R$ 184,70</span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                  <span class="flex items-center gap-1">
+                    Frete Sedex Express
+                    <span class="bg-surface-container text-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-full font-bold">Campanha</span>
+                  </span>
+                  <span class="text-secondary font-bold uppercase text-[12px]">Grátis</span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Desconto Cupom VEVEY10 (-10%)</span>
+                  <span class="text-primary font-medium">- R$ 18,47</span>
+                </div>
+                <div class="flex justify-between text-on-surface-variant">
+                  <span>Desconto Pix Extra (-5%)</span>
+                  <span class="text-secondary font-bold">- R$ 8,31</span>
+                </div>
+                <div class="pt-space-xs mt-space-xs border-t border-surface-container flex justify-between items-baseline">
+                  <span class="font-title-md text-title-md text-on-surface font-extrabold">Total a Pagar</span>
+                  <div class="text-right">
+                    <span class="font-headline-md text-headline-md text-primary font-extrabold">R$ 157,92</span>
+                    <span class="block font-label-sm text-[11px] text-on-surface-variant">À vista no Pix</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Garantia Doce Vevey -->
+              <div class="mt-space-lg p-space-md rounded-2xl bg-surface-container-low/50 flex items-start gap-space-sm border border-surface-container">
+                <span class="material-symbols-outlined text-primary text-[24px]">verified</span>
+                <div class="font-body-sm text-body-sm text-on-surface-variant text-xs leading-relaxed">
+                  <span class="font-label-md text-label-md text-on-surface block font-bold mb-0.5">Garantia Doce Vevey</span>
+                  Produtos inspecionados individualmente. Em caso de avaria no transporte, realizamos reposição imediata via motoboy parceiro em capitais ou Sedex 10.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       RODAPÉ
+       ========================================================================== -->
+  <footer class="w-full bg-surface-container-low mt-space-3xl border-t border-surface-container">
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl">
+        <div class="space-y-space-sm">
+          <div class="flex items-center gap-space-xs">
+            <div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]">cake</span>
+            </div>
+            <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold">Vevey Doces</span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Transformando momentos comuns em celebrações inesquecíveis. Produtos selecionados de alta qualidade para encantar confeiteiros, decoradores e famílias em festa.
+          </p>
+          <div class="flex items-center gap-space-sm pt-space-xs text-primary">
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">photo_camera</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">chat</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">play_circle</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">share</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Links Úteis</h4>
+          <ul class="space-y-space-xs">
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Dúvidas Frequentes (FAQ)</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Política de Privacidade</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Termos de Uso</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Trocas e Devoluções</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Central de Apoio</h4>
+          <ul class="space-y-space-xs">
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Nossa História</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">Fale Conosco</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Prazos e Entregas</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="catalogo.html?categoria=cursos">Cursos e Workshops</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Pagamento Seguro</h4>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Pague com segurança via Pix, Cartões de Crédito (Visa, Mastercard, Elo) ou Boleto.</p>
+          <div class="flex flex-wrap items-center gap-space-xs text-on-surface-variant mb-space-md">
+            <span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+            <span class="material-symbols-outlined text-[28px]">credit_card</span>
+            <span class="material-symbols-outlined text-[28px]">receipt_long</span>
+            <span class="material-symbols-outlined text-[28px]">payments</span>
+          </div>
+          <div class="flex items-center gap-space-xs p-space-xs bg-surface-container rounded-xl border border-surface-container-high">
+            <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+            <div class="text-left">
+              <p class="font-label-sm text-label-sm text-on-surface font-bold">Ambiente 100% Protegido</p>
+              <p class="font-body-sm text-[11px] text-on-surface-variant">Certificação SSL Criptografada</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-space-2xl pt-space-md text-center border-t border-surface-container">
+        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 Vevey Doces Confeitaria &amp; Festas Ltda. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      let timeLeft = 29 * 60 + 45;
+      const timerElem = document.getElementById('countdownTimer');
+      if (timerElem) {
+        const interval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            timerElem.textContent = 'Expirado';
+            return;
+          }
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          timerElem.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }, 1000);
+      }
+    })();
+  </script>
+
+</body>
+</html>

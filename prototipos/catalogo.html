@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Catálogo de Produtos — Vevey Doces</title>
+  
+  <!-- Fontes Oficiais -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#b80035",
+            "primary-container": "#e11d48",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#fffaf9",
+            "secondary": "#855300",
+            "secondary-container": "#fea619",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#684000",
+            "secondary-fixed": "#ffddb8",
+            "tertiary": "#6a37d3",
+            "tertiary-container": "#8354ee",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#fffafd",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "surface-bright": "#f8f9ff",
+            "surface-dim": "#d0dbed",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e6eeff",
+            "surface-container-high": "#dee9fc",
+            "surface-container-highest": "#d9e3f6",
+            "on-surface": "#121c2a",
+            "on-surface-variant": "#5c3f40",
+            "outline": "#906f70",
+            "outline-variant": "#e5bdbe"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-2xs": "0.25rem",
+            "space-xs": "0.5rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-3xl": "4rem",
+            "gutter-mobile": "1rem",
+            "gutter-desktop": "1.5rem",
+            "container-max": "80rem"
+          },
+          fontFamily: {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+            "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+            "title-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+            "label-md": ["Plus Jakarta Sans", "sans-serif"],
+            "label-sm": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Estilos Globais -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Script Principal -->
+  <script src="js/app.js" defer></script>
+</head>
+
+<body class="bg-surface font-body-md text-on-surface">
+
+  <!-- ==========================================================================
+       HEADER & BARRA DE NAVEGAÇÃO
+       ========================================================================== -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_4px_20px_-2px_rgba(225,29,72,0.06)]">
+    <div class="bg-primary text-on-primary text-center py-space-xs px-gutter-mobile">
+      <div class="max-w-container-max mx-auto flex flex-wrap items-center justify-center gap-space-xs font-label-sm text-label-sm">
+        <span>🎉 Frete Grátis acima de R$ 199 para todo o Brasil</span>
+        <span class="opacity-50">|</span>
+        <span>Parcele em até 6x sem juros</span>
+        <span class="opacity-50">|</span>
+        <span>Atendimento WhatsApp: (11) 98765-4321</span>
+      </div>
+    </div>
+
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop h-20 flex items-center justify-between gap-space-md">
+      <a href="index.html" class="flex items-center gap-space-sm shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-[22px]">cake</span>
+        </div>
+        <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold hidden sm:inline-block">Vevey Doces</span>
+      </a>
+
+      <div class="flex-1 max-w-2xl mx-space-md hidden md:block">
+        <div class="relative flex items-center">
+          <input 
+            id="catalog-search"
+            class="w-full h-12 pl-space-md pr-12 rounded-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 font-body-sm text-body-sm outline-none transition-all shadow-inner focus:ring-2 focus:ring-primary/40 focus:bg-white" 
+            placeholder="O que você precisa para sua festa hoje? (ex: balões metalizados, kit confeitaria...)" 
+            type="text"
+          >
+          <button class="absolute right-1 w-10 h-10 rounded-full bg-primary-container hover:bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-105" title="Buscar produtos">
+            <span class="material-symbols-outlined text-[20px]">search</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-space-md shrink-0">
+        <a class="hidden xl:flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-colors" href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">
+          <span class="material-symbols-outlined text-secondary-container">chat</span>
+          <div class="text-left leading-tight">
+            <p class="font-label-sm text-label-sm opacity-80">Tire Dúvidas</p>
+            <p class="font-label-md text-label-md text-on-surface font-semibold">WhatsApp</p>
+          </div>
+        </a>
+
+        <a href="minha-conta.html" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity">
+          <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-label-sm text-label-sm font-bold">N</div>
+          <div class="hidden sm:block text-left leading-tight">
+            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
+            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+          </div>
+        </a>
+
+        <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+          </div>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 184,70</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Menu de Categorias -->
+    <div class="bg-surface-container-low/60 border-t border-surface-container">
+      <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop overflow-x-auto">
+        <nav class="flex items-center gap-space-xs py-space-xs whitespace-nowrap">
+          <a class="font-label-md text-label-md bg-primary-container text-on-primary font-bold shadow-sm px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=baloes">🎈 Balões</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=decoracao">✨ Decoração</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=confeitaria">🧁 Confeitaria</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=descartaveis">🍽️ Descartáveis</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=cursos">🎓 Cursos</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=promocoes">🏷️ Promoções &amp; Kits</a>
+          <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors" href="catalogo.html?categoria=novidades">🎉 Novidades</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTEÚDO PRINCIPAL (CATÁLOGO)
+       ========================================================================== -->
+  <main class="w-full pt-36 bg-surface min-h-screen">
+    <div class="flex flex-col w-full">
+
+      <!-- Faixa de Destaque da Categoria & Breadcrumb -->
+      <div class="w-full bg-gradient-to-r from-surface-container-low via-surface-container-lowest to-surface-container-low py-space-sm mb-space-md border-b border-surface-container">
+        <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
+          
+          <nav aria-label="Breadcrumb" class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm mb-space-xs">
+            <a class="hover:text-primary transition-colors flex items-center gap-1" href="index.html">
+              <span class="material-symbols-outlined text-[16px]">home</span> Início
+            </a>
+            <span class="opacity-40">/</span>
+            <a class="hover:text-primary transition-colors" href="catalogo.html">Categorias</a>
+            <span class="opacity-40">/</span>
+            <span class="text-primary font-semibold">Balões &amp; Decorações</span>
+          </nav>
+
+          <!-- Hero da Categoria -->
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md pt-space-xs pb-space-sm">
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary/10 text-primary text-label-sm font-label-sm mb-space-xs font-bold">
+                <span class="material-symbols-outlined text-[14px]">celebration</span>
+                <span>Coleção Festiva 2025</span>
+              </div>
+              <h1 class="font-display-lg text-headline-lg lg:text-display-lg text-on-surface tracking-tight leading-none font-extrabold">
+                Balões &amp; Decorações 
+                <span class="font-title-md text-title-md font-normal text-on-surface-variant ml-2">(86 produtos encontrados)</span>
+              </h1>
+              <p class="font-body-md text-body-md text-on-surface-variant mt-space-xs leading-relaxed max-w-2xl">
+                Explore nossa seleção de balões metalizados, látex biodegradável, arcos desconstruídos e kits práticos para criar cenários inesquecíveis e encantar seus convidados.
+              </p>
+            </div>
+
+            <!-- Ordenação & Botão Mobile -->
+            <div class="flex flex-wrap items-center gap-space-sm self-start lg:self-end shrink-0">
+              <div class="flex items-center gap-2 bg-surface-container-lowest shadow-sm rounded-full px-space-md py-space-xs border border-surface-container">
+                <span class="material-symbols-outlined text-on-surface-variant text-[18px]">sort</span>
+                <span class="font-label-md text-label-md text-on-surface-variant font-semibold">Ordenar por:</span>
+                <select class="bg-transparent font-title-md text-label-md text-primary focus:outline-none cursor-pointer font-bold" id="sort-select">
+                  <option selected value="bestsellers">Mais vendidos</option>
+                  <option value="price-asc">Menor preço</option>
+                  <option value="price-desc">Maior preço</option>
+                  <option value="newest">Novidades</option>
+                  <option value="rating">Melhor avaliação</option>
+                </select>
+              </div>
+
+              <button class="lg:hidden flex items-center gap-space-xs px-space-md py-space-xs bg-primary text-on-primary rounded-full shadow-sm font-label-md text-label-md font-bold" id="toggle-mobile-filter">
+                <span class="material-symbols-outlined text-[18px]">tune</span>
+                <span>Filtros</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pills Rápidas de Subcategorias -->
+          <div class="flex items-center gap-space-xs overflow-x-auto py-space-xs no-scrollbar">
+            <button class="shrink-0 px-space-md py-space-xs rounded-full bg-primary-container text-on-primary font-label-md text-label-md flex items-center gap-1 shadow-sm font-bold">
+              <span>Todos os Balões</span>
+            </button>
+            <button class="shrink-0 px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md transition-colors font-medium">Balões Metalizados</button>
+            <button class="shrink-0 px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md transition-colors font-medium">Arcos &amp; Guirlandas</button>
+            <button class="shrink-0 px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md transition-colors font-medium">Látex Biodegradável</button>
+            <button class="shrink-0 px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md transition-colors font-medium">Acessórios &amp; Infladores</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Área Principal com Sidebar e Grid -->
+      <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop w-full pb-space-3xl">
+        <div class="flex flex-col lg:flex-row gap-space-xl items-start">
+          
+          <!-- Sidebar: Painel de Filtros -->
+          <aside class="w-full lg:w-72 shrink-0 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm hidden lg:block border border-surface-container" id="filter-sidebar">
+            <div class="flex items-center justify-between pb-space-sm mb-space-md bg-surface-container-low p-space-sm rounded-lg">
+              <div class="flex items-center gap-2 text-on-surface font-title-md text-title-md font-bold">
+                <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+                <span>Filtros Refinados</span>
+              </div>
+              <button class="text-primary hover:underline font-label-sm text-label-sm font-bold" id="reset-all-filters">Limpar</button>
+            </div>
+
+            <form class="space-y-space-lg" id="filters-form" onsubmit="event.preventDefault();">
+              
+              <!-- Faixa de Preço Interativa -->
+              <div class="space-y-space-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-title-md text-title-md text-on-surface font-bold">Faixa de Preço</span>
+                  <span class="font-label-md text-label-md text-primary font-bold" id="price-val">Até R$ 180,00</span>
+                </div>
+                <input class="w-full accent-primary cursor-pointer h-2 bg-surface-container-highest rounded-lg appearance-none" id="price-slider" max="300" min="10" step="5" type="range" value="180">
+                <div class="flex justify-between text-on-surface-variant font-label-sm text-label-sm">
+                  <span>R$ 10,00</span>
+                  <span>R$ 150,00</span>
+                  <span>R$ 300,00</span>
+                </div>
+              </div>
+
+              <!-- Paleta de Cores -->
+              <div class="space-y-space-xs">
+                <label class="block font-title-md text-title-md text-on-surface font-bold">Paleta de Cores</label>
+                <div class="grid grid-cols-3 gap-space-xs pt-1">
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input checked class="sr-only peer" name="color" type="checkbox" value="rosegold">
+                    <span class="w-5 h-5 rounded-full bg-[#B76E79] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Rosé</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input checked class="sr-only peer" name="color" type="checkbox" value="dourado">
+                    <span class="w-5 h-5 rounded-full bg-[#E5B80B] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Dourado</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input class="sr-only peer" name="color" type="checkbox" value="pastel">
+                    <span class="w-5 h-5 rounded-full bg-[#FEE2E2] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Pastel</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input class="sr-only peer" name="color" type="checkbox" value="vermelho">
+                    <span class="w-5 h-5 rounded-full bg-[#DC2626] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Cereja</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input class="sr-only peer" name="color" type="checkbox" value="lilas">
+                    <span class="w-5 h-5 rounded-full bg-[#C084FC] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Lilás</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer p-1 rounded hover:bg-surface-container-low transition-colors">
+                    <input class="sr-only peer" name="color" type="checkbox" value="azul">
+                    <span class="w-5 h-5 rounded-full bg-[#93C5FD] shadow-sm peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:ring-primary flex items-center justify-center text-white text-[10px]"></span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-medium">Azul Céu</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Tipo de Balão -->
+              <div class="space-y-space-xs">
+                <span class="font-title-md text-title-md text-on-surface block font-bold">Tipo de Balão</span>
+                <div class="space-y-1">
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+                    <div class="flex items-center gap-2">
+                      <input checked class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Balões Metalizados</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(42)</span>
+                  </label>
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+                    <div class="flex items-center gap-2">
+                      <input checked class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Látex Biodegradável</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(28)</span>
+                  </label>
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+                    <div class="flex items-center gap-2">
+                      <input class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Balão Bubble Cristal</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(16)</span>
+                  </label>
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer transition-colors">
+                    <div class="flex items-center gap-2">
+                      <input class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Kits Arco Desconstruído</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(12)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ocasião & Tema -->
+              <div class="space-y-space-xs">
+                <span class="font-title-md text-title-md text-on-surface block font-bold">Ocasião &amp; Tema</span>
+                <div class="space-y-1">
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer">
+                    <div class="flex items-center gap-2">
+                      <input checked class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Aniversário &amp; Celebração</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(54)</span>
+                  </label>
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer">
+                    <div class="flex items-center gap-2">
+                      <input class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Casamento &amp; Noivado</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(22)</span>
+                  </label>
+                  <label class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container-low cursor-pointer">
+                    <div class="flex items-center gap-2">
+                      <input class="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox">
+                      <span class="font-body-sm text-body-sm text-on-surface">Chá Revelação &amp; Bebê</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">(18)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ações da Barra Lateral -->
+              <div class="pt-space-sm space-y-space-xs">
+                <button class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-md transition-transform hover:scale-[1.02] flex items-center justify-center gap-2 font-bold" type="button">
+                  <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                  <span>Aplicar Filtros (86)</span>
+                </button>
+                <button class="w-full py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded-full transition-colors font-semibold" id="clear-filters-btn" type="button">
+                  Redefinir Tudo
+                </button>
+              </div>
+
+              <!-- Card de Atendimento na Sidebar -->
+              <div class="p-space-md rounded-xl bg-surface-container-low space-y-2 mt-space-md border border-surface-container">
+                <div class="flex items-center gap-2 text-primary font-title-md text-title-md font-bold">
+                  <span class="material-symbols-outlined">support_agent</span>
+                  <span>Dúvida na quantidade?</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant text-xs">
+                  Fale com nossas especialistas em montagem de festas pelo WhatsApp.
+                </p>
+                <a class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-bold hover:underline" href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">
+                  Calcular balões por m² →
+                </a>
+              </div>
+
+            </form>
+          </aside>
+
+          <!-- Conteúdo Principal: Grade de Produtos -->
+          <main class="flex-1 w-full">
+            
+            <!-- Barra de Chips Ativos -->
+            <div class="flex flex-wrap items-center gap-space-xs mb-space-md">
+              <span class="font-label-sm text-label-sm text-on-surface-variant font-bold">Filtros Ativos:</span>
+              <span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-sm text-label-sm px-space-sm py-1 rounded-full font-semibold">
+                Balões Metalizados
+                <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary">close</span>
+              </span>
+              <span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-sm text-label-sm px-space-sm py-1 rounded-full font-semibold">
+                Até R$ 180,00
+                <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary">close</span>
+              </span>
+              <span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-sm text-label-sm px-space-sm py-1 rounded-full font-semibold">
+                Rosé Gold
+                <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-primary">close</span>
+              </span>
+              <button class="font-label-sm text-label-sm text-primary hover:underline ml-2 font-bold">Remover todos</button>
+            </div>
+
+            <!-- Grade com 8 Cards de Produto Leves -->
+            <div id="catalog-products" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+              
+              <!-- CARD 1: Kit Balões Metalizados Rose Gold -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="baloes">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-rose-50 to-pink-100 flex flex-col items-center justify-center p-3 text-center border border-rose-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-primary/70 mb-1">celebration</span>
+                  <span class="font-label-sm text-[11px] font-bold text-primary">Kit Balões Metalizados</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">50 unid. Rose Gold &amp; Cereja</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-primary-container text-on-primary font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">25% OFF</span>
+                    <span class="bg-secondary text-on-secondary font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Mais Vendido</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Balões &amp; Festas</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Kit Balões Metalizados Rose Gold &amp; Cereja (50 unid.)
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(128)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 86,50</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 64,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">ou 3x de R$ 21,63 sem juros</p>
+                    <button data-action="add-to-cart" data-id="BL-9921" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 2: Balão Bubble Cristal com Confetes -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="baloes">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-amber-50 to-yellow-100 flex flex-col items-center justify-center p-3 text-center border border-amber-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-secondary mb-1">bubble_chart</span>
+                  <span class="font-label-sm text-[11px] font-bold text-secondary">Bubble Cristal Transparente</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">24 pol. com Confetes Ouro</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-secondary-container text-on-secondary-container font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Novidade</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Balões Especiais</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Balão Bubble Cristal com Confetes Dourados (24 pol.)
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(48)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 38,00</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 29,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">unidade pronta para inflar</p>
+                    <button data-action="add-to-cart" data-id="BB-1024" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 3: Fita para Arco Desconstruído -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="decoracao">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-purple-50 to-indigo-100 flex flex-col items-center justify-center p-3 text-center border border-purple-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-tertiary mb-1">linear_scale</span>
+                  <span class="font-label-sm text-[11px] font-bold text-tertiary">Fita Suporte para Arco</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">5m + 100 Pontos Cola</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-tertiary-container text-on-tertiary-container font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Essencial</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Montagem &amp; Suportes</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Fita para Arco Desconstruído 5 Metros + Pontos de Cola
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star_half</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(92)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 24,90</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 18,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">kit montagem fácil</p>
+                    <button data-action="add-to-cart" data-id="FT-0500" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 4: Kit Balões Látex Cromados Champagne -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="baloes">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-100 flex flex-col items-center justify-center p-3 text-center border border-emerald-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-emerald-600 mb-1">auto_awesome</span>
+                  <span class="font-label-sm text-[11px] font-bold text-emerald-800">Látex Cromado Premium</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">30 unid. Champagne &amp; Prata</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-primary-container text-on-primary font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">20% OFF</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Balões &amp; Festas</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Kit Balões Látex Cromados Champagne &amp; Prata (30 unid.)
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(73)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 49,90</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 39,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">brilho espelhado intenso</p>
+                    <button data-action="add-to-cart" data-id="BL-3030" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 5: Bomba Manual de Encher Balões -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="decoracao">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-100 flex flex-col items-center justify-center p-3 text-center border border-blue-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-blue-600 mb-1">air</span>
+                  <span class="font-label-sm text-[11px] font-bold text-blue-800">Inflador Manual Dupla Ação</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">Enche na ida e na volta</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-secondary text-on-secondary font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Top Vendas</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Acessórios</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Bomba Manual de Encher Balões Dupla Ação Rápida
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star_half</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(115)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 32,00</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 24,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">agilidade na montagem</p>
+                    <button data-action="add-to-cart" data-id="BM-0200" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 6: Topo de Bolo Balões Orgânicos -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="confeitaria">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-pink-50 to-red-100 flex flex-col items-center justify-center p-3 text-center border border-pink-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-primary mb-1">cake</span>
+                  <span class="font-label-sm text-[11px] font-bold text-primary">Mini Balões Topo de Bolo</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">10 mini balões + canudos</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-primary-container text-on-primary font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Tendência</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Confeitaria &amp; Topos</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Topo de Bolo Balões Orgânicos Miniatura Rosé &amp; Branco
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(64)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 29,90</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 22,50</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">para bolos de 15 a 25cm</p>
+                    <button data-action="add-to-cart" data-id="TP-0010" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 7: Balão Metalizado Números Gigantes 1 Metro -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="baloes">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-amber-50 to-orange-100 flex flex-col items-center justify-center p-3 text-center border border-amber-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-secondary mb-1">pin</span>
+                  <span class="font-label-sm text-[11px] font-bold text-secondary">Número Gigante 1 Metro</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">Dourado / Hélio ou Ar</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-tertiary-container text-on-tertiary-container font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">20% OFF</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Balões &amp; Números</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Balão Metalizado Número Gigante 1 Metro Dourado (0 a 9)
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(88)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 34,90</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 27,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">escolha o dígito desejado</p>
+                    <button data-action="add-to-cart" data-id="NM-1000" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CARD 8: Kit Arco Fácil Guirlanda Orgânica 100 Balões -->
+              <div class="product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container" data-category="kits">
+                <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-rose-50 to-purple-100 flex flex-col items-center justify-center p-3 text-center border border-rose-200/50 mb-space-xs">
+                  <span class="material-symbols-outlined text-[36px] text-primary mb-1">celebration</span>
+                  <span class="font-label-sm text-[11px] font-bold text-primary">Kit Guirlanda 100 Balões</span>
+                  <span class="font-body-sm text-[10px] text-on-surface-variant/70">Fita 5m + Cola + Pontos</span>
+                  <div class="absolute top-2 left-2 flex flex-col gap-1">
+                    <span class="bg-secondary-container text-on-secondary-container font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Kit Completo</span>
+                  </div>
+                  <button aria-label="Favoritar produto" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+                  </button>
+                </div>
+                <div class="flex-1 flex flex-col">
+                  <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Kits Prontos</span>
+                  <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                    Kit Arco Fácil Guirlanda Orgânica Festiva (100 Balões)
+                  </h2>
+                  <div class="flex items-center gap-1 mt-1 mb-space-xs">
+                    <div class="flex text-secondary-container text-[14px]">
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star</span>
+                      <span class="material-symbols-outlined text-[16px]">star_half</span>
+                    </div>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">(142)</span>
+                  </div>
+                  <div class="mt-auto pt-space-xs">
+                    <div class="text-on-surface-variant text-label-sm font-label-sm line-through">R$ 149,90</div>
+                    <div class="flex items-baseline gap-1">
+                      <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ 119,90</span>
+                      <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+                    </div>
+                    <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">ou 3x de R$ 39,96 sem juros</p>
+                    <button data-action="add-to-cart" data-id="KT-100B" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                      <span class="btn-text">Adicionar</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Paginação -->
+            <div class="mt-space-2xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm border border-surface-container">
+              <div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm order-2 md:order-1 font-medium">
+                <span>Exibir</span>
+                <select class="bg-surface-container-low text-on-surface font-title-md text-label-md px-3 py-1.5 rounded-full focus:outline-none cursor-pointer font-bold">
+                  <option value="12">12 por página</option>
+                  <option selected value="24">24 por página</option>
+                  <option value="48">48 por página</option>
+                </select>
+                <span class="hidden sm:inline">de 86 itens</span>
+              </div>
+
+              <nav aria-label="Navegação entre páginas" class="flex items-center gap-1 order-1 md:order-2">
+                <button class="h-10 px-3 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-40" disabled>
+                  <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                  <span class="font-label-md text-label-md hidden sm:inline ml-1 font-semibold">Anterior</span>
+                </button>
+                <button class="w-10 h-10 rounded-full bg-primary text-on-primary font-title-md text-label-lg font-bold shadow-sm">1</button>
+                <button class="w-10 h-10 rounded-full text-on-surface hover:bg-surface-container-low font-title-md text-label-lg transition-colors font-semibold">2</button>
+                <button class="w-10 h-10 rounded-full text-on-surface hover:bg-surface-container-low font-title-md text-label-lg transition-colors font-semibold">3</button>
+                <button class="w-10 h-10 rounded-full text-on-surface hover:bg-surface-container-low font-title-md text-label-lg transition-colors font-semibold">4</button>
+                <span class="px-2 text-on-surface-variant font-bold">...</span>
+                <button class="w-10 h-10 rounded-full text-on-surface hover:bg-surface-container-low font-title-md text-label-lg transition-colors font-semibold">7</button>
+                <button class="h-10 px-3 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors font-semibold">
+                  <span class="font-label-md text-label-md hidden sm:inline mr-1">Próxima</span>
+                  <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                </button>
+              </nav>
+            </div>
+
+            <!-- Banner de Consultoria e Ajuda no WhatsApp -->
+            <div class="mt-space-2xl bg-gradient-to-r from-surface-container-high via-surface-container-lowest to-surface-container rounded-2xl p-space-lg lg:p-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg shadow-sm border border-surface-container">
+              <div class="space-y-space-xs max-w-xl">
+                <span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Consultoria Gratuita Vevey</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface font-extrabold">Monte a festa dos seus sonhos com nossa equipe</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                  Envie fotos do seu espaço ou da sua referência do Pinterest e montamos a lista exata de arcos, suportes e fitas sem sobras.
+                </p>
+                <div class="pt-space-xs flex items-center gap-space-md">
+                  <a class="px-space-md py-space-xs bg-secondary-container text-on-secondary-container font-label-lg text-label-lg rounded-full shadow-sm hover:scale-105 transition-transform inline-flex items-center gap-2 font-bold" href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                    Pedir Ajuda no WhatsApp
+                  </a>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Resposta em até 15 min</span>
+                </div>
+              </div>
+
+              <div class="w-32 h-32 lg:w-44 lg:h-44 rounded-2xl bg-gradient-to-tr from-primary/10 to-secondary/15 border border-primary/20 shrink-0 flex flex-col items-center justify-center text-on-surface-variant gap-1.5 select-none shadow-sm text-center p-3">
+                <span class="material-symbols-outlined text-[36px] text-primary">auto_fix_high</span>
+                <span class="font-label-sm text-[11px] font-bold text-primary uppercase tracking-wide">Design de Festas</span>
+                <span class="font-body-sm text-[10px] text-on-surface-variant">Montagens Sob Medida</span>
+              </div>
+            </div>
+
+          </main>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       RODAPÉ
+       ========================================================================== -->
+  <footer class="w-full bg-surface-container-low mt-space-3xl border-t border-surface-container">
+    <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl">
+        <div class="space-y-space-sm">
+          <div class="flex items-center gap-space-xs">
+            <div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center">
+              <span class="material-symbols-outlined text-[18px]">cake</span>
+            </div>
+            <span class="font-headline-sm text-headline-sm text-primary tracking-tight font-extrabold">Vevey Doces</span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            Transformando momentos comuns em celebrações inesquecíveis. Produtos selecionados de alta qualidade para encantar confeiteiros, decoradores e famílias em festa.
+          </p>
+          <div class="flex items-center gap-space-sm pt-space-xs text-primary">
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">photo_camera</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">chat</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">play_circle</span>
+            <span class="material-symbols-outlined cursor-pointer hover:opacity-75">share</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Links Úteis</h4>
+          <ul class="space-y-space-xs">
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Dúvidas Frequentes (FAQ)</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Política de Privacidade</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Termos de Uso</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Trocas e Devoluções</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Central de Apoio</h4>
+          <ul class="space-y-space-xs">
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Nossa História</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="https://wa.me/5511987654321" target="_blank" rel="noopener noreferrer">Fale Conosco</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="#">Prazos e Entregas</a></li>
+            <li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a href="catalogo.html?categoria=cursos">Cursos e Workshops</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-title-md text-title-md text-on-surface mb-space-md font-bold">Pagamento Seguro</h4>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Pague com segurança via Pix, Cartões de Crédito (Visa, Mastercard, Elo) ou Boleto.</p>
+          <div class="flex flex-wrap items-center gap-space-xs text-on-surface-variant mb-space-md">
+            <span class="material-symbols-outlined text-[28px]">qr_code_scanner</span>
+            <span class="material-symbols-outlined text-[28px]">credit_card</span>
+            <span class="material-symbols-outlined text-[28px]">receipt_long</span>
+            <span class="material-symbols-outlined text-[28px]">payments</span>
+          </div>
+          <div class="flex items-center gap-space-xs p-space-xs bg-surface-container rounded-xl border border-surface-container-high">
+            <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+            <div class="text-left">
+              <p class="font-label-sm text-label-sm text-on-surface font-bold">Ambiente 100% Protegido</p>
+              <p class="font-body-sm text-[11px] text-on-surface-variant">Certificação SSL Criptografada</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-space-2xl pt-space-md text-center border-t border-surface-container">
+        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 Vevey Doces Confeitaria &amp; Festas Ltda. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts Interativos da Página de Catálogo -->
+  <script>
+    // Controle do Slider de Preço
+    const slider = document.getElementById('price-slider');
+    const priceDisplay = document.getElementById('price-val');
+    if (slider && priceDisplay) {
+      slider.addEventListener('input', (e) => {
+        priceDisplay.textContent = 'Até R$ ' + e.target.value + ',00';
+      });
+    }
+
+    // Toggle da Sidebar no Mobile
+    const toggleBtn = document.getElementById('toggle-mobile-filter');
+    const sidebar = document.getElementById('filter-sidebar');
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        if (!sidebar.classList.contains('hidden')) {
+          sidebar.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+
+    // Resetar Filtros
+    const resetBtn = document.getElementById('reset-all-filters');
+    const clearBtn = document.getElementById('clear-filters-btn');
+    const form = document.getElementById('filters-form');
+    function resetForm() {
+      if (form) {
+        form.reset();
+        if (slider && priceDisplay) {
+          slider.value = 180;
+          priceDisplay.textContent = 'Até R$ 180,00';
+        }
+      }
+    }
+    if (resetBtn) resetBtn.addEventListener('click', resetForm);
+    if (clearBtn) clearBtn.addEventListener('click', resetForm);
+  </script>
+
+</body>
+</html>

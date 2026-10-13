@@ -25,7 +25,10 @@ else:
         EmailStr = Annotated[str, AfterValidator(validate_email_format)]
 
 # Importando Enums do models.py para manter a consistência de tipos
-from models import CargoAdmin, StatusPedido, MetodoPagamento, StatusPagamento, TipoEntrega
+try:
+    from app.models import CargoAdmin, StatusPedido, MetodoPagamento, StatusPagamento, TipoEntrega
+except ImportError:
+    from models import CargoAdmin, StatusPedido, MetodoPagamento, StatusPagamento, TipoEntrega
 
 
 

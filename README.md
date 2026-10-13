@@ -1,57 +1,99 @@
-# Vevey Doces — E-Commerce (TCC)
+# Vevey Doces — E-Commerce & Varejo de Festas (TCC)
 
-Projeto de E-commerce para confeitaria festiva e doces finos (**Vevey Doces**), contemplando protótipos de alta fidelidade e especificação de backend com modelagem de banco de dados relacional.
+Projeto de E-commerce e Gestão de Varejo/Distribuidora de Confeitaria e Festas (**Vevey Co.**), desenvolvido no âmbito do curso de Engenharia de Software da FATEC.
+
+A solução adota uma **Arquitetura Desacoplada em Três Camadas (3-Tier Decoupled Architecture)**, permitindo que cada serviço seja hospedado, escalado e mantido de forma independente.
 
 ---
 
-## 🎂 Sobre o Projeto
+## 🏗️ Arquitetura do Sistema
 
-O **Vevey Doces** é uma solução completa de comércio eletrônico desenvolvida como Trabalho de Conclusão de Curso (TCC). O projeto alia uma experiência visual atraente e moderna com uma arquitetura técnica robusta:
-
-- **Protótipos de Interface:** Páginas de vitrine, catálogo com filtros avançados, carrinho dinâmico, checkout com múltiplas etapas e tela de confirmação de pedido.
-- **Design System:** Guia completo de identidade visual, paleta cromática festiva (carmim, âmbar e violeta), tipografia e biblioteca de componentes reutilizáveis.
-- **Modelagem de Dados e Backend:** Especificação física para PostgreSQL, modelos SQLAlchemy, schemas Pydantic e scripts DDL/Seed para FastAPI.
+```text
+┌─────────────────────────┐       HTTPS / JSON       ┌──────────────────────────┐       SSL / Pooler       ┌────────────────────────┐
+│        FRONTEND         │ ───────────────────────> │         BACKEND          │ ───────────────────────> │    BANCO DE DADOS      │
+│     (Vercel / Web)      │ <─────────────────────── │     (Render / Cloud)     │ <─────────────────────── │       (Supabase)       │
+│   HTML5 / CSS3 / JS     │           CORS           │     FastAPI / Python     │        SQLAlchemy        │    PostgreSQL Nativo   │
+└─────────────────────────┘                          └──────────────────────────┘                          └────────────────────────┘
+```
 
 ---
 
 ## 📁 Estrutura de Diretórios
 
 ```text
-├── banco de dados/
-│   ├── alteracoes_schema.sql         # Scripts de migração e ajustes de schema
-│   ├── documentacao_modelagem.md     # Especificação técnica do banco e DER
-│   ├── models.py                     # Modelos ORM SQLAlchemy 2.0
-│   ├── schema.sql                    # DDL completo do banco relacional
-│   ├── schemas.py                    # Schemas Pydantic v2 para validação e serialização
-│   └── seed.sql                      # Carga inicial de dados para testes
-├── prototipos/
-│   ├── css/                          # Folhas de estilo modularizadas
-│   ├── js/                           # Lógica frontend dos protótipos
-│   ├── index.html                    # Página inicial (Home)
-│   ├── catalogo.html                 # Catálogo e busca de produtos
-│   ├── carrinho.html                 # Carrinho de compras
-│   ├── checkout.html                 # Fluxo de finalização de compra
-│   └── confirmacao.html              # Confirmação e resumo do pedido
-├── design_system.md                  # Tokens de design e guia de estilo
-└── .gitignore                        # Regras de exclusão do Git
+vevey/
+├── frontend/                     # Camada de Apresentação (Interface Web do Usuário)
+│   ├── css/                      # Estilos e tokens visuais
+│   ├── js/                       # Lógica de interface e chamadas de API
+│   ├── index.html                # Tela 1: Home e Destaques
+│   ├── catalogo.html             # Tela 2: Listagem e Filtros
+│   ├── carrinho.html             # Tela 4: Carrinho de Compras
+│   ├── checkout.html             # Tela 5: Checkout Seguro
+│   └── confirmacao.html          # Tela 6: Confirmação do Pedido
+├── backend/                      # Camada de Lógica de Negócio (API RESTful)
+│   ├── app/
+│   │   ├── core/                 # Configurações, variáveis de ambiente e sessão do banco
+│   │   │   ├── config.py
+│   │   │   └── database.py
+│   │   ├── models.py             # Mapeamento Objeto-Relacional (SQLAlchemy 2.0)
+│   │   ├── schemas.py            # Validação e serialização de dados (Pydantic v2)
+│   │   └── main.py               # Ponto de entrada FastAPI com CORS e Swagger Docs
+│   ├── .env.example              # Modelo de variáveis de ambiente
+│   └── requirements.txt          # Dependências Python do backend
+├── database/                     # Camada de Persistência (PostgreSQL / Supabase)
+│   ├── schema.sql                # DDL físico completo (Tabelas, índices, triggers)
+│   ├── seed.sql                  # Carga inicial de dados para testes
+│   ├── alteracoes_schema.sql     # Ajustes de migração e controle RBAC de funcionários
+│   └── documentacao_modelagem.md # Especificação técnica do banco e DER (Normas ABNT)
+├── docs/                         # Documentações e Guias de Engenharia
+│   └── design_system.md          # Tokens de design, paleta cromática e componentes
+├── .gitignore                    # Regras de exclusão do repositório Git
+└── README.md                     # Documentação geral do projeto
 ```
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias e Serviços
 
-- **Frontend:** HTML5 semântico, CSS3 (Design Tokens, Flexbox, CSS Grid), JavaScript vanilla.
-- **Backend & Modelagem:** Python 3.10+, FastAPI, SQLAlchemy 2.0, Pydantic v2, PostgreSQL.
-- **Identidade Visual:** Design System proprietário com paleta festiva e tipografia moderna.
+* **Apresentação (Frontend):** HTML5 Semântico, CSS3 (Design Tokens, Grid, Flexbox), Vanilla JavaScript (preparado para deploy estático na Vercel/Netlify).
+* **Lógica de Negócios (Backend):** Python 3.10+, FastAPI, SQLAlchemy 2.0, Pydantic v2, Uvicorn, PyJWT.
+* **Persistência (Database):** PostgreSQL gerenciado na nuvem via **Supabase** (com pooling de conexões PgBouncer/Supavisor).
 
 ---
 
 ## 🚀 Como Executar Localmente
 
-### Visualizar os Protótipos
-1. Navegue até o diretório `prototipos/`.
-2. Abra qualquer um dos arquivos `.html` diretamente no navegador (ou utilize a extensão **Live Server** do VS Code).
+### 1. Banco de Dados (Supabase)
+1. Crie um projeto no [Supabase](https://supabase.com).
+2. Acesse o **SQL Editor** e execute na sequência os arquivos:
+   - `database/schema.sql`
+   - `database/alteracoes_schema.sql`
+   - `database/seed.sql`
 
-### Banco de Dados e Backend
-1. Consulte a documentação em [`banco de dados/documentacao_modelagem.md`](banco%20de%20dados/documentacao_modelagem.md).
-2. Execute os scripts `schema.sql` e `seed.sql` em um banco PostgreSQL para criar a estrutura e carregar os dados de exemplo.
+### 2. Backend (FastAPI)
+1. Acesse o diretório `backend`:
+   ```bash
+   cd backend
+   ```
+2. Crie e ative um ambiente virtual:
+   ```bash
+   python -m venv venv
+   # No Windows (PowerShell):
+   .\venv\Scripts\Activate.ps1
+   ```
+3. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Crie o arquivo `.env` a partir do `.env.example` e preencha sua `DATABASE_URL` do Supabase:
+   ```bash
+   cp .env.example .env
+   ```
+5. Inicie o servidor da API:
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+6. Acesse a documentação interativa Swagger em: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs).
+
+### 3. Frontend
+Abra o diretório `frontend` e execute com qualquer servidor local (como Live Server do VS Code ou `npx serve frontend`).

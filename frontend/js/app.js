@@ -140,11 +140,22 @@ function initCart() {
    1.1 VITRINE DINÂMICA DA HOME (index.html)
    ========================================================================== */
 
+const VEVEY_PRODUCT_IMAGES = {
+  'bl-9921': 'assets/images/prod-baloes.jpg',
+  'bb-1024': 'assets/images/prod-bubble.jpg',
+  'cf-4402': 'assets/images/prod-bicos.jpg',
+  'pa-1029': 'assets/images/cat-confeitaria.jpg',
+  'fd-5510': 'assets/images/cat-doces.jpg',
+  'to-3310': 'assets/images/hero-vevey.jpg',
+  'in-8801': 'assets/images/cat-baloes.jpg',
+  'ch-7720': 'assets/images/prod-chocolate.jpg'
+};
+
 async function initHomePage() {
   const homeGrid = document.getElementById('home-featured-products');
   if (!homeGrid) return;
 
-  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1';
+  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
 
   try {
     const res = await fetch(`${apiUrl}/produtos?ativo=true&limite=8`);
@@ -153,56 +164,67 @@ async function initHomePage() {
 
     if (produtos && produtos.length > 0) {
       homeGrid.innerHTML = produtos.map(p => {
-        const precoAtual = p.preco_promocional || p.preco;
+        const precoAtual = Number(p.preco_promocional || p.preco);
+        const precoOriginal = Number(p.preco);
         const temPromo = p.preco_promocional && p.preco_promocional < p.preco;
-        const icone = p.imagem_url || 'celebration';
-        const categoriaNome = p.categorias && p.categorias.length > 0 ? p.categorias[0].nome : 'Confeitaria & Festas';
+        const slugKey = (p.slug || '').toLowerCase();
+        const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+        const categoriaNome = p.categorias && p.categorias.length > 0 ? p.categorias[0].nome : 'Confeitaria & Decoração';
 
         return `
-          <div class="product-card group relative flex flex-col bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-surface-container">
-            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-rose-50 to-pink-50 flex flex-col items-center justify-center p-4 text-center border border-rose-100 mb-space-sm">
-              <span class="material-symbols-outlined text-[44px] text-primary/70 mb-1 group-hover:scale-110 transition-transform">${icone}</span>
-              <span class="font-label-sm text-[12px] font-bold text-primary truncate max-w-[90%]">${p.nome}</span>
-              <span class="font-body-sm text-[10px] text-on-surface-variant/70">Estoque: ${p.estoque} un</span>
-
+          <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
+              <img 
+                src="${imgUrl}" 
+                alt="${p.nome}" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              >
               ${temPromo ? `
-                <div class="absolute top-2 left-2 flex flex-col gap-1">
-                  <span class="bg-primary text-white font-label-sm text-[10px] px-2 py-0.5 rounded-full shadow-sm font-bold">Oferta</span>
-                </div>
+                <span class="absolute top-2.5 left-2.5 bg-[#800F2F] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                  Oferta
+                </span>
               ` : ''}
-
-              <button class="btn-wishlist absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 backdrop-blur hover:bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors shadow" title="Favoritar">
-                <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+              <button 
+                type="button"
+                aria-label="Favoritar"
+                class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 backdrop-blur text-[#665A5B] hover:text-[#800F2F] flex items-center justify-center shadow-sm transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
               </button>
             </div>
 
-            <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">${categoriaNome}</span>
-            <a href="produto.html?id=${p.id}" class="block group">
-              <h3 class="product-title font-title-md text-title-md text-on-surface mt-1 line-clamp-2 min-h-[44px] group-hover:text-primary transition-colors font-bold">
+            <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">${categoriaNome}</span>
+            <a href="produto.html?id=${p.id}" class="block mt-1">
+              <h3 class="font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
                 ${p.nome}
               </h3>
             </a>
 
-            <div class="mt-auto pt-space-xs">
-              ${temPromo ? `
-                <span class="font-body-sm text-body-sm line-through text-on-surface-variant text-[12px]">R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</span>
-              ` : '<span class="font-body-sm text-[12px] text-transparent select-none">-</span>'}
-              <div class="flex items-baseline gap-1">
-                <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ ${Number(precoAtual).toFixed(2).replace('.', ',')}</span>
-                <span class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">à vista</span>
+            <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
+              <div class="flex items-baseline gap-2">
+                <span class="text-lg font-extrabold text-[#800F2F]">
+                  R$ ${precoAtual.toFixed(2).replace('.', ',')}
+                </span>
+                ${temPromo ? `
+                  <span class="text-xs text-[#665A5B] line-through">
+                    R$ ${precoOriginal.toFixed(2).replace('.', ',')}
+                  </span>
+                ` : ''}
               </div>
-              <p class="font-body-sm text-[11px] text-on-surface-variant mt-0.5">ou 3x sem juros</p>
+              <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 3x sem juros</p>
             </div>
 
             <button 
+              type="button"
               data-action="add-to-cart" 
               data-id="${p.slug || p.id}"
               data-name="${p.nome.replace(/"/g, '&quot;')}"
               data-price="${precoAtual}"
-              class="btn-add-cart-dynamic mt-space-md w-full py-space-xs px-space-md rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-space-xs transition-all active:scale-95 shadow font-bold"
+              class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm"
             >
-              <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
-              <span>Adicionar ao Carrinho</span>
+              <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
+              <span>Adicionar à Sacola</span>
             </button>
           </div>
         `;
@@ -278,12 +300,105 @@ function initGlobalSearch() {
    4. TELA DE CATÁLOGO (Filtros e Busca em Tempo Real)
    ========================================================================== */
 
-function initCatalogPage() {
+async function initCatalogPage() {
   const catalogGrid = document.getElementById('catalog-products');
   const searchInputs = document.querySelectorAll('#catalog-search, #catalog-search-mobile');
   const categoryFilters = document.querySelectorAll('input[name="category-filter"]');
   
   if (!catalogGrid) return;
+
+  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
+
+  // 1. Busca produtos reais da API
+  try {
+    const res = await fetch(`${apiUrl}/produtos?ativo=true`);
+    if (res.ok) {
+      const produtos = await res.json();
+      if (produtos && produtos.length > 0) {
+        catalogGrid.innerHTML = produtos.map(p => {
+          const precoAtual = Number(p.preco_promocional || p.preco);
+          const precoOriginal = Number(p.preco);
+          const temPromo = p.preco_promocional && p.preco_promocional < p.preco;
+          const slugKey = (p.slug || '').toLowerCase();
+          const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+          const categoriaObj = p.categorias && p.categorias.length > 0 ? p.categorias[0] : null;
+          const categoriaNome = categoriaObj ? categoriaObj.nome : 'Confeitaria & Decoração';
+          const categoriaSlug = categoriaObj ? categoriaObj.slug : 'geral';
+
+          return `
+            <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300" data-category="${categoriaSlug}" data-sku="${p.slug || p.id}">
+              <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
+                <img 
+                  src="${imgUrl}" 
+                  alt="${p.nome}" 
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                >
+                ${temPromo ? `
+                  <span class="absolute top-2.5 left-2.5 bg-[#800F2F] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                    Oferta
+                  </span>
+                ` : ''}
+                <button 
+                  type="button"
+                  aria-label="Favoritar"
+                  class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 backdrop-blur text-[#665A5B] hover:text-[#800F2F] flex items-center justify-center shadow-sm transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[18px]">favorite</span>
+                </button>
+              </div>
+
+              <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">${categoriaNome}</span>
+              <a href="produto.html?id=${p.id}" class="block mt-1">
+                <h3 class="product-title font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
+                  ${p.nome}
+                </h3>
+              </a>
+
+              <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
+                <div class="flex items-baseline gap-2">
+                  <span class="product-price text-lg font-extrabold text-[#800F2F]">
+                    R$ ${precoAtual.toFixed(2).replace('.', ',')}
+                  </span>
+                  ${temPromo ? `
+                    <span class="text-xs text-[#665A5B] line-through">
+                      R$ ${precoOriginal.toFixed(2).replace('.', ',')}
+                    </span>
+                  ` : ''}
+                </div>
+                <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 3x sem juros</p>
+              </div>
+
+              <button 
+                type="button"
+                data-action="add-to-cart" 
+                data-id="${p.slug || p.id}"
+                data-name="${p.nome.replace(/"/g, '&quot;')}"
+                data-price="${precoAtual}"
+                class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
+                <span>Adicionar à Sacola</span>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        // Liga os botões de adicionar ao carrinho dinâmicos
+        catalogGrid.querySelectorAll('.btn-add-cart-dynamic').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = btn.getAttribute('data-id');
+            const name = btn.getAttribute('data-name');
+            const price = parseFloat(btn.getAttribute('data-price')) || 0;
+            addToCart({ id, name, price }, 1);
+          });
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('API catálogo offline, mantendo fallback local:', err);
+  }
 
   // Função central de filtragem
   function applyFilters() {
@@ -316,12 +431,12 @@ function initCatalogPage() {
       if (!noResultsEl) {
         noResultsEl = document.createElement('div');
         noResultsEl.id = 'catalog-no-results';
-        noResultsEl.className = 'col-span-full py-16 text-center text-on-surface-variant';
+        noResultsEl.className = 'col-span-full py-16 text-center text-[#665A5B]';
         noResultsEl.innerHTML = `
-          <span class="material-symbols-outlined text-5xl text-primary/40 mb-2">search_off</span>
-          <h3 class="font-headline text-lg font-bold text-on-surface">Nenhum produto encontrado</h3>
+          <span class="material-symbols-outlined text-5xl text-[#800F2F]/40 mb-2">search_off</span>
+          <h3 class="font-serif text-xl font-bold text-[#201516]">Nenhum produto encontrado</h3>
           <p class="text-sm mt-1">Tente buscar por outro termo ou desmarcar os filtros selecionados.</p>
-          <button id="btn-reset-filters" class="mt-4 px-4 py-2 bg-primary/10 text-primary font-bold text-sm rounded-full hover:bg-primary/20 transition-colors">
+          <button id="btn-reset-filters" class="mt-4 px-5 py-2.5 bg-[#800F2F] text-white font-bold text-xs rounded-full hover:bg-[#5E0921] transition-colors">
             Limpar Filtros
           </button>
         `;
@@ -353,71 +468,12 @@ function initCatalogPage() {
     if (matchingCheck) {
       matchingCheck.checked = true;
     }
-    // Sincroniza chips do menu de navegação
-    document.querySelectorAll('header nav a').forEach(a => {
-      if (a.getAttribute('href')?.includes(`categoria=${paramCategory}`)) {
-        a.className = 'font-label-md text-label-md bg-primary-container text-on-primary font-bold shadow-sm px-space-md py-space-xs rounded-full transition-colors';
-      } else if (a.getAttribute('href')?.includes('categoria=')) {
-        a.className = 'font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors';
-      }
-    });
   }
 
-  // Injeta produtos criados no Admin que ainda não estão no DOM
-  try {
-    const adminProducts = JSON.parse(localStorage.getItem('vevey_products') || '[]');
-    adminProducts.forEach(p => {
-      if (p.id > 8 && p.ativo && !document.querySelector(`[data-id="${p.sku}"]`)) {
-        const newCard = document.createElement('div');
-        newCard.className = 'product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container';
-        newCard.setAttribute('data-category', p.categoria);
-        newCard.setAttribute('data-sku', p.sku);
-        newCard.innerHTML = `
-          <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-rose-50 to-pink-100 flex flex-col items-center justify-center p-3 text-center border border-rose-200/50 mb-space-xs">
-            <span class="material-symbols-outlined text-[36px] text-primary/70 mb-1">${p.icone || 'celebration'}</span>
-            <span class="font-label-sm text-[11px] font-bold text-primary">${p.nome}</span>
-            <span class="font-body-sm text-[10px] text-on-surface-variant/70">Vevey Doces • Estoque: ${p.estoque} un</span>
-            <div class="absolute top-2 left-2 flex flex-col gap-1">
-              <span class="bg-emerald-600 text-white font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Novo</span>
-            </div>
-            <button aria-label="Favoritar produto" class="btn-wishlist absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
-              <span class="material-symbols-outlined text-[18px]">favorite_border</span>
-            </button>
-          </div>
-          <div class="flex-1 flex flex-col">
-            <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">${p.categoria}</span>
-            <a href="produto.html?id=${p.sku}" class="block group">
-              <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
-                ${p.nome}
-              </h2>
-            </a>
-            <div class="flex items-center gap-1 mt-1 mb-space-xs">
-              <div class="flex text-secondary-container text-[14px]">
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-                <span class="material-symbols-outlined text-[16px]">star</span>
-              </div>
-              <span class="font-label-sm text-label-sm text-on-surface-variant">(Novo)</span>
-            </div>
-            <div class="mt-auto pt-space-xs">
-              <div class="flex items-baseline gap-1">
-                <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
-                <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
-              </div>
-              <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">ou 3x sem juros</p>
-              <button data-action="add-to-cart" data-id="${p.sku}" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
-                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                <span class="btn-text">Adicionar</span>
-              </button>
-            </div>
-          </div>
-        `;
-        catalogGrid.appendChild(newCard);
-      }
-    });
-  } catch (e) {}
+  // Aciona filtro inicial se houver parâmetros
+  if (paramCategory || paramQuery) {
+    applyFilters();
+  }
 
   // Configura links de detalhe do produto
   document.querySelectorAll('.product-card').forEach(card => {
@@ -512,29 +568,49 @@ function initProductPage() {
   const targetId = urlParams.get('id') || urlParams.get('sku');
 
   if (targetId) {
-    try {
-      const allProducts = JSON.parse(localStorage.getItem('vevey_products') || '[]');
-      const matched = allProducts.find(p => p.sku === targetId || String(p.id) === targetId);
+    (async () => {
+      try {
+        const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
+        let matched = null;
 
-      if (matched) {
-        const titleEl = document.getElementById('product-detail-title');
-        const skuEl = document.getElementById('product-detail-sku');
-        const priceEl = document.getElementById('product-detail-price');
-        const heroImg = document.getElementById('main-product-image');
-
-        if (titleEl) titleEl.textContent = matched.nome;
-        if (skuEl) skuEl.textContent = `Cód: ${matched.sku}`;
-        if (priceEl) priceEl.textContent = `R$ ${matched.preco.toFixed(2).replace('.', ',')}`;
-
-        if (heroImg) {
-          heroImg.innerHTML = `
-            <span class="material-symbols-outlined text-[100px] text-primary/80 drop-shadow-md mb-2 group-hover:scale-105 transition-transform duration-300">${matched.icone || 'celebration'}</span>
-            <h3 class="font-headline-sm text-headline-sm font-extrabold text-primary tracking-tight">${matched.nome}</h3>
-            <p class="font-body-sm text-on-surface-variant font-medium text-sm mt-1">Categoria: ${matched.categoria} • Vevey Doces</p>
-          `;
+        // Tenta buscar diretamente por ID numérico
+        if (!isNaN(targetId)) {
+          const res = await fetch(`${apiUrl}/produtos/${targetId}`);
+          if (res.ok) matched = await res.json();
         }
+
+        // Se não achou por ID numérico, busca na listagem por slug
+        if (!matched) {
+          const listRes = await fetch(`${apiUrl}/produtos?ativo=true`);
+          if (listRes.ok) {
+            const list = await listRes.json();
+            matched = list.find(p => String(p.id) === targetId || (p.slug && p.slug.toLowerCase() === targetId.toLowerCase()));
+          }
+        }
+
+        if (matched) {
+          const titleEl = document.getElementById('product-detail-title');
+          const skuEl = document.getElementById('product-detail-sku');
+          const priceEl = document.getElementById('product-detail-price');
+          const heroImg = document.getElementById('main-product-image');
+          const slugKey = (matched.slug || '').toLowerCase();
+          const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+          const preco = Number(matched.preco_promocional || matched.preco);
+
+          if (titleEl) titleEl.textContent = matched.nome;
+          if (skuEl) skuEl.textContent = `Cód: ${(matched.slug || matched.id).toUpperCase()}`;
+          if (priceEl) priceEl.textContent = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+
+          if (heroImg) {
+            heroImg.innerHTML = `
+              <img src="${imgUrl}" alt="${matched.nome}" class="w-full h-full object-cover rounded-2xl shadow-sm">
+            `;
+          }
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar detalhes do produto:', e);
       }
-    } catch (e) {}
+    })();
   }
 
   // Controle de Quantidade (+ / -)

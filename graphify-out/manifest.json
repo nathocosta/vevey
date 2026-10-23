@@ -60,15 +60,15 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1791921438.4281216,
-    "seen": 1792712053.785183,
-    "ast_hash": "d2c9259e66d9eccf6eecfd2b5e14230f",
+    "mtime": 1792774514.1304357,
+    "seen": 1792780232.151533,
+    "ast_hash": "ac53aed480a16b3aca7be8ad514406ce",
     "semantic_hash": ""
   },
   "backend/app/core/database.py": {
-    "mtime": 1791921451.771495,
-    "seen": 1792712053.7851846,
-    "ast_hash": "c757ab78eac1c2ef09054d4f21c55f37",
+    "mtime": 1792775412.7242768,
+    "seen": 1792780232.1515353,
+    "ast_hash": "1a9664b922527481276e7fb648110427",
     "semantic_hash": ""
   },
   "backend/app/core/security.py": {
@@ -96,21 +96,21 @@
     "semantic_hash": ""
   },
   "frontend/js/app.js": {
-    "mtime": 1792714114.0807111,
-    "seen": 1792714335.5540462,
-    "ast_hash": "4dc4e4c1e53cd7b259d15f5b3a4f5697",
+    "mtime": 1792780103.1862488,
+    "seen": 1792780232.151555,
+    "ast_hash": "07b7b076f2d700e920798f4c4b05c800",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791921489.9545312,
-    "seen": 1792712053.7851923,
-    "ast_hash": "bbbe4e296186385c62d820d61d067086",
+    "mtime": 1792715638.6486316,
+    "seen": 1792780232.1515582,
+    "ast_hash": "071ebc081efe46c720b971e2650a549e",
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
-    "mtime": 1791921385.0615704,
-    "seen": 1792712053.7851934,
-    "ast_hash": "1b5ca8e5b0da705d654d9667cadb8e5e",
+    "mtime": 1792775424.9404147,
+    "seen": 1792780232.1515596,
+    "ast_hash": "dc245836e3dc2baff58105fe0e574739",
     "semantic_hash": ""
   },
   "database/documentacao_modelagem.md": {
@@ -126,39 +126,39 @@
     "semantic_hash": ""
   },
   "frontend/admin.html": {
-    "mtime": 1792714295.5407267,
-    "seen": 1792714335.5540557,
-    "ast_hash": "422e5f9381810565af3690fac46e1334",
+    "mtime": 1792715110.0162625,
+    "seen": 1792780232.1515648,
+    "ast_hash": "5a0725869958042b1281cf0af8d59a0e",
     "semantic_hash": ""
   },
   "frontend/carrinho.html": {
-    "mtime": 1792714229.4977195,
-    "seen": 1792714335.5540578,
-    "ast_hash": "c7066e071b5f03c27922c31d6247bd37",
+    "mtime": 1792777264.1171086,
+    "seen": 1792780232.1515665,
+    "ast_hash": "0f87e4f1e8ad5dbf8af82fbe7271d650",
     "semantic_hash": ""
   },
   "frontend/catalogo.html": {
-    "mtime": 1792714180.134122,
-    "seen": 1792714335.5540593,
-    "ast_hash": "a4869fcbd187d786d7f7cac80c203cd8",
+    "mtime": 1792779944.557211,
+    "seen": 1792780232.151568,
+    "ast_hash": "06a4b473e0a3e1cb4f2b8e4ca5cf1d5c",
     "semantic_hash": ""
   },
   "frontend/checkout.html": {
-    "mtime": 1792714245.5536354,
-    "seen": 1792714335.5540612,
-    "ast_hash": "8f4feec220b84526d1fa3e8f3aa9f869",
+    "mtime": 1792777331.9857335,
+    "seen": 1792780232.1515694,
+    "ast_hash": "46d88af2d2af6458b9b95b8becd321a5",
     "semantic_hash": ""
   },
   "frontend/confirmacao.html": {
-    "mtime": 1792714261.9036715,
-    "seen": 1792714335.5540624,
-    "ast_hash": "fc2f265caa4bceca1d04a599690486f3",
+    "mtime": 1792777430.1893513,
+    "seen": 1792780232.1515708,
+    "ast_hash": "f937659c61e20e906cda95d53933c0b6",
     "semantic_hash": ""
   },
   "frontend/index.html": {
-    "mtime": 1792714196.1394236,
-    "seen": 1792714335.5540636,
-    "ast_hash": "cb1abadb3bac1ea21c472a210d00c6a7",
+    "mtime": 1792779199.6343033,
+    "seen": 1792780232.151572,
+    "ast_hash": "5310753a9b40e83e9f585c95827f30fd",
     "semantic_hash": ""
   },
   "frontend/meus-pedidos.html": {
@@ -168,15 +168,15 @@
     "semantic_hash": ""
   },
   "frontend/minha-conta.html": {
-    "mtime": 1792714278.5381527,
-    "seen": 1792714335.554067,
-    "ast_hash": "bc79aae4ac875092aa636e309fbbfd80",
+    "mtime": 1792777674.9142623,
+    "seen": 1792780232.151575,
+    "ast_hash": "4522989a33ac2e9d0f9bd641e736e672",
     "semantic_hash": ""
   },
   "frontend/produto.html": {
-    "mtime": 1792714213.2547965,
-    "seen": 1792714335.5540683,
-    "ast_hash": "ca9de4a917f8f457adbc1aa4d6a64896",
+    "mtime": 1792777233.1228263,
+    "seen": 1792780232.1515763,
+    "ast_hash": "c36ec608b6ec08f66643cbdc324e6d23",
     "semantic_hash": ""
   },
   "database/alteracoes_schema.sql": {
@@ -195,6 +195,72 @@
     "mtime": 1786323196.7168398,
     "seen": 1792712134.7904458,
     "ast_hash": "86f67379d329675f23b7dae8a76af780",
+    "semantic_hash": ""
+  },
+  "backend/seed.py": {
+    "mtime": 1792715419.7014227,
+    "seen": 1792780232.151545,
+    "ast_hash": "0adf097220d827c14b3ad1906ebbbcb7",
+    "semantic_hash": ""
+  },
+  "backend/seed.sql": {
+    "mtime": 1792715386.8789957,
+    "seen": 1792780232.151547,
+    "ast_hash": "64b64a61b42b620d0f88b0f5c29fb10f",
+    "semantic_hash": ""
+  },
+  "ARQUITETURA_3_CAMADAS.md": {
+    "mtime": 1792715624.2470996,
+    "seen": 1792780232.1515565,
+    "ast_hash": "f33b4010830df473283e1d44cded3cc0",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-baloes.jpg": {
+    "mtime": 1792778700.2697084,
+    "seen": 1792780232.151578,
+    "ast_hash": "bd774af35c687db1c7b35d41737132c6",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-confeitaria.jpg": {
+    "mtime": 1792778723.8198516,
+    "seen": 1792780232.1515794,
+    "ast_hash": "31652c76e72a8aa440b6b421875c17d7",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-doces.jpg": {
+    "mtime": 1792778750.7384768,
+    "seen": 1792780232.1515806,
+    "ast_hash": "b32bc601f7cd28ad7c0f77e74298b9d0",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/hero-vevey.jpg": {
+    "mtime": 1792778638.959923,
+    "seen": 1792780232.151582,
+    "ast_hash": "575bc1834d92b3cdd547128b67803e04",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-baloes.jpg": {
+    "mtime": 1792778700.2697084,
+    "seen": 1792780232.1515832,
+    "ast_hash": "bd774af35c687db1c7b35d41737132c6",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-bicos.jpg": {
+    "mtime": 1792778818.389806,
+    "seen": 1792780232.1515846,
+    "ast_hash": "9b06abde5798807f790c50d9a5a645c9",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-bubble.jpg": {
+    "mtime": 1792778847.894015,
+    "seen": 1792780232.1515858,
+    "ast_hash": "a19a6f23fad640b7b6562cb529a862ef",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-chocolate.jpg": {
+    "mtime": 1792778925.0951726,
+    "seen": 1792780232.1515887,
+    "ast_hash": "0b68cfa18ae9ef7af74cef61523137c8",
     "semantic_hash": ""
   }
 }

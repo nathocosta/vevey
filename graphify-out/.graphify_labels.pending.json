@@ -12,5 +12,8 @@
   "10": "app/__init__.py",
   "11": "api/__init__.py",
   "12": "v1/__init__.py",
-  "13": "seed.sql"
+  "13": "seed.sql",
+  "14": "4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)",
+  "15": "login",
+  "16": "backend/seed.sql"
 }

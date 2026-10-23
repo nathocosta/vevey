@@ -251,6 +251,16 @@ async function initHomePage() {
    2. SISTEMA DE NOTIFICAÇÕES (Toast)
    ========================================================================== */
 
+function escapeHtml(text) {
+  if (typeof text !== 'string') return text;
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function showToast(message, type = 'info') {
   let container = document.getElementById('toast-container');
   if (!container) {
@@ -267,8 +277,9 @@ function showToast(message, type = 'info') {
     <span class="material-symbols-outlined text-xl text-${type === 'success' ? 'emerald' : type === 'error' ? 'red' : 'brand'}-600">
       ${iconName}
     </span>
-    <span class="font-medium">${message}</span>
+    <span class="font-medium">${escapeHtml(message)}</span>
   `;
+
 
   container.appendChild(toast);
 

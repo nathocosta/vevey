@@ -23,9 +23,12 @@ wheels/
 .installed.cfg
 *.egg
 
-# Ambientes virtuais
+# Ambientes virtuais e secrets
 .env
+.env.*
+*.env
 .venv
+
 
 # Logs e temporários
 *.log

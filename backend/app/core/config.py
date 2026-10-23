@@ -26,6 +26,17 @@ class Settings(BaseSettings):
         "https://vevey.vercel.app",
     ]
 
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        env = os.getenv("ENVIRONMENT", "development").lower()
+        if env == "production" and v == "chave_temporaria_dev_vevey_tcc_2026":
+            raise ValueError(
+                "SECRET_KEY insegura em produção! Defina a variável de ambiente SECRET_KEY no Render/servidor."
+            )
+        return v
+
+
     class Config:
         env_file = ".env"
         case_sensitive = True

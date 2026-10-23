@@ -744,6 +744,19 @@
        SCRIPT CENTRALIZADO DO PAINEL ADMINISTRATIVO
        ========================================================================== -->
   <script>
+    // Verificação RBAC (Redirecionamento para 403 se for perfil comum de cliente)
+    (function checkAdminAccess() {
+      const savedUser = localStorage.getItem('vevey_user');
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          if (user.role === 'cliente') {
+            window.location.href = '403.html';
+          }
+        } catch (e) {}
+      }
+    })();
+
     /* ==========================================================================
        1. ESTADO CENTRAL (PRODUTOS & PEDIDOS)
        ========================================================================== */

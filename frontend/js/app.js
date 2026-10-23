@@ -148,22 +148,38 @@ function saveCart(cart) {
   updateCartBadge();
 }
 
+function getVeveyProductImage(id, category = '') {
+  const normId = String(id || '').toLowerCase();
+  if (typeof VEVEY_PRODUCT_IMAGES !== 'undefined' && VEVEY_PRODUCT_IMAGES[normId]) {
+    return VEVEY_PRODUCT_IMAGES[normId];
+  }
+  const cat = String(category || '').toLowerCase();
+  if (cat.includes('bal')) return 'assets/images/prod-baloes.jpg';
+  if (cat.includes('confeit') || cat.includes('doce')) return 'assets/images/cat-confeitaria.jpg';
+  if (cat.includes('choc')) return 'assets/images/prod-chocolate.jpg';
+  if (cat.includes('decor')) return 'assets/images/prod-bubble.jpg';
+  return 'assets/images/prod-baloes.jpg';
+}
+
 function addToCart(product, qty = 1) {
   const cart = getCart();
   const existing = cart.find(item => item.id === product.id);
+  const img = product.image || getVeveyProductImage(product.id, product.category);
   if (existing) {
     existing.quantity += qty;
+    if (!existing.image) existing.image = img;
   } else {
     cart.push({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: Number(product.price) || 0,
       quantity: qty,
-      category: product.category || 'geral'
+      category: product.category || 'Confeitaria & Decoração',
+      image: img
     });
   }
   saveCart(cart);
-  showToast(`"${product.name}" adicionado ao carrinho!`, 'success');
+  showToast(`"${product.name}" adicionado à sacola!`, 'success');
 }
 
 function updateCartBadge() {
@@ -825,6 +841,8 @@ function initProductPage() {
    ========================================================================== */
 
 let appliedDiscountPercent = 0;
+let appliedShippingMethod = 'calc'; // 'retirada', 'sedex', 'calc'
+let appliedShippingCost = 0;
 
 function initCartPage() {
   const cartContainer = document.getElementById('cart-items-container');
@@ -840,6 +858,7 @@ function initCartPage() {
       const code = inputCoupon.value.trim().toUpperCase();
       if (code === 'VEVEY10') {
         appliedDiscountPercent = 0.10;
+        localStorage.setItem('vevey_discount_coupon', 'VEVEY10');
         showToast('Cupom VEVEY10 aplicado: 10% de desconto!', 'success');
         updateCartSummary();
       } else if (code === '') {
@@ -848,6 +867,13 @@ function initCartPage() {
         showToast('Cupom inválido ou expirado.', 'error');
       }
     });
+  }
+
+  // Se já havia cupom salvo
+  if (localStorage.getItem('vevey_discount_coupon') === 'VEVEY10') {
+    appliedDiscountPercent = 0.10;
+    if (inputCoupon) inputCoupon.value = 'VEVEY10';
+    updateCartSummary();
   }
 }
 
@@ -859,52 +885,73 @@ function renderCartItems() {
 
   if (cart.length === 0) {
     cartContainer.innerHTML = `
-      <div class="text-center py-12 bg-white border border-gray-200 rounded-xl p-8 space-y-4">
-        <span class="material-symbols-outlined text-5xl text-gray-300">shopping_cart</span>
-        <h3 class="font-bold text-gray-700 text-lg">Seu carrinho está vazio</h3>
-        <p class="text-xs text-gray-500">Explore nosso catálogo e encontre tudo para sua festa e confeitaria!</p>
-        <a href="catalogo.html" class="btn-primary inline-flex">Ver Produtos</a>
+      <div class="text-center py-14 px-6 bg-white rounded-3xl border border-[#EAE3D9] shadow-sm space-y-4">
+        <div class="w-20 h-20 mx-auto rounded-full bg-[#FAF7F2] border border-[#EAE3D9] flex items-center justify-center text-[#800F2F]">
+          <span class="material-symbols-outlined text-4xl">shopping_bag</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="font-serif text-2xl font-bold text-[#201516]">Sua sacola está vazia</h3>
+          <p class="text-xs text-[#665A5B] max-w-sm mx-auto">Explore nossas criações de confeitaria artística, balões metalizados e decorações para celebrar com elegância.</p>
+        </div>
+        <div class="pt-2">
+          <a href="catalogo.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-sans font-bold text-xs shadow-md hover:shadow-lg transition-all">
+            <span class="material-symbols-outlined text-[16px]">storefront</span>
+            <span>Explorar Catálogo Completo</span>
+          </a>
+        </div>
       </div>
     `;
+    const btnProceed = document.getElementById('btn-proceed-checkout');
+    if (btnProceed) {
+      btnProceed.classList.add('opacity-50', 'pointer-events-none');
+    }
     updateCartSummary();
     return;
   }
 
-  cartContainer.innerHTML = cart.map(item => `
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl gap-4" data-item-id="${item.id}">
-      <div class="flex items-center gap-4 min-w-0">
-        <!-- Placeholder Neutro de Imagem -->
-        <div class="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
-          <span class="material-symbols-outlined text-2xl">image</span>
+  const btnProceed = document.getElementById('btn-proceed-checkout');
+  if (btnProceed) {
+    btnProceed.classList.remove('opacity-50', 'pointer-events-none');
+  }
+
+  cartContainer.innerHTML = cart.map(item => {
+    const imgSrc = item.image || getVeveyProductImage(item.id, item.category);
+    const itemTotal = (item.price * item.quantity).toFixed(2).replace('.', ',');
+    const unitPrice = item.price.toFixed(2).replace('.', ',');
+
+    return `
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 bg-white border border-[#EAE3D9] rounded-2xl gap-4 hover:border-[#800F2F]/30 transition-all shadow-sm" data-item-id="${item.id}">
+        <div class="flex items-center gap-4 min-w-0">
+          <img src="${imgSrc}" alt="${item.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+          <div class="min-w-0">
+            <span class="text-[10px] font-sans font-bold uppercase tracking-wider text-[#B88636] block">${item.category || 'Confeitaria & Decoração'}</span>
+            <h4 class="font-serif font-bold text-sm sm:text-base text-[#201516] truncate">${item.name}</h4>
+            <p class="text-xs font-mono font-semibold text-[#800F2F] mt-1">R$ ${unitPrice} <span class="text-[11px] text-[#665A5B] font-sans font-normal">/ unid.</span></p>
+          </div>
         </div>
-        <div class="min-w-0">
-          <h4 class="font-bold text-sm text-gray-900 truncate">${item.name}</h4>
-          <span class="text-xs text-gray-500">Cód: ${item.id}</span>
-          <p class="text-xs text-brand-600 font-bold mt-1">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+
+        <div class="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#F4EFEB]">
+          <!-- Quantidade -->
+          <div class="flex items-center border border-[#EAE3D9] rounded-xl bg-[#FAF7F2] overflow-hidden">
+            <button class="w-8 h-8 flex items-center justify-center text-[#201516] hover:bg-[#EAE3D9] hover:text-[#800F2F] transition-colors font-bold text-sm" onclick="changeItemQty('${item.id}', -1)" aria-label="Diminuir quantidade">−</button>
+            <span class="w-8 text-center text-xs font-bold text-[#201516] font-mono">${item.quantity}</span>
+            <button class="w-8 h-8 flex items-center justify-center text-[#201516] hover:bg-[#EAE3D9] hover:text-[#800F2F] transition-colors font-bold text-sm" onclick="changeItemQty('${item.id}', 1)" aria-label="Aumentar quantidade">+</button>
+          </div>
+
+          <!-- Subtotal -->
+          <div class="text-right min-w-[90px]">
+            <span class="text-[10px] uppercase font-sans font-semibold text-[#665A5B] block">Subtotal</span>
+            <span class="text-sm sm:text-base font-serif font-bold text-[#800F2F]">R$ ${itemTotal}</span>
+          </div>
+
+          <!-- Botão Remover -->
+          <button class="w-8 h-8 rounded-full hover:bg-rose-50 text-[#665A5B] hover:text-rose-700 flex items-center justify-center transition-colors" onclick="removeCartItem('${item.id}')" title="Remover item da sacola">
+            <span class="material-symbols-outlined text-[18px]">delete_outline</span>
+          </button>
         </div>
       </div>
-
-      <div class="flex items-center justify-between sm:justify-end gap-6">
-        <!-- Quantidade Selector -->
-        <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-          <button class="px-2.5 py-1 text-gray-600 hover:bg-gray-200 transition-colors" onclick="changeItemQty('${item.id}', -1)">-</button>
-          <span class="px-3 py-1 text-xs font-bold text-gray-800">${item.quantity}</span>
-          <button class="px-2.5 py-1 text-gray-600 hover:bg-gray-200 transition-colors" onclick="changeItemQty('${item.id}', 1)">+</button>
-        </div>
-
-        <!-- Subtotal -->
-        <div class="text-right min-w-[80px]">
-          <span class="text-xs text-gray-400 block">Subtotal</span>
-          <span class="text-sm font-bold text-gray-900">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
-        </div>
-
-        <!-- Botão Remover -->
-        <button class="text-gray-400 hover:text-red-600 p-1.5 transition-colors" onclick="removeCartItem('${item.id}')" title="Remover item">
-          <span class="material-symbols-outlined text-lg">delete</span>
-        </button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   updateCartSummary();
 }
@@ -928,24 +975,115 @@ function removeCartItem(id) {
   cart = cart.filter(i => i.id !== id);
   saveCart(cart);
   renderCartItems();
-  showToast('Item removido do carrinho.', 'info');
+  showToast('Item removido da sacola.', 'info');
 }
+
+window.clearEntireCart = function() {
+  if (confirm('Tem certeza que deseja esvaziar sua sacola de compras?')) {
+    saveCart([]);
+    renderCartItems();
+    showToast('Sacola esvaziada com sucesso.', 'info');
+  }
+};
+
+window.calculateCartShipping = function() {
+  const cepInput = document.getElementById('cart-cep-input');
+  const resultDiv = document.getElementById('cart-frete-result');
+  if (!cepInput || !resultDiv) return;
+
+  const cep = cepInput.value.replace(/\D/g, '');
+  if (cep.length !== 8) {
+    showToast('Digite um CEP válido com 8 dígitos.', 'error');
+    return;
+  }
+
+  const cart = getCart();
+  const subtotal = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+  const sedexPrice = subtotal >= 199 ? 0 : 15.00;
+
+  resultDiv.classList.remove('hidden');
+  resultDiv.innerHTML = `
+    <div class="space-y-2 pt-2">
+      <label class="flex items-center justify-between p-3 rounded-xl bg-[#FAF7F2] border border-[#B88636]/40 cursor-pointer hover:bg-white transition-colors">
+        <div class="flex items-center gap-2.5">
+          <input type="radio" name="cart_shipping_option" value="retirada" onchange="selectCartShipping('retirada', 0)" class="accent-[#800F2F]">
+          <div>
+            <span class="font-sans font-bold text-xs text-[#201516] block">Retirada na Loja Física (Santo André - SP)</span>
+            <span class="text-[11px] text-[#665A5B]">Pronto em 2h úteis • Seg a Sex 08h-18h | Sáb 08h-16h</span>
+          </div>
+        </div>
+        <span class="font-sans font-bold text-xs text-emerald-700 uppercase">Grátis</span>
+      </label>
+
+      <label class="flex items-center justify-between p-3 rounded-xl bg-white border border-[#EAE3D9] cursor-pointer hover:bg-[#FAF7F2] transition-colors">
+        <div class="flex items-center gap-2.5">
+          <input type="radio" name="cart_shipping_option" value="sedex" onchange="selectCartShipping('sedex', ${sedexPrice})" class="accent-[#800F2F]">
+          <div>
+            <span class="font-sans font-bold text-xs text-[#201516] block">Sedex Express (Correios)</span>
+            <span class="text-[11px] text-[#665A5B]">Entrega em 2 a 4 dias úteis no seu endereço</span>
+          </div>
+        </div>
+        <span class="font-sans font-bold text-xs text-[#201516]">${sedexPrice === 0 ? '<span class="text-emerald-700 uppercase">Grátis</span>' : `R$ ${sedexPrice.toFixed(2).replace('.', ',')}`}</span>
+      </label>
+    </div>
+  `;
+  showToast('Opções de frete e prazos calculadas!', 'success');
+};
+
+window.selectCartShipping = function(method, cost) {
+  appliedShippingMethod = method;
+  appliedShippingCost = cost;
+  localStorage.setItem('vevey_selected_shipping', JSON.stringify({ method, cost }));
+  updateCartSummary();
+};
 
 function updateCartSummary() {
   const cart = getCart();
   const subtotal = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
   const discount = subtotal * appliedDiscountPercent;
-  const shipping = subtotal >= 199 || subtotal === 0 ? 0 : 15.00;
-  const total = subtotal - discount + shipping;
+
+  let shipping = 0;
+  if (cart.length > 0) {
+    if (appliedShippingMethod === 'retirada') {
+      shipping = 0;
+    } else if (appliedShippingMethod === 'sedex') {
+      shipping = appliedShippingCost;
+    } else {
+      shipping = subtotal >= 199 ? 0 : (subtotal > 0 ? 15.00 : 0);
+    }
+  }
+
+  const total = Math.max(0, subtotal - discount + shipping);
 
   const subtotalEl = document.getElementById('summary-subtotal');
+  const discountRow = document.getElementById('summary-discount-row');
   const discountEl = document.getElementById('summary-discount');
   const shippingEl = document.getElementById('summary-shipping');
   const totalEl = document.getElementById('summary-total');
 
   if (subtotalEl) subtotalEl.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-  if (discountEl) discountEl.textContent = discount > 0 ? `- R$ ${discount.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
-  if (shippingEl) shippingEl.textContent = shipping === 0 ? 'Grátis' : `R$ ${shipping.toFixed(2).replace('.', ',')}`;
+
+  if (discountRow && discountEl) {
+    if (discount > 0) {
+      discountRow.classList.remove('hidden');
+      discountEl.textContent = `- R$ ${discount.toFixed(2).replace('.', ',')}`;
+    } else {
+      discountRow.classList.add('hidden');
+    }
+  }
+
+  if (shippingEl) {
+    if (cart.length === 0) {
+      shippingEl.textContent = 'R$ 0,00';
+    } else if (appliedShippingMethod === 'retirada') {
+      shippingEl.textContent = 'Retirada Grátis';
+    } else if (shipping === 0) {
+      shippingEl.textContent = 'Grátis';
+    } else {
+      shippingEl.textContent = `R$ ${shipping.toFixed(2).replace('.', ',')}`;
+    }
+  }
+
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
 }
 
@@ -954,65 +1092,208 @@ function updateCartSummary() {
    ========================================================================== */
 
 function initCheckoutPage() {
-  const paymentTabs = document.querySelectorAll('[data-payment-tab]');
-  const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
+  const checkoutSummaryContainer = document.getElementById('checkout-items-summary');
   const checkoutForm = document.getElementById('checkout-form');
+  if (!checkoutSummaryContainer && !checkoutForm) return;
 
-  // Alternância das abas de pagamento
+  const cart = getCart();
+
+  // Se a sacola estiver vazia, avisa e desativa
+  if (cart.length === 0 && checkoutSummaryContainer) {
+    checkoutSummaryContainer.innerHTML = `
+      <div class="text-center py-8 text-[#665A5B]">
+        <p class="font-sans text-sm mb-2">Sua sacola está vazia.</p>
+        <a href="catalogo.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#800F2F] text-white text-xs font-bold hover:bg-[#5E0921] transition-colors">
+          <span class="material-symbols-outlined text-[16px]">storefront</span>
+          <span>Ir às Compras</span>
+        </a>
+      </div>
+    `;
+  } else if (checkoutSummaryContainer) {
+    // Renderiza itens reais da sacola no resumo lateral
+    checkoutSummaryContainer.innerHTML = cart.map(item => {
+      const imgSrc = item.image || getVeveyProductImage(item.id, item.category);
+      const totalItem = (item.price * item.quantity).toFixed(2).replace('.', ',');
+      return `
+        <div class="flex items-center gap-3 py-3 border-b border-[#F4EFEB] last:border-0">
+          <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-[#FAF7F2] border border-[#EAE3D9] shrink-0">
+            <img src="${imgSrc}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+            <span class="absolute top-0 right-0 bg-[#800F2F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg font-mono">${item.quantity}x</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-serif font-bold text-xs text-[#201516] truncate">${item.name}</h4>
+            <span class="text-[11px] text-[#665A5B]">R$ ${item.price.toFixed(2).replace('.', ',')} cada</span>
+          </div>
+          <span class="font-serif font-bold text-xs text-[#800F2F] shrink-0">R$ ${totalItem}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Abas de Pagamento
+  let selectedPaymentMethod = 'pix';
+  const paymentTabs = document.querySelectorAll('[data-payment-tab]');
   paymentTabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-payment-tab');
+      const method = tab.getAttribute('data-payment-tab');
+      selectedPaymentMethod = method;
+
       paymentTabs.forEach(t => {
-        t.classList.remove('border-brand-600', 'bg-brand-50', 'text-brand-600', 'font-bold');
-        t.classList.add('border-gray-200', 'text-gray-600');
+        t.classList.remove('border-[#800F2F]', 'bg-[#800F2F]/10', 'text-[#800F2F]', 'font-bold');
+        t.classList.add('border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
       });
-      tab.classList.add('border-brand-600', 'bg-brand-50', 'text-brand-600', 'font-bold');
-      tab.classList.remove('border-gray-200', 'text-gray-600');
+      tab.classList.add('border-[#800F2F]', 'bg-[#800F2F]/10', 'text-[#800F2F]', 'font-bold');
+      tab.classList.remove('border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
 
       document.querySelectorAll('.payment-pane').forEach(p => p.classList.add('hidden'));
-      const activePane = document.getElementById(`pane-${target}`);
+      const activePane = document.getElementById(`pane-${method}`);
       if (activePane) activePane.classList.remove('hidden');
+
+      recalcCheckoutTotals();
     });
   });
 
-  // Atualização do Resumo no Checkout
-  const cart = getCart();
-  const subtotal = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
-  const checkoutSubtotal = document.getElementById('checkout-subtotal');
-  const checkoutTotal = document.getElementById('checkout-total');
-  if (checkoutSubtotal) checkoutSubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-  if (checkoutTotal) checkoutTotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+  // Modalidade de Frete
+  const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
+  const addressFieldsContainer = document.getElementById('checkout-address-section');
+  const pickupNotice = document.getElementById('checkout-pickup-notice');
+
+  function updateShippingUI() {
+    const selected = document.querySelector('input[name="shipping_method"]:checked')?.value || 'retirada';
+    if (selected === 'retirada') {
+      if (addressFieldsContainer) addressFieldsContainer.classList.add('opacity-40', 'pointer-events-none');
+      if (pickupNotice) pickupNotice.classList.remove('hidden');
+    } else {
+      if (addressFieldsContainer) addressFieldsContainer.classList.remove('opacity-40', 'pointer-events-none');
+      if (pickupNotice) pickupNotice.classList.add('hidden');
+    }
+    recalcCheckoutTotals();
+  }
+
+  shippingRadios.forEach(r => r.addEventListener('change', updateShippingUI));
+  updateShippingUI();
+
+  function recalcCheckoutTotals() {
+    const subtotal = cart.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+    const shippingMethod = document.querySelector('input[name="shipping_method"]:checked')?.value || 'retirada';
+    
+    // Frete
+    let shipping = 0;
+    if (shippingMethod === 'sedex') {
+      shipping = subtotal >= 199 ? 0 : 15.00;
+    }
+
+    // Desconto de cupom se ativo
+    const couponSaved = localStorage.getItem('vevey_discount_coupon') === 'VEVEY10';
+    const couponDiscount = couponSaved ? subtotal * 0.10 : 0;
+
+    // Desconto Pix (5% extra à vista)
+    const pixDiscount = (selectedPaymentMethod === 'pix' && subtotal > 0) ? (subtotal - couponDiscount) * 0.05 : 0;
+
+    const total = Math.max(0, subtotal - couponDiscount - pixDiscount + shipping);
+
+    const subtotalEl = document.getElementById('checkout-subtotal');
+    const shippingEl = document.getElementById('checkout-shipping');
+    const pixDiscountRow = document.getElementById('checkout-pix-discount-row');
+    const pixDiscountEl = document.getElementById('checkout-pix-discount');
+    const couponDiscountRow = document.getElementById('checkout-coupon-discount-row');
+    const couponDiscountEl = document.getElementById('checkout-coupon-discount');
+    const totalEl = document.getElementById('checkout-total');
+    const submitBtnTotal = document.getElementById('checkout-submit-btn-total');
+
+    if (subtotalEl) subtotalEl.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+
+    if (shippingEl) {
+      if (shippingMethod === 'retirada') {
+        shippingEl.textContent = 'Retirada Grátis';
+      } else if (shipping === 0) {
+        shippingEl.textContent = 'Grátis (Acima de R$ 199)';
+      } else {
+        shippingEl.textContent = `R$ ${shipping.toFixed(2).replace('.', ',')}`;
+      }
+    }
+
+    if (couponDiscountRow && couponDiscountEl) {
+      if (couponDiscount > 0) {
+        couponDiscountRow.classList.remove('hidden');
+        couponDiscountEl.textContent = `- R$ ${couponDiscount.toFixed(2).replace('.', ',')}`;
+      } else {
+        couponDiscountRow.classList.add('hidden');
+      }
+    }
+
+    if (pixDiscountRow && pixDiscountEl) {
+      if (pixDiscount > 0) {
+        pixDiscountRow.classList.remove('hidden');
+        pixDiscountEl.textContent = `- R$ ${pixDiscount.toFixed(2).replace('.', ',')}`;
+      } else {
+        pixDiscountRow.classList.add('hidden');
+      }
+    }
+
+    const formattedTotal = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    if (totalEl) totalEl.textContent = formattedTotal;
+    if (submitBtnTotal) submitBtnTotal.textContent = formattedTotal;
+
+    return { subtotal, shipping, couponDiscount, pixDiscount, total };
+  }
 
   // Submissão do Pedido
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (cart.length === 0) {
+        showToast('Sua sacola está vazia. Adicione itens antes de finalizar.', 'error');
+        return;
+      }
+
       const nomeInput = document.getElementById('checkout-nome')?.value?.trim();
       const emailInput = document.getElementById('checkout-email')?.value?.trim();
       const telInput = document.getElementById('checkout-telefone')?.value?.trim();
-      const selectedShipping = document.querySelector('input[name="shipping_method"]:checked')?.value;
+      const cpfInput = document.getElementById('checkout-cpf')?.value?.trim();
+      const selectedShipping = document.querySelector('input[name="shipping_method"]:checked')?.value || 'retirada';
       const isRetirada = selectedShipping === 'retirada';
 
+      const enderecoRua = document.getElementById('checkout-rua')?.value?.trim() || 'Avenida Portugal, 500';
+      const enderecoNum = document.getElementById('checkout-num')?.value?.trim() || '120';
+      const enderecoBairro = document.getElementById('checkout-bairro')?.value?.trim() || 'Centro';
+      const enderecoCidade = document.getElementById('checkout-cidade')?.value?.trim() || 'Santo André';
+      const enderecoUF = document.getElementById('checkout-uf')?.value?.trim() || 'SP';
+      const enderecoCEP = document.getElementById('checkout-cep')?.value?.trim() || '09040-000';
+
+      const enderecoFinal = isRetirada
+        ? 'Retirada no Balcão Loja Física (Santo André - SP) — Rua das Figueiras, 450, Bairro Jardim'
+        : `${enderecoRua}, ${enderecoNum} - ${enderecoBairro}, ${enderecoCidade} - ${enderecoUF}, CEP ${enderecoCEP}`;
+
+      const { total } = recalcCheckoutTotals();
       const orderId = '#VV-' + Math.floor(10000 + Math.random() * 90000);
+
       const orderData = {
         orderId,
         date: new Date().toLocaleDateString('pt-BR'),
-        cliente: nomeInput || 'Cliente Online',
-        email: emailInput || 'cliente@exemplo.com.br',
+        cliente: nomeInput || 'Cliente Vevey',
+        email: emailInput || 'cliente@veveydoces.com.br',
         telefone: telInput || '(11) 97825-7360',
+        cpf: cpfInput || '000.000.000-00',
+        formaPagamento: selectedPaymentMethod === 'pix' ? 'Pix à Vista (5% OFF)' : (selectedPaymentMethod === 'card' ? 'Cartão de Crédito' : 'Boleto Bancário'),
         tipoEntrega: isRetirada ? 'Retirada na Loja' : 'Envio Transportadora',
-        endereco: isRetirada ? 'Retirada no Balcão Loja Física (Santo André - SP)' : 'Avenida Paulista, 1000 - Apto 42 - São Paulo / SP',
+        endereco: enderecoFinal,
         items: cart,
-        total: subtotal
+        total: total
       };
 
+      // Salva último pedido para confirmação e sincronização com o Admin
       localStorage.setItem('vevey_last_order', JSON.stringify(orderData));
       
       // Limpa carrinho após fechar pedido
       localStorage.setItem('vevey_cart', JSON.stringify([]));
       updateCartBadge();
 
-      window.location.href = 'confirmacao.html';
-
+      showToast('Pedido gerado com sucesso! Redirecionando...', 'success');
+      setTimeout(() => {
+        window.location.href = 'confirmacao.html';
+      }, 300);
     });
   }
 }
@@ -1022,20 +1303,96 @@ function initCheckoutPage() {
    ========================================================================== */
 
 function initConfirmationPage() {
-  const btnCopyPix = document.getElementById('btn-copy-pix');
-  const pixKeyInput = document.getElementById('pix-key-input');
-  const orderIdDisplay = document.getElementById('order-id-display');
-
   const lastOrder = JSON.parse(localStorage.getItem('vevey_last_order') || 'null');
-  if (lastOrder && orderIdDisplay) {
-    orderIdDisplay.textContent = lastOrder.orderId;
+
+  // Elementos da tela
+  const orderIdEl = document.getElementById('orderNumber');
+  const orderDateEl = document.getElementById('orderDate');
+  const orderClientEl = document.getElementById('orderCustomer');
+  const deliveryTypeEl = document.getElementById('orderDeliveryType');
+  const deliveryAddressEl = document.getElementById('orderDeliveryAddress');
+  const deliveryHoursEl = document.getElementById('orderDeliveryHours');
+  const totalPixEl = document.getElementById('orderTotalPix');
+  const summaryTotalEl = document.getElementById('orderSummaryTotal');
+  const itemsContainer = document.getElementById('confirmation-items-list');
+  const pixKeyInput = document.getElementById('pixCodeInput');
+  const copyPixBtn = document.getElementById('copyPixBtn');
+  const btnWhatsapp = document.getElementById('btn-order-whatsapp');
+
+  if (lastOrder) {
+    if (orderIdEl) orderIdEl.textContent = lastOrder.orderId;
+    if (orderDateEl) orderDateEl.textContent = lastOrder.date || new Date().toLocaleDateString('pt-BR');
+    if (orderClientEl) orderClientEl.textContent = lastOrder.cliente;
+
+    const formattedTotal = `R$ ${Number(lastOrder.total || 0).toFixed(2).replace('.', ',')}`;
+    if (totalPixEl) totalPixEl.textContent = formattedTotal;
+    if (summaryTotalEl) summaryTotalEl.textContent = formattedTotal;
+
+    const isRetirada = lastOrder.tipoEntrega && lastOrder.tipoEntrega.includes('Retirada');
+
+    if (deliveryTypeEl) {
+      deliveryTypeEl.textContent = isRetirada ? 'Retirada na Loja Física (Santo André - SP)' : 'Envio via Transportadora';
+    }
+
+    if (deliveryAddressEl) {
+      deliveryAddressEl.textContent = isRetirada
+        ? 'Rua das Figueiras, 450 - Bairro Jardim, Santo André - SP'
+        : (lastOrder.endereco || 'Endereço cadastrado na finalização');
+    }
+
+    if (deliveryHoursEl) {
+      if (isRetirada) {
+        deliveryHoursEl.innerHTML = '<span class="text-emerald-700 font-bold">Horário de Retirada:</span> Seg a Sex das 08h às 18h | Sáb das 08h às 16h (Apresente documento no balcão)';
+        deliveryHoursEl.classList.remove('hidden');
+      } else {
+        deliveryHoursEl.innerHTML = 'Previsão de Entrega: 2 a 4 dias úteis no seu endereço';
+      }
+    }
+
+    // Código Pix dinâmico com o valor exato
+    if (pixKeyInput) {
+      pixKeyInput.value = `00020126580014br.gov.bcb.pix0136veveydoces-pagamentos@banco.com.br5204000053039865406${(lastOrder.total || 0).toFixed(2)}5802BR5915VEVEY DOCES LTDA6009SANTO ANDRE62070503${lastOrder.orderId.replace('#', '')}6304E8A1`;
+    }
+
+    // WhatsApp botão de suporte com texto pronto
+    if (btnWhatsapp) {
+      const msg = encodeURIComponent(`Olá! Acabei de realizar o pedido ${lastOrder.orderId} na Vevey Doces (${isRetirada ? 'Retirada na Loja' : 'Envio'}) no valor de ${formattedTotal} e gostaria de acompanhar.`);
+      btnWhatsapp.href = `https://wa.me/5511978257360?text=${msg}`;
+    }
+
+    // Renderiza itens dinâmicos do pedido
+    if (itemsContainer && Array.isArray(lastOrder.items) && lastOrder.items.length > 0) {
+      itemsContainer.innerHTML = lastOrder.items.map(item => {
+        const imgSrc = item.image || getVeveyProductImage(item.id, item.category);
+        const subtotal = (item.price * item.quantity).toFixed(2).replace('.', ',');
+        return `
+          <div class="py-3 flex items-center justify-between gap-3 border-b border-[#F4EFEB] last:border-0">
+            <div class="flex items-center gap-3 min-w-0">
+              <img src="${imgSrc}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+              <div class="min-w-0">
+                <h4 class="font-serif font-bold text-xs text-[#201516] truncate">${item.name}</h4>
+                <span class="text-[11px] text-[#665A5B]">${item.quantity}x de R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+              </div>
+            </div>
+            <span class="font-serif font-bold text-xs text-[#800F2F] shrink-0">R$ ${subtotal}</span>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
-  if (btnCopyPix && pixKeyInput) {
-    btnCopyPix.addEventListener('click', () => {
+  // Copiar código Pix
+  if (copyPixBtn && pixKeyInput) {
+    copyPixBtn.addEventListener('click', () => {
       pixKeyInput.select();
       navigator.clipboard.writeText(pixKeyInput.value).then(() => {
-        showToast('Código Pix copiado com sucesso!', 'success');
+        showToast('Código Pix copiado para a área de transferência!', 'success');
+        copyPixBtn.innerText = 'Copiado!';
+        copyPixBtn.classList.add('bg-emerald-700', 'text-white');
+        setTimeout(() => {
+          copyPixBtn.innerText = 'Copiar';
+          copyPixBtn.classList.remove('bg-emerald-700', 'text-white');
+        }, 2000);
       }).catch(() => {
         showToast('Código Pix selecionado!', 'info');
       });

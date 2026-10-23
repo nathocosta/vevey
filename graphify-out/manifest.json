@@ -36,33 +36,33 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/auth.py": {
-    "mtime": 1791927217.0145478,
-    "seen": 1792712053.7851777,
-    "ast_hash": "b302a67cd22efbed5331a030ad1b7b12",
+    "mtime": 1792784293.2920785,
+    "seen": 1792784547.7066376,
+    "ast_hash": "df96956b4aceb7636110b4156c959655",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/frete.py": {
-    "mtime": 1791927261.8596976,
-    "seen": 1792712053.7851791,
-    "ast_hash": "408ac16aa683f60f216bf82a1b4aad3c",
+    "mtime": 1792783937.337457,
+    "seen": 1792784137.13606,
+    "ast_hash": "e7f8b361968911d690a5dce9f1778a23",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/pedidos.py": {
-    "mtime": 1791927300.3888433,
-    "seen": 1792712053.7851803,
-    "ast_hash": "fa6398d249a6cd0fc4b048130cad1b72",
+    "mtime": 1792784002.9509525,
+    "seen": 1792784137.1360617,
+    "ast_hash": "2aa03c6b3ef0964143d58ef1e404a4a8",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/produtos.py": {
-    "mtime": 1791927241.2076106,
-    "seen": 1792712053.7851818,
-    "ast_hash": "a969457926d78249c4bd1f8537ba0230",
+    "mtime": 1792783910.874234,
+    "seen": 1792784137.1360633,
+    "ast_hash": "39f0a81228a77fb593bc1d49840f3f4b",
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1792774514.1304357,
-    "seen": 1792780232.151533,
-    "ast_hash": "ac53aed480a16b3aca7be8ad514406ce",
+    "mtime": 1792783381.6156273,
+    "seen": 1792784137.136065,
+    "ast_hash": "1109ea17ea444dce0e7d4fb8615b88fa",
     "semantic_hash": ""
   },
   "backend/app/core/database.py": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "backend/app/main.py": {
-    "mtime": 1791927348.3531368,
-    "seen": 1792712053.7851872,
-    "ast_hash": "b0dded3f7f09978883209d405800faf5",
+    "mtime": 1792785249.5584755,
+    "seen": 1792785309.6024742,
+    "ast_hash": "636784fffa6b66dcb3480589d5f7f690",
     "semantic_hash": ""
   },
   "backend/app/models.py": {
@@ -96,9 +96,9 @@
     "semantic_hash": ""
   },
   "frontend/js/app.js": {
-    "mtime": 1792780103.1862488,
-    "seen": 1792780232.151555,
-    "ast_hash": "07b7b076f2d700e920798f4c4b05c800",
+    "mtime": 1792786207.5776973,
+    "seen": 1792786389.5789292,
+    "ast_hash": "11e21f5379f29a40244edc60a33231f7",
     "semantic_hash": ""
   },
   "README.md": {
@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
-    "mtime": 1792775424.9404147,
-    "seen": 1792780232.1515596,
-    "ast_hash": "dc245836e3dc2baff58105fe0e574739",
+    "mtime": 1792783822.2693384,
+    "seen": 1792784137.1360927,
+    "ast_hash": "197ac7bd506a1de2d5b75a8d096982f4",
     "semantic_hash": ""
   },
   "database/documentacao_modelagem.md": {
@@ -126,57 +126,57 @@
     "semantic_hash": ""
   },
   "frontend/admin.html": {
-    "mtime": 1792715110.0162625,
-    "seen": 1792780232.1515648,
-    "ast_hash": "5a0725869958042b1281cf0af8d59a0e",
+    "mtime": 1792785620.3854215,
+    "seen": 1792785680.7937422,
+    "ast_hash": "b88530ed07ce7fbdc4d9e1ea2e84cca3",
     "semantic_hash": ""
   },
   "frontend/carrinho.html": {
-    "mtime": 1792777264.1171086,
-    "seen": 1792780232.1515665,
-    "ast_hash": "0f87e4f1e8ad5dbf8af82fbe7271d650",
+    "mtime": 1792785786.782029,
+    "seen": 1792786389.5789468,
+    "ast_hash": "3fbac50b0824a664a3c0095f7bd27043",
     "semantic_hash": ""
   },
   "frontend/catalogo.html": {
-    "mtime": 1792779944.557211,
-    "seen": 1792780232.151568,
-    "ast_hash": "06a4b473e0a3e1cb4f2b8e4ca5cf1d5c",
+    "mtime": 1792786325.6754253,
+    "seen": 1792786389.5789483,
+    "ast_hash": "5863da495e83ec7b5f598b8c17963308",
     "semantic_hash": ""
   },
   "frontend/checkout.html": {
-    "mtime": 1792777331.9857335,
-    "seen": 1792780232.1515694,
-    "ast_hash": "46d88af2d2af6458b9b95b8becd321a5",
+    "mtime": 1792786261.0985024,
+    "seen": 1792786389.5789497,
+    "ast_hash": "226195eb73e77ec7009eed277d80f105",
     "semantic_hash": ""
   },
   "frontend/confirmacao.html": {
-    "mtime": 1792777430.1893513,
-    "seen": 1792780232.1515708,
-    "ast_hash": "f937659c61e20e906cda95d53933c0b6",
+    "mtime": 1792786304.9800444,
+    "seen": 1792786389.5789514,
+    "ast_hash": "a54b0186c2665f97d4cca1516f832957",
     "semantic_hash": ""
   },
   "frontend/index.html": {
-    "mtime": 1792779199.6343033,
-    "seen": 1792780232.151572,
-    "ast_hash": "5310753a9b40e83e9f585c95827f30fd",
+    "mtime": 1792783601.6436331,
+    "seen": 1792784137.136107,
+    "ast_hash": "f6b9c3c3c6af0c8d3e2f926c97fd92a5",
     "semantic_hash": ""
   },
   "frontend/meus-pedidos.html": {
-    "mtime": 1791922153.8991334,
-    "seen": 1792712053.7852056,
+    "mtime": 1792781541.5475914,
+    "seen": 1792781690.951486,
     "ast_hash": "0736c68e43cdd7613e7ea680a7228402",
     "semantic_hash": ""
   },
   "frontend/minha-conta.html": {
-    "mtime": 1792777674.9142623,
-    "seen": 1792780232.151575,
-    "ast_hash": "4522989a33ac2e9d0f9bd641e736e672",
+    "mtime": 1792786357.4313836,
+    "seen": 1792786389.5789564,
+    "ast_hash": "395562cd70d5f6a034f04bdbc2d13d78",
     "semantic_hash": ""
   },
   "frontend/produto.html": {
-    "mtime": 1792777233.1228263,
-    "seen": 1792780232.1515763,
-    "ast_hash": "c36ec608b6ec08f66643cbdc324e6d23",
+    "mtime": 1792786342.3111143,
+    "seen": 1792786389.5789573,
+    "ast_hash": "562cf1881202deec1a13c8f6c2ce7fae",
     "semantic_hash": ""
   },
   "database/alteracoes_schema.sql": {
@@ -261,6 +261,30 @@
     "mtime": 1792778925.0951726,
     "seen": 1792780232.1515887,
     "ast_hash": "0b68cfa18ae9ef7af74cef61523137c8",
+    "semantic_hash": ""
+  },
+  "backend/app/core/limiter.py": {
+    "mtime": 1792783832.759273,
+    "seen": 1792784137.1360686,
+    "ast_hash": "1ff7c56aed52054728a53b03e2a443eb",
+    "semantic_hash": ""
+  },
+  "frontend/admin-login.html": {
+    "mtime": 1792785199.1843576,
+    "seen": 1792785309.6025045,
+    "ast_hash": "f654796f3571da81e7784174f13c5085",
+    "semantic_hash": ""
+  },
+  "frontend/404.html": {
+    "mtime": 1792784704.7437239,
+    "seen": 1792785008.4668887,
+    "ast_hash": "fb2cb8460d80744272cb464de49e499d",
+    "semantic_hash": ""
+  },
+  "frontend/acesso-negado.html": {
+    "mtime": 1792785176.9377117,
+    "seen": 1792785309.6025023,
+    "ast_hash": "7bd70d2a7787d82232c6d71ec4494240",
     "semantic_hash": ""
   }
 }

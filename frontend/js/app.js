@@ -3,6 +3,12 @@
  * Gerenciamento centralizado de Carrinho, Filtros, Abas e Interatividade
  */
 
+window.VEVEY_CONFIG = {
+  API_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8000/api/v1'
+    : 'https://vevey-api.onrender.com/api/v1'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initCart();
   initGlobalSearch();
@@ -151,10 +157,192 @@ function initGlobalSearch() {
 
 function initCatalogPage() {
   const catalogGrid = document.getElementById('catalog-products');
-  const searchInput = document.getElementById('catalog-search');
+  const searchInputs = document.querySelectorAll('#catalog-search, #catalog-search-mobile');
   const categoryFilters = document.querySelectorAll('input[name="category-filter"]');
   
   if (!catalogGrid) return;
+
+  // Função central de filtragem
+  function applyFilters() {
+    const term = (searchInputs[0]?.value || searchInputs[1]?.value || '').toLowerCase().trim();
+    const activeCategories = Array.from(categoryFilters)
+      .filter(c => c.checked)
+      .map(c => c.value.toLowerCase());
+
+    const cards = catalogGrid.querySelectorAll('.product-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const title = card.querySelector('.product-title, h3, h2')?.textContent?.toLowerCase() || '';
+      const cat = (card.getAttribute('data-category') || '').toLowerCase();
+      
+      const matchesSearch = !term || title.includes(term);
+      const matchesCategory = activeCategories.length === 0 || activeCategories.includes(cat);
+
+      if (matchesSearch && matchesCategory) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Mensagem de nenhum resultado encontrado
+    let noResultsEl = document.getElementById('catalog-no-results');
+    if (visibleCount === 0) {
+      if (!noResultsEl) {
+        noResultsEl = document.createElement('div');
+        noResultsEl.id = 'catalog-no-results';
+        noResultsEl.className = 'col-span-full py-16 text-center text-on-surface-variant';
+        noResultsEl.innerHTML = `
+          <span class="material-symbols-outlined text-5xl text-primary/40 mb-2">search_off</span>
+          <h3 class="font-headline text-lg font-bold text-on-surface">Nenhum produto encontrado</h3>
+          <p class="text-sm mt-1">Tente buscar por outro termo ou desmarcar os filtros selecionados.</p>
+          <button id="btn-reset-filters" class="mt-4 px-4 py-2 bg-primary/10 text-primary font-bold text-sm rounded-full hover:bg-primary/20 transition-colors">
+            Limpar Filtros
+          </button>
+        `;
+        catalogGrid.appendChild(noResultsEl);
+        document.getElementById('btn-reset-filters')?.addEventListener('click', () => {
+          searchInputs.forEach(i => i.value = '');
+          categoryFilters.forEach(c => c.checked = false);
+          applyFilters();
+        });
+      } else {
+        noResultsEl.style.display = '';
+      }
+    } else if (noResultsEl) {
+      noResultsEl.style.display = 'none';
+    }
+  }
+
+  // Leitura de parâmetros de URL (?categoria=... ou ?q=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramCategory = urlParams.get('categoria');
+  const paramQuery = urlParams.get('q');
+
+  if (paramQuery) {
+    searchInputs.forEach(input => input.value = paramQuery);
+  }
+
+  if (paramCategory) {
+    const matchingCheck = Array.from(categoryFilters).find(c => c.value.toLowerCase() === paramCategory.toLowerCase());
+    if (matchingCheck) {
+      matchingCheck.checked = true;
+    }
+    // Sincroniza chips do menu de navegação
+    document.querySelectorAll('header nav a').forEach(a => {
+      if (a.getAttribute('href')?.includes(`categoria=${paramCategory}`)) {
+        a.className = 'font-label-md text-label-md bg-primary-container text-on-primary font-bold shadow-sm px-space-md py-space-xs rounded-full transition-colors';
+      } else if (a.getAttribute('href')?.includes('categoria=')) {
+        a.className = 'font-label-md text-label-md text-on-surface-variant hover:text-primary hover:bg-surface-container px-space-md py-space-xs rounded-full transition-colors';
+      }
+    });
+  }
+
+  // Injeta produtos criados no Admin que ainda não estão no DOM
+  try {
+    const adminProducts = JSON.parse(localStorage.getItem('vevey_products') || '[]');
+    adminProducts.forEach(p => {
+      if (p.id > 8 && p.ativo && !document.querySelector(`[data-id="${p.sku}"]`)) {
+        const newCard = document.createElement('div');
+        newCard.className = 'product-card group bg-surface-container-lowest rounded-xl p-space-sm shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-surface-container';
+        newCard.setAttribute('data-category', p.categoria);
+        newCard.setAttribute('data-sku', p.sku);
+        newCard.innerHTML = `
+          <div class="relative w-full aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-rose-50 to-pink-100 flex flex-col items-center justify-center p-3 text-center border border-rose-200/50 mb-space-xs">
+            <span class="material-symbols-outlined text-[36px] text-primary/70 mb-1">${p.icone || 'celebration'}</span>
+            <span class="font-label-sm text-[11px] font-bold text-primary">${p.nome}</span>
+            <span class="font-body-sm text-[10px] text-on-surface-variant/70">Vevey Doces • Estoque: ${p.estoque} un</span>
+            <div class="absolute top-2 left-2 flex flex-col gap-1">
+              <span class="bg-emerald-600 text-white font-label-sm text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold shadow-sm">Novo</span>
+            </div>
+            <button aria-label="Favoritar produto" class="btn-wishlist absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur text-primary flex items-center justify-center hover:bg-surface-container-lowest transition-colors">
+              <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+            </button>
+          </div>
+          <div class="flex-1 flex flex-col">
+            <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">${p.categoria}</span>
+            <a href="produto.html?id=${p.sku}" class="block group">
+              <h2 class="product-title font-title-md text-title-md text-on-surface font-bold line-clamp-2 mt-0.5 group-hover:text-primary transition-colors">
+                ${p.nome}
+              </h2>
+            </a>
+            <div class="flex items-center gap-1 mt-1 mb-space-xs">
+              <div class="flex text-secondary-container text-[14px]">
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+                <span class="material-symbols-outlined text-[16px]">star</span>
+              </div>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">(Novo)</span>
+            </div>
+            <div class="mt-auto pt-space-xs">
+              <div class="flex items-baseline gap-1">
+                <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ ${p.preco.toFixed(2).replace('.', ',')}</span>
+                <span class="font-label-sm text-label-sm text-secondary font-semibold">à vista no Pix</span>
+              </div>
+              <p class="font-body-sm text-[11px] text-on-surface-variant mb-space-sm">ou 3x sem juros</p>
+              <button data-action="add-to-cart" data-id="${p.sku}" class="w-full py-space-xs bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 font-bold">
+                <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                <span class="btn-text">Adicionar</span>
+              </button>
+            </div>
+          </div>
+        `;
+        catalogGrid.appendChild(newCard);
+      }
+    });
+  } catch (e) {}
+
+  // Configura links de detalhe do produto
+  document.querySelectorAll('.product-card').forEach(card => {
+    const sku = card.getAttribute('data-sku') || card.querySelector('[data-id]')?.getAttribute('data-id');
+    const link = card.querySelector('a[href*="produto.html"]');
+    if (sku && link && !link.getAttribute('href').includes('?id=')) {
+      link.setAttribute('href', `produto.html?id=${sku}`);
+    }
+  });
+
+  // Ordenação de Produtos
+  const sortSelect = document.getElementById('sort-select');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      const mode = sortSelect.value;
+      const cards = Array.from(catalogGrid.querySelectorAll('.product-card'));
+      cards.sort((a, b) => {
+        const priceA = parseFloat(a.querySelector('.product-price')?.textContent?.replace('R$', '').replace('.', '').replace(',', '.').trim() || '0');
+        const priceB = parseFloat(b.querySelector('.product-price')?.textContent?.replace('R$', '').replace('.', '').replace(',', '.').trim() || '0');
+        if (mode === 'price-asc') return priceA - priceB;
+        if (mode === 'price-desc') return priceB - priceA;
+        return 0;
+      });
+      cards.forEach(card => catalogGrid.appendChild(card));
+      applyFilters();
+    });
+  }
+
+  // Sistema de Favoritos (Wishlist)
+  document.querySelectorAll('button[aria-label*="Favoritar"], .btn-wishlist').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        if (icon.textContent === 'favorite') {
+          icon.textContent = 'favorite_border';
+          showToast('Produto removido dos favoritos.', 'info');
+        } else {
+          icon.textContent = 'favorite';
+          showToast('Produto adicionado aos seus favoritos!', 'success');
+        }
+      }
+    });
+  });
+
+  // Aplica filtros logo no carregamento
+  applyFilters();
 
   // Adicionar ao carrinho nos botões dos cards
   document.querySelectorAll('[data-action="add-to-cart"]').forEach(btn => {
@@ -171,35 +359,13 @@ function initCatalogPage() {
   });
 
   // Busca em tempo real
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const term = searchInput.value.toLowerCase();
-      const cards = catalogGrid.querySelectorAll('.product-card');
-      cards.forEach(card => {
-        const title = card.querySelector('.product-title, h3, h2')?.textContent?.toLowerCase() || '';
-        const match = title.includes(term);
-        card.style.display = match ? '' : 'none';
-      });
-    });
-  }
+  searchInputs.forEach(input => {
+    input.addEventListener('input', applyFilters);
+  });
 
   // Filtros por Categoria
   categoryFilters.forEach(chk => {
-    chk.addEventListener('change', () => {
-      const activeCategories = Array.from(categoryFilters)
-        .filter(c => c.checked)
-        .map(c => c.value);
-
-      const cards = catalogGrid.querySelectorAll('.product-card');
-      cards.forEach(card => {
-        const cat = card.getAttribute('data-category') || '';
-        if (activeCategories.length === 0 || activeCategories.includes(cat)) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
+    chk.addEventListener('change', applyFilters);
   });
 }
 
@@ -217,6 +383,36 @@ function initProductPage() {
   const cepInput = document.getElementById('cep-input');
   const btnCalcFrete = document.getElementById('btn-calc-frete');
   const freteResult = document.getElementById('frete-result');
+
+  // Carrega dados dinâmicos do produto se houver ?id= ou ?sku= na URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetId = urlParams.get('id') || urlParams.get('sku');
+
+  if (targetId) {
+    try {
+      const allProducts = JSON.parse(localStorage.getItem('vevey_products') || '[]');
+      const matched = allProducts.find(p => p.sku === targetId || String(p.id) === targetId);
+
+      if (matched) {
+        const titleEl = document.getElementById('product-detail-title');
+        const skuEl = document.getElementById('product-detail-sku');
+        const priceEl = document.getElementById('product-detail-price');
+        const heroImg = document.getElementById('main-product-image');
+
+        if (titleEl) titleEl.textContent = matched.nome;
+        if (skuEl) skuEl.textContent = `Cód: ${matched.sku}`;
+        if (priceEl) priceEl.textContent = `R$ ${matched.preco.toFixed(2).replace('.', ',')}`;
+
+        if (heroImg) {
+          heroImg.innerHTML = `
+            <span class="material-symbols-outlined text-[100px] text-primary/80 drop-shadow-md mb-2 group-hover:scale-105 transition-transform duration-300">${matched.icone || 'celebration'}</span>
+            <h3 class="font-headline-sm text-headline-sm font-extrabold text-primary tracking-tight">${matched.nome}</h3>
+            <p class="font-body-sm text-on-surface-variant font-medium text-sm mt-1">Categoria: ${matched.categoria} • Vevey Doces</p>
+          `;
+        }
+      }
+    } catch (e) {}
+  }
 
   // Controle de Quantidade (+ / -)
   if (btnMinus && qtyInput) {
@@ -277,27 +473,86 @@ function initProductPage() {
     });
   });
 
-  // Cálculo de Frete Simulado
+  // Cálculo de Frete Conectado à API (com fallback elegante)
   if (btnCalcFrete && cepInput && freteResult) {
-    btnCalcFrete.addEventListener('click', () => {
+    btnCalcFrete.addEventListener('click', async () => {
       const cep = cepInput.value.replace(/\D/g, '');
-      if (cep.length < 8) {
+      if (cep.length !== 8) {
         showToast('Digite um CEP válido com 8 dígitos.', 'error');
         return;
       }
-      freteResult.classList.remove('hidden');
-      freteResult.innerHTML = `
-        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs space-y-1 text-emerald-900">
-          <div class="flex justify-between font-bold">
-            <span>Sedex Expresso:</span>
-            <span>R$ 18,90 (2 a 3 dias úteis)</span>
+
+      const priceText = document.getElementById('product-detail-price')?.textContent?.replace('R$', '').replace('.', '').replace(',', '.').trim() || '64.90';
+      const subtotal = parseFloat(priceText) || 64.90;
+
+      const originalBtnText = btnCalcFrete.textContent;
+      btnCalcFrete.disabled = true;
+      btnCalcFrete.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Calculando...';
+
+      try {
+        const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1';
+        const response = await fetch(`${apiUrl}/frete/calcular`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cep_destino: cep, subtotal: subtotal })
+        });
+
+        if (!response.ok) throw new Error('Falha no cálculo pela API');
+        const data = await response.json();
+
+        freteResult.classList.remove('hidden');
+        freteResult.innerHTML = `
+          <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs space-y-2 text-emerald-950">
+            <p class="font-bold text-emerald-800 text-[11px] uppercase tracking-wide">Opções para o CEP ${cep.replace(/(\d{5})(\d{3})/, '$1-$2')}:</p>
+            ${data.opcoes.map(op => `
+              <div class="flex justify-between items-center py-1.5 border-b border-emerald-100/80 last:border-none">
+                <div>
+                  <span class="font-bold text-gray-800">${op.nome}</span>
+                  <span class="text-gray-500 block text-[11px]">${op.prazo_dias}</span>
+                </div>
+                <span class="font-bold ${op.gratis ? 'text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full' : 'text-gray-900'}">
+                  ${op.gratis ? 'Grátis' : 'R$ ' + Number(op.valor).toFixed(2).replace('.', ',')}
+                </span>
+              </div>
+            `).join('')}
           </div>
-          <div class="flex justify-between text-gray-600">
-            <span>Retirada no Centro de Distribuição:</span>
-            <span class="text-emerald-700 font-bold">Grátis (1 dia útil)</span>
+        `;
+        showToast('Frete calculado com sucesso!', 'success');
+      } catch (err) {
+        // Fallback offline / sem backend rodando no momento
+        freteResult.classList.remove('hidden');
+        freteResult.innerHTML = `
+          <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs space-y-2 text-emerald-950">
+            <p class="font-bold text-emerald-800 text-[11px] uppercase tracking-wide">Opções para o CEP ${cep.replace(/(\d{5})(\d{3})/, '$1-$2')}:</p>
+            <div class="flex justify-between items-center py-1.5 border-b border-emerald-100/80">
+              <div>
+                <span class="font-bold text-gray-800">Sedex Expresso</span>
+                <span class="text-gray-500 block text-[11px]">1 a 2 dias úteis</span>
+              </div>
+              <span class="font-bold text-gray-900">R$ 18,90</span>
+            </div>
+            <div class="flex justify-between items-center py-1.5 border-b border-emerald-100/80">
+              <div>
+                <span class="font-bold text-gray-800">PAC Econômico</span>
+                <span class="text-gray-500 block text-[11px]">4 a 6 dias úteis</span>
+              </div>
+              <span class="font-bold ${subtotal >= 199 ? 'text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full' : 'text-gray-900'}">
+                ${subtotal >= 199 ? 'Grátis' : 'R$ 11,50'}
+              </span>
+            </div>
+            <div class="flex justify-between items-center py-1.5">
+              <div>
+                <span class="font-bold text-gray-800">Retirada na Loja (Vevey Co.)</span>
+                <span class="text-gray-500 block text-[11px]">Em até 2 horas</span>
+              </div>
+              <span class="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Grátis</span>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      } finally {
+        btnCalcFrete.disabled = false;
+        btnCalcFrete.textContent = originalBtnText;
+      }
     });
   }
 }

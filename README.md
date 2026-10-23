@@ -4,6 +4,8 @@ Projeto de E-commerce e Gestão de Varejo/Distribuidora de Confeitaria e Festas 
 
 A solução adota uma **Arquitetura Desacoplada em Três Camadas (3-Tier Decoupled Architecture)**, permitindo que cada serviço seja hospedado, escalado e mantido de forma independente.
 
+> 📖 **Guia Completo da Arquitetura & Continuidade:** Veja os detalhes e o checklist de conexão no arquivo [ARQUITETURA_3_CAMADAS.md](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/ARQUITETURA_3_CAMADAS.md).
+
 ---
 
 ## 🏗️ Arquitetura do Sistema

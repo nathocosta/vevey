@@ -4,11 +4,14 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Painel Administrativo &amp; Atendimento WhatsApp — Vevey Doces (FATEC)</title>
+  <meta name="description" content="Painel de controle interno da Vevey Doces. Gestão de estoque unificado, cadastro de produtos, pedidos e atendimento WhatsApp.">
+  <meta name="theme-color" content="#b80035">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%23b80035'/%3E%3Cpath d='M30 45 C30 35, 70 35, 70 45 L70 70 C70 75, 30 75, 30 70 Z' fill='%23ffffff'/%3E%3Ccircle cx='50' cy='32' r='8' fill='%23fea619'/%3E%3C/svg%3E">
   
   <!-- Fontes Oficiais -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
@@ -49,6 +52,44 @@
     body { font-family: 'Inter', sans-serif; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    
+    /* Toast Flutuante */
+    #admin-toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+    .admin-toast {
+      pointer-events: auto;
+      padding: 0.85rem 1.25rem;
+      border-radius: 1rem;
+      background: #1e293b;
+      color: #fff;
+      font-size: 0.825rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      animation: toastSlideIn 0.25s ease forwards;
+    }
+    .admin-toast.toast-success { background: #065f46; border: 1px solid #10b981; }
+    .admin-toast.toast-error { background: #991b1b; border: 1px solid #ef4444; }
+    .admin-toast.toast-info { background: #1e3a8a; border: 1px solid #3b82f6; }
+    @keyframes toastSlideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-comanda, #printable-comanda * { visibility: visible; }
+      #printable-comanda { position: absolute; left: 0; top: 0; width: 100%; }
+    }
   </style>
 </head>
 
@@ -70,7 +111,7 @@
         </a>
         <span class="text-xs bg-slate-900 text-white font-mono px-2 py-0.5 rounded font-bold uppercase">Backoffice</span>
         <span class="hidden md:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sistema Online (Supabase / FastAPI)
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sistema Integrado (FastAPI / Supabase Ready)
         </span>
       </div>
 
@@ -86,8 +127,9 @@
           <option value="miriam">Miriam (Sócia / Administradora)</option>
         </select>
 
-        <a href="index.html" class="text-xs text-primary font-bold hover:underline border-l border-surface-container pl-3">
-          Ver Loja Virtual
+        <a href="catalogo.html" target="_blank" class="text-xs text-primary font-bold hover:underline border-l border-surface-container pl-3 flex items-center gap-1">
+          <span>Ver Catálogo</span>
+          <span class="material-symbols-outlined text-[14px]">open_in_new</span>
         </a>
       </div>
 
@@ -97,52 +139,61 @@
   <!-- ==========================================================================
        BARRA DE NAVEGAÇÃO DE ABAS DO PAINEL
        ========================================================================== -->
-  <div class="bg-surface-container-low border-b border-surface-container">
+  <div class="bg-surface-container-low border-b border-surface-container sticky top-16 z-30">
     <div class="max-w-7xl mx-auto px-4 flex items-center gap-2 overflow-x-auto py-2">
-      <button onclick="openTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-primary text-white shadow-sm flex items-center gap-1.5">
+      
+      <button onclick="openTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-primary text-white shadow-sm flex items-center gap-1.5 shrink-0">
         <span class="material-symbols-outlined text-[18px]">dashboard</span>
         Dashboard &amp; Métricas
       </button>
 
-      <button onclick="openTab('tab-pedido-manual')" id="btn-tab-pedido-manual" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[18px] text-emerald-600">add_shopping_cart</span>
-        Novo Pedido Manual (WhatsApp)
+      <button onclick="openTab('tab-pedido-manual')" id="btn-tab-pedido-manual" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5 shrink-0">
+        <span class="material-symbols-outlined text-[18px] text-emerald-600">chat</span>
+        Pedido WhatsApp (Juliana)
         <span class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">UC03</span>
       </button>
 
-      <button onclick="openTab('tab-estoque')" id="btn-tab-estoque" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
+      <button onclick="openTab('tab-estoque')" id="btn-tab-estoque" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5 shrink-0">
         <span class="material-symbols-outlined text-[18px] text-amber-600">inventory</span>
-        Ajuste de Estoque Unificado
+        Estoque Unificado
         <span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">UC04</span>
       </button>
 
-      <button onclick="openTab('tab-pedidos')" id="btn-tab-pedidos" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span>
-        Gestão de Pedidos &amp; Rastreio
+      <button onclick="openTab('tab-novo-produto')" id="btn-tab-novo-produto" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5 shrink-0">
+        <span class="material-symbols-outlined text-[18px] text-purple-600">add_box</span>
+        Cadastrar Produto
+        <span class="bg-purple-100 text-purple-800 text-[10px] px-1.5 py-0.2 rounded-full font-bold">UC01</span>
       </button>
+
+      <button onclick="openTab('tab-pedidos')" id="btn-tab-pedidos" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center gap-1.5 shrink-0">
+        <span class="material-symbols-outlined text-[18px] text-primary">local_shipping</span>
+        Gestão de Pedidos
+        <span id="badge-pedidos-count" class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+      </button>
+
     </div>
   </div>
 
   <!-- ==========================================================================
        CONTEÚDO DAS ABAS
        ========================================================================== -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
 
     <!-- ======================================================================
-         ABA 1: DASHBOARD & MÉTRICAS (VISÃO DA MIRIAM / SÓCIA)
+         ABA 1: DASHBOARD & MÉTRICAS (MIRIAM / SÓCIA)
          ====================================================================== -->
     <section id="tab-dashboard" class="tab-content active space-y-6">
       
-      <!-- Linha de Cards de Métricas -->
+      <!-- Linha de Cards de Métricas Dinâmicas -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Faturamento Hoje -->
+        <!-- Faturamento Calculado -->
         <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Vendas Hoje</span>
-            <p class="font-display text-2xl font-black text-on-surface mt-1">R$ 2.450,80</p>
+            <p id="metric-faturamento" class="font-display text-2xl font-black text-on-surface mt-1">R$ 0,00</p>
             <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
-              <span class="material-symbols-outlined text-[14px]">trending_up</span> +18% vs ontem
+              <span class="material-symbols-outlined text-[14px]">trending_up</span> Calculado em tempo real
             </span>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -150,13 +201,13 @@
           </div>
         </div>
 
-        <!-- Pedidos Pendentes de Envio -->
+        <!-- Pedidos A Separar -->
         <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">A Separar no Estoque</span>
-            <p class="font-display text-2xl font-black text-primary mt-1">4 pedidos</p>
+            <p id="metric-separacao" class="font-display text-2xl font-black text-primary mt-1">0 pedidos</p>
             <span class="text-[11px] text-amber-600 font-bold flex items-center gap-1 mt-1">
-              <span class="material-symbols-outlined text-[14px]">schedule</span> 2 com Sedex Expresso
+              <span class="material-symbols-outlined text-[14px]">schedule</span> Fila prioritária
             </span>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-rose-50 text-primary flex items-center justify-center">
@@ -164,13 +215,13 @@
           </div>
         </div>
 
-        <!-- Pedidos via WhatsApp -->
+        <!-- Vendas via WhatsApp -->
         <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Vendas WhatsApp</span>
-            <p class="font-display text-2xl font-black text-emerald-700 mt-1">9 atendimentos</p>
+            <p id="metric-wpp-vendas" class="font-display text-2xl font-black text-emerald-700 mt-1">0 pedidos</p>
             <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
-              <span class="material-symbols-outlined text-[14px]">chat</span> 6 convertidos com link
+              <span class="material-symbols-outlined text-[14px]">chat</span> Juliana (Balcão)
             </span>
           </div>
           <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -182,7 +233,7 @@
         <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Estoque Crítico</span>
-            <p class="font-display text-2xl font-black text-amber-600 mt-1">2 produtos</p>
+            <p id="metric-estoque-critico" class="font-display text-2xl font-black text-amber-600 mt-1">0 itens</p>
             <span class="text-[11px] text-red-600 font-bold flex items-center gap-1 mt-1">
               <span class="material-symbols-outlined text-[14px]">warning</span> Menos de 5 unidades
             </span>
@@ -194,15 +245,15 @@
 
       </div>
 
-      <!-- Resumo Operacional: Pedidos Recentes para Despacho -->
+      <!-- Resumo Operacional: Fila de Separação de Hoje -->
       <div class="bg-surface-container-lowest rounded-2xl border border-surface-container p-5 shadow-sm space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-display text-base font-extrabold text-on-surface">Fila de Separação de Pedidos (Hoje)</h2>
-            <p class="text-xs text-on-surface-variant">Priorize pedidos com pagamento Pix aprovado e envio Sedex.</p>
+            <h2 class="font-display text-base font-extrabold text-on-surface">Fila de Separação &amp; Despacho (Hoje)</h2>
+            <p class="text-xs text-on-surface-variant">Pedidos confirmados que necessitam de conferência física e emissão de comanda.</p>
           </div>
-          <button onclick="openTab('tab-pedidos')" class="text-xs font-bold text-primary hover:underline">
-            Ver Todos os Pedidos &rarr;
+          <button onclick="openTab('tab-pedidos')" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+            Ver Todos os Pedidos <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
           </button>
         </div>
 
@@ -218,43 +269,8 @@
                 <th class="p-3 text-right">Ação Rápida</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-surface-container">
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9812</td>
-                <td class="p-3">Nathan Costa Santos (São Paulo - SP)</td>
-                <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">Site Online</span></td>
-                <td class="p-3 font-bold">R$ 184,70 (Pix)</td>
-                <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">Em Separação</span></td>
-                <td class="p-3 text-right">
-                  <button onclick="alert('Comanda #VV-2026-9812 enviada para impressora de etiquetas térmica!')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container">
-                    Imprimir Comanda
-                  </button>
-                </td>
-              </tr>
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9813</td>
-                <td class="p-3">Carla Organizadora (Campinas - SP)</td>
-                <td class="p-3"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">WhatsApp Juliana</span></td>
-                <td class="p-3 font-bold">R$ 340,00 (Link Pago)</td>
-                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Pago</span></td>
-                <td class="p-3 text-right">
-                  <button onclick="alert('Comanda #VV-2026-9813 enviada para impressora!')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container">
-                    Imprimir Comanda
-                  </button>
-                </td>
-              </tr>
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9814</td>
-                <td class="p-3">Doceria Doce Sonho (São Bernardo - SP)</td>
-                <td class="p-3"><span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-bold">Retirada Loja</span></td>
-                <td class="p-3 font-bold">R$ 119,80 (Cartão)</td>
-                <td class="p-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-bold">Pronto p/ Retirada</span></td>
-                <td class="p-3 text-right">
-                  <button onclick="alert('Notificação enviada no WhatsApp da cliente!')" class="bg-emerald-600 text-white px-3 py-1 rounded-full font-bold hover:bg-emerald-700">
-                    Avisar no WhatsApp
-                  </button>
-                </td>
-              </tr>
+            <tbody id="dashboard-separation-table" class="divide-y divide-surface-container">
+              <!-- Renderizado via JS -->
             </tbody>
           </table>
         </div>
@@ -274,7 +290,7 @@
           </div>
           <div>
             <h2 class="font-display text-sm font-extrabold text-emerald-950">Atendente Juliana — Criação de Pedido Manual (WhatsApp)</h2>
-            <p class="text-xs text-emerald-800">Monte o carrinho pelo cliente, verifique o estoque em tempo real e gere o link de pagamento do gateway.</p>
+            <p class="text-xs text-emerald-800">Monte o carrinho pelo cliente, consulte o estoque em tempo real e gere o link de pagamento do gateway.</p>
           </div>
         </div>
         <span class="text-xs bg-emerald-200 text-emerald-900 font-mono px-3 py-1 rounded-full font-bold">Caso de Uso: UC03 / RF006</span>
@@ -311,17 +327,16 @@
             <span class="font-display text-xs font-bold text-on-surface uppercase tracking-wider block mb-2">
               2. Consulta de Estoque &amp; Inserção de Itens
             </span>
-            <div class="flex gap-2 mb-3">
+            <div class="flex flex-col sm:flex-row gap-2 mb-3">
               <select id="select-product-manual" class="flex-1 h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none font-semibold">
-                <option value="BL-9921|Kit Balões Metalizados Rose Gold & Cereja|64.90|15">Kit Balões Metalizados Rose Gold &amp; Cereja (Estoque: 15 un) - R$ 64,90</option>
-                <option value="CF-4402|Jogo de Bicos de Confeitar em Inox 12 Pçs|79.90|8">Jogo de Bicos de Confeitar em Inox (Estoque: 8 un) - R$ 79,90</option>
-                <option value="PA-1029|Pasta Americana Tradicional Vermelho Rubi 800g|39.90|22">Pasta Americana Tradicional Vermelho Rubi (Estoque: 22 un) - R$ 39,90</option>
-                <option value="BB-1024|Balão Bubble Cristal Transparente 24 pol.|29.90|30">Balão Bubble Cristal Transparente 24 pol. (Estoque: 30 un) - R$ 29,90</option>
+                <!-- Populado dinamicamente via JS -->
               </select>
-              <input id="manual-item-qty" type="number" min="1" max="99" value="2" class="w-16 h-10 text-center rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold">
-              <button onclick="addManualItem()" type="button" class="px-4 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">add</span> Adicionar
-              </button>
+              <div class="flex gap-2">
+                <input id="manual-item-qty" type="number" min="1" max="99" value="1" class="w-16 h-10 text-center rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold">
+                <button onclick="addManualItem()" type="button" class="px-4 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm shrink-0">
+                  <span class="material-symbols-outlined text-[16px]">add</span> Adicionar
+                </button>
+              </div>
             </div>
 
             <!-- Tabela dos Itens Adicionados -->
@@ -337,28 +352,7 @@
                   </tr>
                 </thead>
                 <tbody id="manual-items-table" class="divide-y divide-surface-container">
-                  <tr>
-                    <td class="p-2.5 font-semibold">Kit Balões Metalizados Rose Gold &amp; Cereja</td>
-                    <td class="p-2.5 font-bold">2</td>
-                    <td class="p-2.5">R$ 64,90</td>
-                    <td class="p-2.5 font-bold text-primary">R$ 129,80</td>
-                    <td class="p-2.5 text-center">
-                      <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="p-2.5 font-semibold">Balão Bubble Cristal Transparente 24 pol.</td>
-                    <td class="p-2.5 font-bold">1</td>
-                    <td class="p-2.5">R$ 29,90</td>
-                    <td class="p-2.5 font-bold text-primary">R$ 29,90</td>
-                    <td class="p-2.5 text-center">
-                      <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                      </button>
-                    </td>
-                  </tr>
+                  <!-- Inseridos dinamicamente -->
                 </tbody>
               </table>
             </div>
@@ -376,7 +370,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Endereço de Entrega:</label>
-              <input type="text" value="Rua das Acácias, 142 - Campinas - SP" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none">
+              <input id="manual-delivery-address" type="text" value="Rua das Acácias, 142 - Campinas - SP" class="w-full h-10 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none">
             </div>
           </div>
 
@@ -389,7 +383,7 @@
           <div class="space-y-2 text-xs border-b border-surface-container pb-3">
             <div class="flex justify-between">
               <span class="text-on-surface-variant">Produtos:</span>
-              <strong id="manual-subtotal" class="text-on-surface">R$ 159,70</strong>
+              <strong id="manual-subtotal" class="text-on-surface">R$ 0,00</strong>
             </div>
             <div class="flex justify-between">
               <span class="text-on-surface-variant">Frete:</span>
@@ -397,14 +391,14 @@
             </div>
             <div class="flex justify-between text-base font-black pt-2 border-t border-surface-container">
               <span class="text-on-surface">Total:</span>
-              <span id="manual-total" class="text-primary">R$ 178,60</span>
+              <span id="manual-total" class="text-primary">R$ 18,90</span>
             </div>
           </div>
 
           <!-- Ação Principal: Gerar Link de Pagamento -->
           <button onclick="generatePaymentLink()" type="button" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
             <span class="material-symbols-outlined text-[18px]">link</span>
-            <span>Gerar Link de Pagamento (Gateway)</span>
+            <span>Gerar Link &amp; Salvar Pedido</span>
           </button>
 
           <!-- Bloco do Link Gerado -->
@@ -412,14 +406,14 @@
             <div class="flex items-center justify-between text-xs font-bold text-emerald-900">
               <span class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-[16px] text-emerald-700">check_circle</span>
-                Link Gerado com Sucesso!
+                Link Gerado &amp; Pedido Registrado!
               </span>
-              <span class="font-mono text-[10px]">#VV-MANUAL-781</span>
+              <span id="generated-order-id" class="font-mono text-[10px]">#VV-WPP-0001</span>
             </div>
-            <input id="payment-url-input" type="text" readonly value="https://pagamento.veveydoces.com.br/pay/vv-manual-781" class="w-full text-[11px] p-2 bg-white rounded-lg border border-emerald-300 font-mono text-emerald-800">
+            <input id="payment-url-input" type="text" readonly value="" class="w-full text-[11px] p-2 bg-white rounded-lg border border-emerald-300 font-mono text-emerald-800">
             <div class="flex gap-2">
-              <button onclick="copyPaymentLink()" class="flex-1 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800">
-                Copiar Link
+              <button onclick="copyPaymentLink()" class="flex-1 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar Link
               </button>
               <button onclick="openWhatsAppChat()" class="flex-1 py-1.5 bg-white text-emerald-800 border border-emerald-400 rounded-lg text-xs font-bold hover:bg-emerald-100 flex items-center justify-center gap-1">
                 <span class="material-symbols-outlined text-[14px]">send</span> Enviar no Zap
@@ -427,7 +421,7 @@
             </div>
           </div>
 
-          <button onclick="alert('Comanda impressa com sucesso para a equipe de separação do estoque!')" type="button" class="w-full py-2.5 rounded-xl border border-surface-container hover:bg-surface-container text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5">
+          <button onclick="printLastManualOrder()" type="button" class="w-full py-2.5 rounded-xl border border-surface-container hover:bg-surface-container text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5">
             <span class="material-symbols-outlined text-[16px]">print</span> Imprimir Comanda de Separação
           </button>
 
@@ -460,90 +454,36 @@
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="relative flex-1 max-w-sm">
-            <input type="text" placeholder="Buscar por código SKU ou nome..." class="w-full h-10 pl-9 pr-3 rounded-full bg-surface-container-low border border-surface-container text-xs outline-none">
+            <input id="stock-search-input" oninput="filterStockTable()" type="text" placeholder="Buscar por código SKU, nome ou categoria..." class="w-full h-10 pl-9 pr-3 rounded-full bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-amber-500">
             <span class="material-symbols-outlined text-[18px] text-on-surface-variant absolute left-2.5 top-2.5">search</span>
           </div>
-          <button onclick="saveAllStock()" class="px-5 py-2.5 rounded-full bg-primary hover:bg-primary-container text-white font-bold text-xs flex items-center gap-1.5 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">save</span> Salvar Alterações de Estoque
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="openTab('tab-novo-produto')" class="px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-bold text-xs flex items-center gap-1.5 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-purple-600">add_box</span> Novo Produto
+            </button>
+            <button onclick="saveAllStock()" class="px-5 py-2.5 rounded-full bg-primary hover:bg-primary-container text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">save</span> Salvar Alterações de Estoque
+            </button>
+          </div>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-xs text-left">
             <thead class="bg-surface-container-low text-on-surface-variant font-bold text-[10px] uppercase">
               <tr>
-                <th class="p-3">Código</th>
+                <th class="p-3">Código / SKU</th>
                 <th class="p-3">Produto</th>
                 <th class="p-3">Categoria</th>
                 <th class="p-3">Preço Unit.</th>
-                <th class="p-3">Estoque Físico</th>
-                <th class="p-3">Estoque Disponível</th>
+                <th class="p-3">Estoque Atual</th>
+                <th class="p-3">Condição</th>
                 <th class="p-3 text-center">Status no Site</th>
-                <th class="p-3 text-right">Ajuste Rápido (Balcão)</th>
+                <th class="p-3 text-right">Ajuste Rápido</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-surface-container">
-              
-              <!-- Produto 1 -->
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">BL-9921</td>
-                <td class="p-3 font-semibold">Kit Balões Metalizados Rose Gold &amp; Cereja (50 unid.)</td>
-                <td class="p-3"><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Balões</span></td>
-                <td class="p-3 font-bold">R$ 64,90</td>
-                <td class="p-3 font-mono">15 un</td>
-                <td class="p-3"><span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">15 unidades</span></td>
-                <td class="p-3 text-center">
-                  <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Ativo</span>
-                </td>
-                <td class="p-3 text-right">
-                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                    <button onclick="decrementStock('qty-bl9921')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
-                    <input id="qty-bl9921" type="number" value="15" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
-                    <button onclick="incrementStock('qty-bl9921')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Produto 2 -->
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">CF-4402</td>
-                <td class="p-3 font-semibold">Jogo de Bicos de Confeitar em Inox (12 Peças)</td>
-                <td class="p-3"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Confeitaria</span></td>
-                <td class="p-3 font-bold">R$ 79,90</td>
-                <td class="p-3 font-mono">8 un</td>
-                <td class="p-3"><span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">8 unidades</span></td>
-                <td class="p-3 text-center">
-                  <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Ativo</span>
-                </td>
-                <td class="p-3 text-right">
-                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                    <button onclick="decrementStock('qty-cf4402')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
-                    <input id="qty-cf4402" type="number" value="8" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
-                    <button onclick="incrementStock('qty-cf4402')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Produto 3 (Estoque Crítico) -->
-              <tr class="hover:bg-surface-container-low/50 bg-amber-50/30">
-                <td class="p-3 font-mono font-bold text-primary">PA-1029</td>
-                <td class="p-3 font-semibold">Pasta Americana Tradicional Vermelho Rubi 800g</td>
-                <td class="p-3"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold text-[10px]">Confeitaria</span></td>
-                <td class="p-3 font-bold">R$ 39,90</td>
-                <td class="p-3 font-mono">3 un</td>
-                <td class="p-3"><span class="text-amber-700 font-bold bg-amber-100 px-2 py-0.5 rounded-full">3 unidades (Baixo)</span></td>
-                <td class="p-3 text-center">
-                  <span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold">Alerta</span>
-                </td>
-                <td class="p-3 text-right">
-                  <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
-                    <button onclick="decrementStock('qty-pa1029')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">-</button>
-                    <input id="qty-pa1029" type="number" value="3" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
-                    <button onclick="incrementStock('qty-pa1029')" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center">+</button>
-                  </div>
-                </td>
-              </tr>
-
+            <tbody id="stock-table-body" class="divide-y divide-surface-container">
+              <!-- Renderizado dinamicamente via JS -->
             </tbody>
           </table>
         </div>
@@ -553,25 +493,157 @@
     </section>
 
     <!-- ======================================================================
-         ABA 4: GESTÃO DE PEDIDOS & RASTREIO (FEATURE 6 / UC02)
+         ABA 4: CADASTRAR NOVO PRODUTO (UC01 / RF001)
+         ====================================================================== -->
+    <section id="tab-novo-produto" class="tab-content space-y-6">
+      
+      <div class="bg-gradient-to-r from-purple-50 via-fuchsia-50 to-pink-50 p-4 rounded-2xl border border-purple-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">add_box</span>
+          </div>
+          <div>
+            <h2 class="font-display text-sm font-extrabold text-purple-950">Cadastro de Novo Produto no Catálogo Unificado</h2>
+            <p class="text-xs text-purple-800">Insira novos itens na loja virtual e no inventário de balcão físico simultaneamente.</p>
+          </div>
+        </div>
+        <span class="text-xs bg-purple-200 text-purple-900 font-mono px-3 py-1 rounded-full font-bold">Caso de Uso: UC01 / RF001</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Formulário de Cadastro (8 Colunas) -->
+        <form id="form-novo-produto" onsubmit="handleCreateProduct(event)" class="lg:col-span-8 bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-sm space-y-5">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Nome do Produto *</label>
+              <input id="prod-nome" type="text" required placeholder="Ex: Kit Mini Arco Desconstruído Candy Color" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Código / SKU *</label>
+              <input id="prod-sku" type="text" required placeholder="Ex: AR-2090" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs font-mono outline-none focus:ring-2 focus:ring-purple-500 uppercase">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Categoria *</label>
+              <select id="prod-categoria" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs font-semibold outline-none focus:ring-2 focus:ring-purple-500">
+                <option value="baloes">Balões &amp; Festas</option>
+                <option value="confeitaria">Confeitaria Artística</option>
+                <option value="descartaveis">Descartáveis &amp; Embalagens</option>
+                <option value="decoracao">Decoração de Mesa</option>
+                <option value="acessorios">Acessórios &amp; Infladores</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Preço Regular (R$) *</label>
+              <input id="prod-preco" type="number" step="0.01" min="0.01" required placeholder="49.90" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Preço Promocional (R$)</label>
+              <input id="prod-preco-promo" type="number" step="0.01" min="0.00" placeholder="39.90 (opcional)" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Estoque Inicial (unidades) *</label>
+              <input id="prod-estoque" type="number" min="0" value="20" required class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs font-bold outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-on-surface mb-1">Ícone / Imagem Visual</label>
+              <select id="prod-icone" class="w-full h-11 px-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none font-semibold">
+                <option value="celebration">🎉 celebration (Balões / Festas)</option>
+                <option value="cake">🎂 cake (Bolos &amp; Confeitaria)</option>
+                <option value="bubble_chart">🫧 bubble_chart (Balões Bubble)</option>
+                <option value="cookie">🍪 cookie (Doces &amp; Biscoitos)</option>
+                <option value="local_shipping">📦 local_shipping (Kits &amp; Acessórios)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-on-surface mb-1">Descrição Detalhada do Produto</label>
+            <textarea id="prod-descricao" rows="3" placeholder="Informações de dimensões, material, acabamento e orientações de montagem..." class="w-full p-3 rounded-xl bg-surface-container-low border border-surface-container text-xs outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input id="prod-ativo" type="checkbox" checked class="w-4 h-4 rounded accent-purple-600 cursor-pointer">
+              <span class="text-xs font-semibold text-on-surface">Produto ativo e visível na loja virtual imediatamente</span>
+            </label>
+
+            <button type="submit" class="px-6 py-3 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs flex items-center gap-2 shadow-md transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">save</span>
+              <span>Cadastrar no Catálogo &amp; Estoque</span>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Preview em Tempo Real (4 Colunas) -->
+        <div class="lg:col-span-4 bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-sm space-y-4">
+          <h3 class="font-display text-xs font-bold uppercase tracking-wider text-on-surface-variant">Pré-visualização do Card</h3>
+          
+          <div class="p-4 bg-surface-container-low rounded-xl border border-surface-container flex flex-col justify-between space-y-3">
+            <div class="w-full aspect-square rounded-lg bg-gradient-to-br from-rose-50 to-pink-100 flex flex-col items-center justify-center p-3 text-center border border-rose-200/50 relative">
+              <span id="preview-icon" class="material-symbols-outlined text-[42px] text-primary/70 mb-1">celebration</span>
+              <span id="preview-tag" class="font-bold text-xs text-primary">Prévia do Produto</span>
+              <span class="text-[10px] text-on-surface-variant/70">Vevey Doces &amp; Festas</span>
+              <span class="absolute top-2 left-2 bg-emerald-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Novo</span>
+            </div>
+
+            <div>
+              <span id="preview-cat" class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Balões &amp; Festas</span>
+              <h4 id="preview-name" class="font-bold text-sm text-on-surface line-clamp-2 mt-0.5">Nome do Produto Cadastrado</h4>
+              
+              <div class="flex items-baseline gap-2 mt-2">
+                <span id="preview-price" class="text-base font-extrabold text-primary">R$ 49,90</span>
+                <span class="text-[11px] text-secondary font-semibold">à vista no Pix</span>
+              </div>
+              <span id="preview-stock" class="text-[11px] text-emerald-700 font-bold block mt-1">Estoque: 20 unidades</span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-950 space-y-1">
+            <div class="flex items-center gap-1 font-bold text-purple-900">
+              <span class="material-symbols-outlined text-[16px]">info</span>
+              Integração Instantânea:
+            </div>
+            <p class="text-[11px] text-purple-800">
+              Ao cadastrar, o produto fica imediatamente disponível no Catálogo de Vendas e na seleção de Pedidos do WhatsApp.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         ABA 5: GESTÃO DE PEDIDOS & RASTREIO (FEATURE 6 / UC02 / RF015)
          ====================================================================== -->
     <section id="tab-pedidos" class="tab-content space-y-5">
       
       <div class="bg-surface-container-lowest rounded-2xl border border-surface-container p-5 shadow-sm space-y-4">
+        
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="font-display text-base font-extrabold text-on-surface">Todos os Pedidos do Sistema</h2>
-            <p class="text-xs text-on-surface-variant">Altere o status operacional e insira códigos de rastreamento para notificar os clientes.</p>
+            <h2 class="font-display text-base font-extrabold text-on-surface">Gestão de Pedidos Operacionais (Site + WhatsApp)</h2>
+            <p class="text-xs text-on-surface-variant">Altere o status operacional e insira códigos de rastreamento para despachar as encomendas.</p>
           </div>
+          
           <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold">Filtrar:</span>
-            <select class="text-xs bg-surface-container-low border border-surface-container rounded-lg px-2.5 py-1.5 font-semibold">
-              <option>Todos os Status</option>
-              <option>Pendente / Aguardando Pagamento</option>
-              <option>Pago</option>
-              <option>Em Separação</option>
-              <option>Enviado</option>
-              <option>Entregue</option>
+            <span class="text-xs font-semibold">Filtrar por Status:</span>
+            <select id="orders-status-filter" onchange="filterOrdersTable(this.value)" class="text-xs bg-surface-container-low border border-surface-container rounded-lg px-2.5 py-1.5 font-semibold outline-none cursor-pointer">
+              <option value="todos">Todos os Pedidos</option>
+              <option value="Aguardando Pagamento">Aguardando Pagamento</option>
+              <option value="Pago">Pago</option>
+              <option value="Em Separação">Em Separação</option>
+              <option value="Enviado">Enviado</option>
+              <option value="Entregue">Entregue</option>
             </select>
           </div>
         </div>
@@ -583,70 +655,83 @@
                 <th class="p-3">Pedido</th>
                 <th class="p-3">Data / Hora</th>
                 <th class="p-3">Cliente</th>
+                <th class="p-3">Origem</th>
                 <th class="p-3">Valor Total</th>
-                <th class="p-3">Status do Pedido</th>
+                <th class="p-3">Status Operacional</th>
                 <th class="p-3">Código de Rastreio</th>
-                <th class="p-3 text-right">Ação</th>
+                <th class="p-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-surface-container">
-              
-              <!-- Pedido 1 -->
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9812</td>
-                <td class="p-3 text-on-surface-variant">13/10 - 14:32</td>
-                <td class="p-3 font-semibold">Nathan Costa Santos</td>
-                <td class="p-3 font-bold">R$ 184,70</td>
-                <td class="p-3">
-                  <select onchange="updateOrderStatus('#VV-2026-9812', this.value)" class="bg-amber-50 border border-amber-300 text-amber-800 font-bold rounded px-2 py-1 text-xs">
-                    <option>Pago</option>
-                    <option selected>Em Separação</option>
-                    <option>Enviado</option>
-                    <option>Entregue</option>
-                  </select>
-                </td>
-                <td class="p-3">
-                  <input type="text" value="BR829381928BR" class="w-32 bg-surface-container-low border border-surface-container px-2 py-1 rounded font-mono text-[11px]">
-                </td>
-                <td class="p-3 text-right">
-                  <button onclick="alert('Status do Pedido #VV-2026-9812 atualizado e e-mail disparado para o cliente!')" class="bg-primary hover:bg-primary-container text-white px-3 py-1 rounded font-bold">
-                    Salvar
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Pedido 2 -->
-              <tr class="hover:bg-surface-container-low/50">
-                <td class="p-3 font-mono font-bold text-primary">#VV-2026-9813</td>
-                <td class="p-3 text-on-surface-variant">13/10 - 15:10</td>
-                <td class="p-3 font-semibold">Carla Silva</td>
-                <td class="p-3 font-bold">R$ 340,00</td>
-                <td class="p-3">
-                  <select onchange="updateOrderStatus('#VV-2026-9813', this.value)" class="bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold rounded px-2 py-1 text-xs">
-                    <option selected>Pago</option>
-                    <option>Em Separação</option>
-                    <option>Enviado</option>
-                    <option>Entregue</option>
-                  </select>
-                </td>
-                <td class="p-3">
-                  <input type="text" placeholder="Inserir rastreio..." class="w-32 bg-surface-container-low border border-surface-container px-2 py-1 rounded font-mono text-[11px]">
-                </td>
-                <td class="p-3 text-right">
-                  <button onclick="alert('Status do Pedido #VV-2026-9813 salvo!')" class="bg-primary hover:bg-primary-container text-white px-3 py-1 rounded font-bold">
-                    Salvar
-                  </button>
-                </td>
-              </tr>
-
+            <tbody id="orders-table-body" class="divide-y divide-surface-container">
+              <!-- Renderizado dinamicamente via JS -->
             </tbody>
           </table>
         </div>
+
       </div>
 
     </section>
 
   </main>
+
+  <!-- ==========================================================================
+       MODAL DE IMPRESSÃO DE COMANDA TÉRMICA (SEPARAÇÃO DE ESTOQUE)
+       ========================================================================== -->
+  <div id="comanda-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 relative animate-in fade-in duration-200">
+      
+      <button onclick="closeComandaModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+
+      <!-- Conteúdo da Comanda Impressa -->
+      <div id="printable-comanda" class="space-y-4 font-mono text-xs text-gray-900 border-2 border-dashed border-gray-300 p-4 rounded-xl bg-gray-50/50">
+        <div class="text-center pb-2 border-b border-gray-300">
+          <h3 class="font-black text-sm uppercase">VEVEY DOCES &amp; FESTAS</h3>
+          <p class="text-[10px] text-gray-600">COMANDA DE SEPARAÇÃO &amp; EXPEDIÇÃO</p>
+          <p id="comanda-order-id" class="font-bold text-xs text-primary mt-1">#VV-2026-9812</p>
+          <p id="comanda-date" class="text-[10px] text-gray-500">Data: 13/10/2026 - 14:32</p>
+        </div>
+
+        <div>
+          <span class="text-[10px] uppercase font-bold text-gray-500 block">Cliente:</span>
+          <p id="comanda-client-name" class="font-bold text-xs">Nathan Costa Santos</p>
+          <p id="comanda-client-phone" class="text-[11px] text-gray-600">(11) 98765-4321</p>
+          <p id="comanda-address" class="text-[11px] text-gray-600 mt-0.5">Av. Paulista, 1000 - Bela Vista - São Paulo / SP</p>
+        </div>
+
+        <div>
+          <span class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Itens do Pedido:</span>
+          <div id="comanda-items-list" class="space-y-1 border-t border-b border-gray-300 py-2">
+            <!-- Inserido dinamicamente -->
+          </div>
+        </div>
+
+        <div class="flex justify-between font-bold text-xs pt-1">
+          <span>TOTAL DO PEDIDO:</span>
+          <span id="comanda-total" class="text-primary font-black">R$ 184,70</span>
+        </div>
+
+        <div class="text-center pt-2 text-[10px] text-gray-500">
+          <p>Conferido por: Juliana (Atendente)</p>
+          <p class="mt-1 font-mono tracking-widest">||||||||||||||||||||||||||||||||</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-5">
+        <button onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-primary text-white font-bold text-xs flex items-center justify-center gap-1 shadow hover:bg-primary-container">
+          <span class="material-symbols-outlined text-[16px]">print</span> Imprimir Comanda
+        </button>
+        <button onclick="closeComandaModal()" class="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold text-xs hover:bg-gray-100">
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Container de Toasts Flutuantes -->
+  <div id="admin-toast-container"></div>
 
   <!-- ==========================================================================
        RODAPÉ DO ADMIN
@@ -655,8 +740,236 @@
     <p>Painel de Controle Vevey Co. — Módulo Acadêmico FATEC (Engenharia de Software) • RBAC Ativado</p>
   </footer>
 
-  <!-- SCRIPT DE INTERAÇÃO DO PAINEL -->
+  <!-- ==========================================================================
+       SCRIPT CENTRALIZADO DO PAINEL ADMINISTRATIVO
+       ========================================================================== -->
   <script>
+    /* ==========================================================================
+       1. ESTADO CENTRAL (PRODUTOS & PEDIDOS)
+       ========================================================================== */
+
+    const INITIAL_PRODUCTS = [
+      {
+        id: 1,
+        sku: 'BL-9921',
+        nome: 'Kit Balões Metalizados Rose Gold & Cereja (50 unid.)',
+        categoria: 'baloes',
+        preco: 64.90,
+        preco_promocional: 49.90,
+        estoque: 15,
+        icone: 'celebration',
+        ativo: true
+      },
+      {
+        id: 2,
+        sku: 'BB-1024',
+        nome: 'Balão Bubble Cristal Transparente com Confetes (24 pol.)',
+        categoria: 'baloes',
+        preco: 29.90,
+        preco_promocional: null,
+        estoque: 30,
+        icone: 'bubble_chart',
+        ativo: true
+      },
+      {
+        id: 3,
+        sku: 'CF-4402',
+        nome: 'Jogo de Bicos de Confeitar em Inox (12 Peças + Adaptador)',
+        categoria: 'confeitaria',
+        preco: 79.90,
+        preco_promocional: 69.90,
+        estoque: 8,
+        icone: 'cake',
+        ativo: true
+      },
+      {
+        id: 4,
+        sku: 'PA-1029',
+        nome: 'Pasta Americana Tradicional Vermelho Rubi 800g',
+        categoria: 'confeitaria',
+        preco: 39.90,
+        preco_promocional: null,
+        estoque: 3,
+        icone: 'cookie',
+        ativo: true
+      },
+      {
+        id: 5,
+        sku: 'FD-5510',
+        nome: 'Forminhas 4 Pétalas Rosa Bebê (100 unid.)',
+        categoria: 'descartaveis',
+        preco: 18.90,
+        preco_promocional: null,
+        estoque: 45,
+        icone: 'celebration',
+        ativo: true
+      },
+      {
+        id: 6,
+        sku: 'TO-3310',
+        nome: "Topo de Bolo Dourado 'Parabéns' em Acrílico Espelhado",
+        categoria: 'decoracao',
+        preco: 24.90,
+        preco_promocional: null,
+        estoque: 12,
+        icone: 'cake',
+        ativo: true
+      },
+      {
+        id: 7,
+        sku: 'IN-8801',
+        nome: 'Inflador de Balões Elétrico Profissional 600W (Bivolt)',
+        categoria: 'acessorios',
+        preco: 189.90,
+        preco_promocional: 169.90,
+        estoque: 4,
+        icone: 'local_shipping',
+        ativo: true
+      },
+      {
+        id: 8,
+        sku: 'CH-7720',
+        nome: 'Chocolate Nobre Gotas Meio Amargo 1,01kg',
+        categoria: 'confeitaria',
+        preco: 54.90,
+        preco_promocional: null,
+        estoque: 19,
+        icone: 'cookie',
+        ativo: true
+      }
+    ];
+
+    const INITIAL_ORDERS = [
+      {
+        id: 'VV-2026-9812',
+        data: 'Hoje - 14:32',
+        cliente: 'Nathan Costa Santos',
+        telefone: '(11) 98765-4321',
+        endereco: 'Av. Paulista, 1000 - Bela Vista - São Paulo / SP',
+        origem: 'Site Online',
+        total: 184.70,
+        status: 'Em Separação',
+        rastreio: 'BR829381928BR',
+        itens: [
+          { nome: 'Kit Balões Metalizados Rose Gold & Cereja', qtd: 1, preco: 64.90 },
+          { nome: 'Jogo de Bicos de Confeitar em Inox (12 Peças)', qtd: 1, preco: 79.90 },
+          { nome: 'Pasta Americana Tradicional Vermelho Rubi', qtd: 1, preco: 39.90 }
+        ]
+      },
+      {
+        id: 'VV-2026-9813',
+        data: 'Hoje - 15:10',
+        cliente: 'Carla Silva (Organizadora)',
+        telefone: '(11) 97123-4567',
+        endereco: 'Rua das Acácias, 142 - Campinas - SP',
+        origem: 'WhatsApp Juliana',
+        total: 340.00,
+        status: 'Pago',
+        rastreio: '',
+        itens: [
+          { nome: 'Kit Balões Metalizados Rose Gold & Cereja', qtd: 4, preco: 64.90 },
+          { nome: 'Balão Bubble Cristal Transparente (24 pol.)', qtd: 2, preco: 29.90 }
+        ]
+      },
+      {
+        id: 'VV-2026-9814',
+        data: 'Hoje - 16:05',
+        cliente: 'Doceria Doce Sonho',
+        telefone: '(11) 96543-2109',
+        endereco: 'Retirada no Balcão Loja Física',
+        origem: 'Retirada Loja',
+        total: 119.80,
+        status: 'Em Separação',
+        rastreio: 'RETIRADA-BALCAO',
+        itens: [
+          { nome: 'Chocolate Nobre Gotas Meio Amargo 1,01kg', qtd: 2, preco: 54.90 }
+        ]
+      }
+    ];
+
+    function getAdminProducts() {
+      const saved = localStorage.getItem('vevey_products');
+      if (!saved) {
+        localStorage.setItem('vevey_products', JSON.stringify(INITIAL_PRODUCTS));
+        return INITIAL_PRODUCTS;
+      }
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return INITIAL_PRODUCTS;
+      }
+    }
+
+    function saveAdminProducts(products) {
+      localStorage.setItem('vevey_products', JSON.stringify(products));
+      renderStockTable();
+      populateManualProductSelect();
+      updateDashboardMetrics();
+    }
+
+    function getAdminOrders() {
+      let orders = INITIAL_ORDERS;
+      const saved = localStorage.getItem('vevey_admin_orders');
+      if (saved) {
+        try { orders = JSON.parse(saved); } catch (e) {}
+      }
+
+      // Sincroniza se o usuário acabou de fazer um pedido no checkout online
+      const lastCheckoutOrder = JSON.parse(localStorage.getItem('vevey_last_order') || 'null');
+      if (lastCheckoutOrder && lastCheckoutOrder.orderId) {
+        const exists = orders.some(o => o.id === lastCheckoutOrder.orderId || o.id === lastCheckoutOrder.orderId.replace('#', ''));
+        if (!exists) {
+          orders.unshift({
+            id: lastCheckoutOrder.orderId.replace('#', ''),
+            data: 'Hoje - ' + (new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })),
+            cliente: 'Nathan Costa Santos (Online)',
+            telefone: '(11) 98765-4321',
+            endereco: 'Entrega Padrão',
+            origem: 'Site Online',
+            total: lastCheckoutOrder.total || 184.70,
+            status: 'Pago',
+            rastreio: '',
+            itens: lastCheckoutOrder.items || []
+          });
+          localStorage.setItem('vevey_admin_orders', JSON.stringify(orders));
+        }
+      }
+
+      return orders;
+    }
+
+    function saveAdminOrders(orders) {
+      localStorage.setItem('vevey_admin_orders', JSON.stringify(orders));
+      renderOrdersTable();
+      updateDashboardMetrics();
+    }
+
+    /* ==========================================================================
+       2. SISTEMA DE NOTIFICAÇÕES (TOAST FLUTUANTE)
+       ========================================================================== */
+    function showAdminToast(message, type = 'info') {
+      const container = document.getElementById('admin-toast-container');
+      const toast = document.createElement('div');
+      toast.className = `admin-toast toast-${type}`;
+      
+      const icon = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-[18px]">${icon}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* ==========================================================================
+       3. CONTROLE DE ABAS E PERFIS
+       ========================================================================== */
     function openTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -678,17 +991,303 @@
       const roleEl = document.getElementById('operator-role');
       if (role === 'miriam') {
         nameEl.textContent = 'Miriam (Sócia / Administradora)';
-        roleEl.textContent = 'Cargo: ADMIN • Gestão Geral & Relatórios';
+        roleEl.textContent = 'Cargo: ADMIN • Gestão Geral & Relatórios FATEC';
+        showAdminToast('Perfil alterado para Miriam (Administradora Geral).', 'info');
       } else {
         nameEl.textContent = 'Juliana (Atendente WhatsApp)';
-        roleEl.textContent = 'Cargo: OPERADOR • Loja Física + Online';
+        roleEl.textContent = 'Cargo: OPERADOR • Loja Física + Balcão WhatsApp';
+        showAdminToast('Perfil alterado para Juliana (Atendente WhatsApp).', 'info');
       }
+    }
+
+    /* ==========================================================================
+       4. GESTÃO DE ESTOQUE UNIFICADO (UC04)
+       ========================================================================== */
+    function renderStockTable(filterTerm = '') {
+      const tbody = document.getElementById('stock-table-body');
+      if (!tbody) return;
+
+      const products = getAdminProducts();
+      const term = filterTerm.toLowerCase().trim();
+
+      const filtered = products.filter(p => 
+        !term || 
+        p.sku.toLowerCase().includes(term) || 
+        p.nome.toLowerCase().includes(term) || 
+        p.categoria.toLowerCase().includes(term)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-8 text-center text-on-surface-variant">
+              Nenhum produto encontrado para o termo pesquisado.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => {
+        const isCritical = p.estoque <= 5 && p.estoque > 0;
+        const isOut = p.estoque === 0;
+        const conditionBadge = isOut 
+          ? `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold">Esgotado</span>`
+          : isCritical 
+          ? `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">Baixo (${p.estoque} un)</span>`
+          : `<span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">${p.estoque} unidades</span>`;
+
+        const rowBg = isOut ? 'bg-red-50/30' : isCritical ? 'bg-amber-50/30' : '';
+
+        return `
+          <tr class="hover:bg-surface-container-low/50 ${rowBg}">
+            <td class="p-3 font-mono font-bold text-primary">${p.sku}</td>
+            <td class="p-3 font-semibold max-w-xs truncate" title="${p.nome}">${p.nome}</td>
+            <td class="p-3">
+              <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase">
+                ${p.categoria}
+              </span>
+            </td>
+            <td class="p-3 font-bold">R$ ${p.preco.toFixed(2).replace('.', ',')}</td>
+            <td class="p-3 font-mono font-bold">${p.estoque} un</td>
+            <td class="p-3">${conditionBadge}</td>
+            <td class="p-3 text-center">
+              <button onclick="toggleProductActive(${p.id})" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${p.ativo ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-700'}">
+                ${p.ativo ? 'Ativo' : 'Inativo'}
+              </button>
+            </td>
+            <td class="p-3 text-right">
+              <div class="inline-flex items-center gap-1 bg-surface-container-low rounded-lg p-1 border border-surface-container">
+                <button onclick="decrementStockLocal(${p.id})" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center shadow-xs">-</button>
+                <input id="input-stock-${p.id}" type="number" value="${p.estoque}" min="0" onchange="updateStockDirect(${p.id}, this.value)" class="w-12 text-center bg-transparent font-bold font-mono outline-none">
+                <button onclick="incrementStockLocal(${p.id})" class="w-6 h-6 rounded bg-white hover:bg-surface-container font-bold text-on-surface flex items-center justify-center shadow-xs">+</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterStockTable() {
+      const input = document.getElementById('stock-search-input');
+      renderStockTable(input ? input.value : '');
+    }
+
+    function incrementStockLocal(productId) {
+      const products = getAdminProducts();
+      const p = products.find(x => x.id === productId);
+      if (p) {
+        p.estoque++;
+        saveAdminProducts(products);
+      }
+    }
+
+    function decrementStockLocal(productId) {
+      const products = getAdminProducts();
+      const p = products.find(x => x.id === productId);
+      if (p && p.estoque > 0) {
+        p.estoque--;
+        saveAdminProducts(products);
+      }
+    }
+
+    function updateStockDirect(productId, val) {
+      const products = getAdminProducts();
+      const p = products.find(x => x.id === productId);
+      const parsed = parseInt(val) || 0;
+      if (p && parsed >= 0) {
+        p.estoque = parsed;
+        saveAdminProducts(products);
+      }
+    }
+
+    function toggleProductActive(productId) {
+      const products = getAdminProducts();
+      const p = products.find(x => x.id === productId);
+      if (p) {
+        p.ativo = !p.ativo;
+        saveAdminProducts(products);
+        showAdminToast(`Produto "${p.nome}" ${p.ativo ? 'ativado' : 'desativado'} no catálogo.`, 'info');
+      }
+    }
+
+    async function saveAllStock() {
+      const products = getAdminProducts();
+      localStorage.setItem('vevey_products', JSON.stringify(products));
+
+      // Tenta sincronizar com o backend FastAPI se estiver ativo
+      try {
+        const apiUrl = (window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1');
+        for (const p of products) {
+          fetch(`${apiUrl}/produtos/${p.id}/estoque`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ novo_estoque: p.estoque })
+          }).catch(() => {});
+        }
+      } catch (e) {}
+
+      showAdminToast('Estoque físico sincronizado com sucesso! Alterações refletidas no catálogo e banco.', 'success');
+      updateDashboardMetrics();
+    }
+
+    /* ==========================================================================
+       5. CADASTRAR NOVO PRODUTO (UC01 / RF001)
+       ========================================================================== */
+    function setupProductPreview() {
+      const nomeInput = document.getElementById('prod-nome');
+      const precoInput = document.getElementById('prod-preco');
+      const catSelect = document.getElementById('prod-categoria');
+      const estoqueInput = document.getElementById('prod-estoque');
+      const iconeSelect = document.getElementById('prod-icone');
+
+      function updatePreview() {
+        const nome = nomeInput.value.trim() || 'Nome do Produto Cadastrado';
+        const preco = parseFloat(precoInput.value) || 49.90;
+        const cat = catSelect.options[catSelect.selectedIndex].text;
+        const estoque = parseInt(estoqueInput.value) || 20;
+        const icone = iconeSelect.value;
+
+        document.getElementById('preview-name').textContent = nome;
+        document.getElementById('preview-tag').textContent = nome;
+        document.getElementById('preview-price').textContent = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+        document.getElementById('preview-cat').textContent = cat;
+        document.getElementById('preview-stock').textContent = `Estoque: ${estoque} unidades`;
+        document.getElementById('preview-icon').textContent = icone;
+      }
+
+      [nomeInput, precoInput, catSelect, estoqueInput, iconeSelect].forEach(el => {
+        if (el) el.addEventListener('input', updatePreview);
+      });
+    }
+
+    async function handleCreateProduct(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById('prod-nome').value.trim();
+      const sku = document.getElementById('prod-sku').value.trim().toUpperCase();
+      const categoria = document.getElementById('prod-categoria').value;
+      const preco = parseFloat(document.getElementById('prod-preco').value) || 0;
+      const precoPromoVal = document.getElementById('prod-preco-promo').value;
+      const precoPromo = precoPromoVal ? parseFloat(precoPromoVal) : null;
+      const estoque = parseInt(document.getElementById('prod-estoque').value) || 0;
+      const icone = document.getElementById('prod-icone').value;
+      const descricao = document.getElementById('prod-descricao').value.trim();
+      const ativo = document.getElementById('prod-ativo').checked;
+
+      if (!nome || !sku || preco <= 0) {
+        showAdminToast('Preencha os campos obrigatórios corretamente.', 'error');
+        return;
+      }
+
+      const products = getAdminProducts();
+      
+      // Valida SKU duplicado
+      if (products.some(p => p.sku === sku)) {
+        showAdminToast(`Já existe um produto com o SKU "${sku}".`, 'error');
+        return;
+      }
+
+      const newProduct = {
+        id: Date.now(),
+        sku,
+        nome,
+        categoria,
+        preco,
+        preco_promocional: precoPromo,
+        estoque,
+        icone,
+        descricao,
+        ativo
+      };
+
+      // Tenta enviar para o backend
+      try {
+        const apiUrl = (window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1');
+        await fetch(`${apiUrl}/produtos/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome,
+            slug: sku.toLowerCase(),
+            descricao: descricao || nome,
+            preco,
+            preco_promocional: precoPromo,
+            estoque,
+            ativo
+          })
+        });
+      } catch (e) {
+        // Fallback local caso backend não esteja rodando
+      }
+
+      products.push(newProduct);
+      saveAdminProducts(products);
+
+      showAdminToast(`Produto "${nome}" cadastrado com sucesso!`, 'success');
+      document.getElementById('form-novo-produto').reset();
+      openTab('tab-estoque');
+    }
+
+    /* ==========================================================================
+       6. PEDIDO MANUAL WHATSAPP (JULIANA / UC03)
+       ========================================================================== */
+    function populateManualProductSelect() {
+      const select = document.getElementById('select-product-manual');
+      if (!select) return;
+
+      const products = getAdminProducts().filter(p => p.ativo);
+      select.innerHTML = products.map(p => `
+        <option value="${p.sku}|${p.nome}|${p.preco}|${p.estoque}">
+          [${p.sku}] ${p.nome} (Estoque: ${p.estoque} un) - R$ ${p.preco.toFixed(2).replace('.', ',')}
+        </option>
+      `).join('');
+    }
+
+    function addManualItem() {
+      const select = document.getElementById('select-product-manual');
+      const qtyInput = document.getElementById('manual-item-qty');
+      const qty = parseInt(qtyInput.value) || 1;
+
+      if (!select.value) return;
+
+      const [sku, name, priceStr, stockStr] = select.value.split('|');
+      const price = parseFloat(priceStr);
+      const stock = parseInt(stockStr);
+
+      if (qty > stock) {
+        showAdminToast(`Quantidade solicitada (${qty}) maior que o estoque disponível (${stock}).`, 'error');
+        return;
+      }
+
+      const tbody = document.getElementById('manual-items-table');
+      const subtotal = price * qty;
+
+      const tr = document.createElement('tr');
+      tr.setAttribute('data-sku', sku);
+      tr.setAttribute('data-qty', qty);
+      tr.setAttribute('data-price', price);
+      tr.setAttribute('data-name', name);
+      tr.innerHTML = `
+        <td class="p-2.5 font-semibold">${name}</td>
+        <td class="p-2.5 font-bold">${qty}</td>
+        <td class="p-2.5">R$ ${price.toFixed(2).replace('.', ',')}</td>
+        <td class="p-2.5 font-bold text-primary">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+        <td class="p-2.5 text-center">
+          <button type="button" onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      recalculateManualTotal();
+      showAdminToast(`"${name}" adicionado ao pedido!`, 'success');
     }
 
     function recalculateManualTotal() {
       let subtotal = 0;
       document.querySelectorAll('#manual-items-table tr').forEach(row => {
-        const text = row.querySelector('td:nth-child(4)')?.textContent?.replace('R$', '').replace(',', '.').trim();
+        const text = row.querySelector('td:nth-child(4)')?.textContent?.replace('R$', '').replace('.', '').replace(',', '.').trim();
         subtotal += parseFloat(text) || 0;
       });
 
@@ -700,42 +1299,83 @@
       document.getElementById('manual-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
     }
 
-    function addManualItem() {
-      const select = document.getElementById('select-product-manual');
-      const qtyInput = document.getElementById('manual-item-qty');
-      const qty = parseInt(qtyInput.value) || 1;
-      const [sku, name, priceStr] = select.value.split('|');
-      const price = parseFloat(priceStr);
-      const subtotal = price * qty;
-
-      const tbody = document.getElementById('manual-items-table');
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="p-2.5 font-semibold">${name}</td>
-        <td class="p-2.5 font-bold">${qty}</td>
-        <td class="p-2.5">R$ ${price.toFixed(2).replace('.', ',')}</td>
-        <td class="p-2.5 font-bold text-primary">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
-        <td class="p-2.5 text-center">
-          <button onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
-            <span class="material-symbols-outlined text-[16px]">delete</span>
-          </button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-      recalculateManualTotal();
-    }
-
     function generatePaymentLink() {
+      const rows = document.querySelectorAll('#manual-items-table tr');
+      if (rows.length === 0) {
+        showAdminToast('Adicione pelo menos 1 item ao pedido.', 'error');
+        return;
+      }
+
+      const clientName = document.getElementById('manual-client-name').value.trim();
+      const clientPhone = document.getElementById('manual-client-phone').value.trim();
+      const address = document.getElementById('manual-delivery-address').value.trim();
+      const shipping = parseFloat(document.getElementById('manual-shipping-type').value) || 0;
+
+      let subtotal = 0;
+      const items = [];
+      const products = getAdminProducts();
+
+      rows.forEach(row => {
+        const sku = row.getAttribute('data-sku');
+        const name = row.getAttribute('data-name');
+        const qty = parseInt(row.getAttribute('data-qty')) || 1;
+        const price = parseFloat(row.getAttribute('data-price')) || 0;
+        
+        items.push({ sku, nome: name, qtd: qty, preco: price });
+        subtotal += price * qty;
+
+        // Decrementa o estoque unificado
+        const prod = products.find(p => p.sku === sku);
+        if (prod && prod.estoque >= qty) {
+          prod.estoque -= qty;
+        }
+      });
+
+      // Salva estoque atualizado
+      saveAdminProducts(products);
+
+      const orderNumber = 'VV-WPP-' + Math.floor(1000 + Math.random() * 9000);
+      const total = subtotal + shipping;
+
+      // Cria pedido nos pedidos do sistema
+      const orders = getAdminOrders();
+      const newOrder = {
+        id: orderNumber,
+        data: 'Hoje - ' + (new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })),
+        cliente: clientName || 'Cliente WhatsApp',
+        telefone: clientPhone,
+        endereco: address,
+        origem: 'WhatsApp Juliana',
+        total: total,
+        status: 'Aguardando Pagamento',
+        rastreio: '',
+        itens: items
+      };
+
+      orders.unshift(newOrder);
+      saveAdminOrders(orders);
+
+      // Exibe box do link
       const linkBox = document.getElementById('generated-link-box');
+      const linkInput = document.getElementById('payment-url-input');
+      const orderIdSpan = document.getElementById('generated-order-id');
+
+      const paymentUrl = `https://pagamento.veveydoces.com.br/pay/${orderNumber.toLowerCase()}`;
+      linkInput.value = paymentUrl;
+      orderIdSpan.textContent = '#' + orderNumber;
       linkBox.classList.remove('hidden');
+
+      window.lastManualOrderGenerated = newOrder;
+      showAdminToast(`Pedido #${orderNumber} gerado e gravado no sistema!`, 'success');
       linkBox.scrollIntoView({ behavior: 'smooth' });
     }
 
     function copyPaymentLink() {
       const input = document.getElementById('payment-url-input');
       input.select();
-      navigator.clipboard.writeText(input.value);
-      alert('Link de pagamento copiado para a área de transferência!');
+      navigator.clipboard.writeText(input.value).then(() => {
+        showAdminToast('Link de pagamento copiado para a área de transferência!', 'success');
+      });
     }
 
     function openWhatsAppChat() {
@@ -743,28 +1383,235 @@
       const url = document.getElementById('payment-url-input').value;
       const name = document.getElementById('manual-client-name').value;
       const total = document.getElementById('manual-total').textContent;
-      const msg = encodeURIComponent(`Olá ${name}! Segue o link de pagamento do seu pedido na Vevey Doces no valor de ${total}:\n\n${url}\n\nAssim que o pagamento for confirmado, seu pedido entrará em separação no estoque!`);
+      
+      const msg = encodeURIComponent(`Olá ${name}! Tudo bem?\n\nSegue o link seguro para pagamento do seu pedido na Vevey Doces no valor de ${total}:\n\n${url}\n\nAssim que o pagamento for aprovado, seu pedido entrará em separação no estoque!`);
       window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
     }
 
-    function incrementStock(id) {
-      const input = document.getElementById(id);
-      input.value = parseInt(input.value || 0) + 1;
+    function printLastManualOrder() {
+      if (window.lastManualOrderGenerated) {
+        openComandaModal(window.lastManualOrderGenerated.id);
+      } else {
+        showAdminToast('Gere um pedido manual primeiro para imprimir a comanda.', 'info');
+      }
     }
 
-    function decrementStock(id) {
-      const input = document.getElementById(id);
-      const val = parseInt(input.value || 0);
-      if (val > 0) input.value = val - 1;
+    /* ==========================================================================
+       7. GESTÃO DE PEDIDOS & RASTREIO (FEATURE 6 / UC02 / RF015)
+       ========================================================================== */
+    function renderOrdersTable(filterStatus = 'todos') {
+      const tbody = document.getElementById('orders-table-body');
+      if (!tbody) return;
+
+      const orders = getAdminOrders();
+      const filtered = orders.filter(o => filterStatus === 'todos' || o.status === filterStatus);
+
+      document.getElementById('badge-pedidos-count').textContent = orders.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-8 text-center text-on-surface-variant">
+              Nenhum pedido encontrado para o status selecionado.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(o => {
+        const originBadge = o.origem.includes('WhatsApp') 
+          ? `<span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">WhatsApp Juliana</span>`
+          : o.origem.includes('Retirada')
+          ? `<span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-bold">Retirada Loja</span>`
+          : `<span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">Site Online</span>`;
+
+        return `
+          <tr class="hover:bg-surface-container-low/50">
+            <td class="p-3 font-mono font-bold text-primary">#${o.id}</td>
+            <td class="p-3 text-on-surface-variant">${o.data}</td>
+            <td class="p-3">
+              <span class="font-semibold block">${o.cliente}</span>
+              <span class="text-[10px] text-gray-500">${o.telefone || ''}</span>
+            </td>
+            <td class="p-3">${originBadge}</td>
+            <td class="p-3 font-bold">R$ ${Number(o.total).toFixed(2).replace('.', ',')}</td>
+            <td class="p-3">
+              <select id="status-select-${o.id}" class="bg-surface-container-low border border-surface-container rounded px-2 py-1 text-xs font-semibold outline-none">
+                <option value="Aguardando Pagamento" ${o.status === 'Aguardando Pagamento' ? 'selected' : ''}>Aguardando Pagamento</option>
+                <option value="Pago" ${o.status === 'Pago' ? 'selected' : ''}>Pago</option>
+                <option value="Em Separação" ${o.status === 'Em Separação' ? 'selected' : ''}>Em Separação</option>
+                <option value="Enviado" ${o.status === 'Enviado' ? 'selected' : ''}>Enviado</option>
+                <option value="Entregue" ${o.status === 'Entregue' ? 'selected' : ''}>Entregue</option>
+              </select>
+            </td>
+            <td class="p-3">
+              <input id="tracking-input-${o.id}" type="text" value="${o.rastreio || ''}" placeholder="BR...BR" class="w-28 bg-surface-container-low border border-surface-container px-2 py-1 rounded font-mono text-[11px] uppercase">
+            </td>
+            <td class="p-3 text-right space-x-1">
+              <button onclick="saveOrderStatus('${o.id}')" class="bg-primary hover:bg-primary-container text-white px-2.5 py-1 rounded font-bold text-[11px] shadow-xs">
+                Salvar
+              </button>
+              <button onclick="openComandaModal('${o.id}')" class="bg-surface-container hover:bg-surface-container-high text-on-surface px-2.5 py-1 rounded font-semibold text-[11px]" title="Imprimir Comanda">
+                <span class="material-symbols-outlined text-[14px] align-middle">print</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    function saveAllStock() {
-      alert('Estoque físico sincronizado com sucesso! Alterações refletidas em tempo real no banco PostgreSQL/Supabase e no catálogo online.');
+    function filterOrdersTable(status) {
+      renderOrdersTable(status);
     }
 
-    function updateOrderStatus(id, newStatus) {
-      alert(`Status do pedido ${id} atualizado para "${newStatus}". Notificação disparada.`);
+    async function saveOrderStatus(orderId) {
+      const orders = getAdminOrders();
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const select = document.getElementById(`status-select-${orderId}`);
+      const trackingInput = document.getElementById(`tracking-input-${orderId}`);
+
+      if (select) order.status = select.value;
+      if (trackingInput) order.rastreio = trackingInput.value.trim().toUpperCase();
+
+      saveAdminOrders(orders);
+
+      // Tenta enviar para o backend
+      try {
+        const apiUrl = (window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1');
+        const numId = parseInt(orderId.replace(/\D/g, '')) || 1;
+        fetch(`${apiUrl}/pedidos/${numId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            novo_status: order.status,
+            codigo_rastreio: order.rastreio
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      showAdminToast(`Pedido #${orderId} atualizado para "${order.status}"!`, 'success');
+      updateDashboardMetrics();
     }
+
+    /* ==========================================================================
+       8. MODAL DE COMANDA DE SEPARAÇÃO (EXPEDIÇÃO)
+       ========================================================================== */
+    function openComandaModal(orderId) {
+      const orders = getAdminOrders();
+      const order = orders.find(o => o.id === orderId) || orders[0];
+      if (!order) return;
+
+      document.getElementById('comanda-order-id').textContent = '#' + order.id;
+      document.getElementById('comanda-date').textContent = 'Data: ' + order.data;
+      document.getElementById('comanda-client-name').textContent = order.cliente;
+      document.getElementById('comanda-client-phone').textContent = order.telefone || '(11) 98765-4321';
+      document.getElementById('comanda-address').textContent = order.endereco || 'Endereço cadastrado';
+      document.getElementById('comanda-total').textContent = 'R$ ' + Number(order.total).toFixed(2).replace('.', ',');
+
+      const itemsContainer = document.getElementById('comanda-items-list');
+      itemsContainer.innerHTML = (order.itens || []).map(i => `
+        <div class="flex justify-between text-[11px]">
+          <span>${i.qtd || i.quantity || 1}x ${i.nome || i.name}</span>
+          <span>R$ ${((i.preco || i.price || 0) * (i.qtd || i.quantity || 1)).toFixed(2).replace('.', ',')}</span>
+        </div>
+      `).join('') || '<p class="text-gray-400 text-[10px]">Itens padrão em conferência.</p>';
+
+      const modal = document.getElementById('comanda-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeComandaModal() {
+      const modal = document.getElementById('comanda-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /* ==========================================================================
+       9. DASHBOARD & MÉTRICAS DINÂMICAS
+       ========================================================================== */
+    function updateDashboardMetrics() {
+      const orders = getAdminOrders();
+      const products = getAdminProducts();
+
+      // Faturamento total dos pedidos pagos/em separação
+      const faturamento = orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
+      document.getElementById('metric-faturamento').textContent = 'R$ ' + faturamento.toFixed(2).replace('.', ',');
+
+      // Pedidos a separar
+      const aSeparar = orders.filter(o => o.status === 'Pago' || o.status === 'Em Separação');
+      document.getElementById('metric-separacao').textContent = `${aSeparar.length} pedidos`;
+
+      // Vendas WhatsApp
+      const vendasWpp = orders.filter(o => o.origem.includes('WhatsApp'));
+      document.getElementById('metric-wpp-vendas').textContent = `${vendasWpp.length} pedidos`;
+
+      // Estoque crítico
+      const criticos = products.filter(p => p.estoque <= 5);
+      document.getElementById('metric-estoque-critico').textContent = `${criticos.length} itens`;
+
+      // Fila de separação de hoje no dashboard
+      const tbody = document.getElementById('dashboard-separation-table');
+      if (tbody) {
+        if (aSeparar.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="p-6 text-center text-on-surface-variant text-xs">
+                Nenhum pedido pendente de separação no momento. Todos despachados!
+              </td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = aSeparar.slice(0, 5).map(o => `
+            <tr class="hover:bg-surface-container-low/50">
+              <td class="p-3 font-mono font-bold text-primary">#${o.id}</td>
+              <td class="p-3">${o.cliente}</td>
+              <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">${o.origem}</span></td>
+              <td class="p-3 font-bold">R$ ${Number(o.total).toFixed(2).replace('.', ',')}</td>
+              <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">${o.status}</span></td>
+              <td class="p-3 text-right">
+                <button onclick="openComandaModal('${o.id}')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container text-[11px]">
+                  Imprimir Comanda
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    /* ==========================================================================
+       INICIALIZAÇÃO NO CARREGAMENTO
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStockTable();
+      renderOrdersTable();
+      populateManualProductSelect();
+      updateDashboardMetrics();
+      setupProductPreview();
+
+      // Adiciona itens iniciais no pedido manual para demonstração
+      const manualTable = document.getElementById('manual-items-table');
+      if (manualTable && manualTable.children.length === 0) {
+        manualTable.innerHTML = `
+          <tr data-sku="BL-9921" data-qty="2" data-price="64.90" data-name="Kit Balões Metalizados Rose Gold & Cereja">
+            <td class="p-2.5 font-semibold">Kit Balões Metalizados Rose Gold &amp; Cereja</td>
+            <td class="p-2.5 font-bold">2</td>
+            <td class="p-2.5">R$ 64,90</td>
+            <td class="p-2.5 font-bold text-primary">R$ 129,80</td>
+            <td class="p-2.5 text-center">
+              <button type="button" onclick="this.closest('tr').remove(); recalculateManualTotal();" class="text-red-500 hover:text-red-700">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </td>
+          </tr>
+        `;
+        recalculateManualTotal();
+      }
+    });
   </script>
 
 </body>

@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Catálogo de Produtos — Vevey Doces</title>
+  <meta name="description" content="Vevey Doces — Confeitaria, balões metalizados, decorações e artigos para festas e celebrações inesquecíveis.">
+  <meta property="og:title" content="Catálogo de Produtos — Vevey Doces">
+  <meta property="og:description" content="Confeitaria, balões metalizados, decorações e artigos para festas com frete grátis e entrega rápida.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="theme-color" content="#b80035">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%23b80035'/%3E%3Cpath d='M30 45 C30 35, 70 35, 70 45 L70 70 C70 75, 30 75, 30 70 Z' fill='%23ffffff'/%3E%3Ccircle cx='50' cy='32' r='8' fill='%23fea619'/%3E%3C/svg%3E">
   
   <!-- Fontes Oficiais -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,7 +225,18 @@
             </div>
 
             <!-- Ordenação & Botão Mobile -->
-            <div class="flex flex-wrap items-center gap-space-sm self-start lg:self-end shrink-0">
+            <div class="flex flex-wrap items-center gap-space-sm self-start lg:self-end shrink-0 w-full lg:w-auto">
+              <!-- Barra de Busca Mobile Visível -->
+              <div class="w-full md:hidden relative flex items-center mb-1">
+                <input 
+                  id="catalog-search-mobile"
+                  class="w-full h-11 pl-4 pr-10 rounded-full bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/70 text-sm outline-none transition-all border border-surface-container shadow-sm focus:ring-2 focus:ring-primary/40 focus:bg-white" 
+                  placeholder="Buscar produtos nesta categoria..." 
+                  type="text"
+                >
+                <span class="material-symbols-outlined text-primary absolute right-3 text-[18px]">search</span>
+              </div>
+
               <div class="flex items-center gap-2 bg-surface-container-lowest shadow-sm rounded-full px-space-md py-space-xs border border-surface-container">
                 <span class="material-symbols-outlined text-on-surface-variant text-[18px]">sort</span>
                 <span class="font-label-md text-label-md text-on-surface-variant font-semibold">Ordenar por:</span>

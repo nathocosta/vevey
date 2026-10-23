@@ -49,11 +49,11 @@ async def custom_403_exception_handler(request: Request, exc):
         status_code=status.HTTP_403_FORBIDDEN,
         content={
             "status": 403,
-            "erro": "Acesso Restrito / Proibido",
+            "erro": "Acesso Proibido",
             "mensagem": "Você não possui permissão administrativa para acessar este recurso.",
-            "portal": "https://vevey.vercel.app/403.html"
         }
     )
+
 
 # Registra todos os endpoints da API v1
 app.include_router(api_router, prefix=settings.API_V1_STR)

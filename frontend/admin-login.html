@@ -180,6 +180,14 @@
       document.getElementById('admin-password').value = senha;
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('error') === 'unauthorized') {
+        showAlert('Acesso restrito ao painel. Por favor, autentique-se com credenciais de operador ou administrador.', 'error');
+      }
+    });
+
+
     function showAlert(message, type = 'error') {
       const alertEl = document.getElementById('login-alert');
       alertEl.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
@@ -223,12 +231,12 @@
 
         // Validação Estrita de Papel (Role)
         if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
-          showAlert('Acesso Não Autorizado: Sua conta possui perfil de cliente comum. Este painel é restrito a operadores.', 'error');
-          setTimeout(() => {
-            window.location.href = '403.html';
-          }, 2000);
+          showAlert('Acesso Restrito: Sua conta possui perfil de cliente comum e não tem autorização para o painel de lojista.', 'error');
+          btn.disabled = false;
+          btnText.textContent = 'Autenticar & Acessar Painel';
           return;
         }
+
 
         // Armazena credenciais autorizadas
         localStorage.setItem('vevey_admin_token', data.access_token);

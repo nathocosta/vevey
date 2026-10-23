@@ -773,16 +773,17 @@
         if (res.status === 401 || res.status === 403) {
           localStorage.removeItem('vevey_admin_token');
           localStorage.removeItem('vevey_admin_user');
-          window.location.href = '403.html';
+          window.location.href = 'admin-login.html?error=unauthorized';
           return;
         }
 
         if (res.ok) {
           const data = await res.json();
           if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
-            window.location.href = '403.html';
+            window.location.href = 'admin-login.html?error=unauthorized';
             return;
           }
+
 
           // Atualiza dados na tela com os valores autenticados no servidor
           const nameEl = document.getElementById('operator-name');

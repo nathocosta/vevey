@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/frete.py": {
-    "mtime": 1792783937.337457,
-    "seen": 1792784137.13606,
-    "ast_hash": "e7f8b361968911d690a5dce9f1778a23",
+    "mtime": 1792788476.2069347,
+    "seen": 1792788730.3288128,
+    "ast_hash": "62164fd66042eba8f5d976da20e81422",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/pedidos.py": {
@@ -96,9 +96,9 @@
     "semantic_hash": ""
   },
   "frontend/js/app.js": {
-    "mtime": 1792786207.5776973,
-    "seen": 1792786389.5789292,
-    "ast_hash": "11e21f5379f29a40244edc60a33231f7",
+    "mtime": 1792788574.003599,
+    "seen": 1792788730.3288417,
+    "ast_hash": "47dd2058bd03fda6f61753388fcb6e0b",
     "semantic_hash": ""
   },
   "README.md": {
@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
-    "mtime": 1792783822.2693384,
-    "seen": 1792784137.1360927,
-    "ast_hash": "197ac7bd506a1de2d5b75a8d096982f4",
+    "mtime": 1792788411.2588704,
+    "seen": 1792788730.3288488,
+    "ast_hash": "975ebd064c553710a4ae7a75deddf977",
     "semantic_hash": ""
   },
   "database/documentacao_modelagem.md": {
@@ -192,9 +192,9 @@
     "semantic_hash": ""
   },
   "database/seed.sql": {
-    "mtime": 1786323196.7168398,
-    "seen": 1792712134.7904458,
-    "ast_hash": "86f67379d329675f23b7dae8a76af780",
+    "mtime": 1792788439.597979,
+    "seen": 1792788730.3288403,
+    "ast_hash": "64b64a61b42b620d0f88b0f5c29fb10f",
     "semantic_hash": ""
   },
   "backend/seed.py": {
@@ -285,6 +285,12 @@
     "mtime": 1792785176.9377117,
     "seen": 1792785309.6025023,
     "ast_hash": "7bd70d2a7787d82232c6d71ec4494240",
+    "semantic_hash": ""
+  },
+  "ROADMAP_PROXIMA_SESSAO.md": {
+    "mtime": 1792788707.0319693,
+    "seen": 1792788730.3288472,
+    "ast_hash": "fbc3959fec561153eb4ea317c03787ca",
     "semantic_hash": ""
   }
 }

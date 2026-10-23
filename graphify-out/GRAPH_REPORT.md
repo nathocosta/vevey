@@ -1,17 +1,17 @@
 # Graph Report - Vevey - tcc  (2026-10-23)
 
 ## Corpus Check
-- 27 files · ~243,272 words
+- 28 files · ~244,315 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 1, .example 1, .css 1)
 
 ## Summary
-- 321 nodes · 642 edges · 18 communities (12 shown, 6 thin omitted)
+- 332 nodes · 652 edges · 20 communities (14 shown, 6 thin omitted)
 - Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `422ada4f`
+- Built from commit: `511772f3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -27,8 +27,10 @@
 - Vevey Doces — E-Commerce & Varejo de Festas (TCC)
 - schema.sql
 - 4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)
+- login
 - main.py
 - Settings
+- 2. 🎯 O Que Falta Implementar (Backlog Priorizado para a Próxima Sessão)
 
 ## God Nodes (most connected - your core abstractions)
 1. `criar_pedido_online()` - 18 edges
@@ -45,31 +47,31 @@
 ## Surprising Connections (you probably didn't know these)
 - `🔵 Camada 2: Lógica de Negócios (Backend API)` --references--> `get_db()`  [INFERRED]
   ARQUITETURA_3_CAMADAS.md → backend/app/core/database.py
-- `get_current_client()` --uses--> `Cliente`  [INFERRED]
-  backend/app/api/deps.py → backend/app/models.py
-- `get_current_admin()` --uses--> `UsuarioAdmin`  [INFERRED]
-  backend/app/api/deps.py → backend/app/models.py
 - `register_client()` --uses--> `Cliente`  [INFERRED]
   backend/app/api/v1/endpoints/auth.py → backend/app/models.py
 - `register_client()` --uses--> `ClienteCreate`  [INFERRED]
   backend/app/api/v1/endpoints/auth.py → backend/app/schemas.py
+- `login()` --uses--> `Cliente`  [INFERRED]
+  backend/app/api/v1/endpoints/auth.py → backend/app/models.py
+- `login()` --uses--> `UsuarioAdmin`  [INFERRED]
+  backend/app/api/v1/endpoints/auth.py → backend/app/models.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (18 total, 6 thin omitted)
+## Communities (20 total, 6 thin omitted)
 
 ### Community 0 - "schemas.py"
 Cohesion: 0.07
-Nodes (41): CargoAdmin, TipoEntrega, CategoriaBase, CategoriaCreate, CategoriaResponse, CategoriaUpdate, ClienteBase, ClienteCreate (+33 more)
+Nodes (44): PedidoOnlineCreate, MetodoPagamento, StatusPagamento, StatusPedido, TipoEntrega, CategoriaBase, CategoriaCreate, CategoriaResponse (+36 more)
 
 ### Community 1 - "auth.py"
-Cohesion: 0.07
-Nodes (14): get_current_admin(), get_current_client(), get_admin_me(), get_me(), login(), LoginRequest, register_client(), TokenResponse (+6 more)
+Cohesion: 0.11
+Nodes (13): get_current_admin(), get_current_client(), get_db(), create_access_token(), decode_access_token(), get_password_hash(), CargoAdmin, Categoria (+5 more)
 
 ### Community 2 - "pedidos.py"
-Cohesion: 0.12
-Nodes (22): atualizar_status_pedido(), criar_pedido_manual_whatsapp(), criar_pedido_online(), ItemPedidoInput, listar_meus_pedidos(), listar_todos_pedidos(), PedidoManualCreate, PedidoOnlineCreate (+14 more)
+Cohesion: 0.13
+Nodes (12): atualizar_status_pedido(), criar_pedido_manual_whatsapp(), criar_pedido_online(), ItemPedidoInput, listar_meus_pedidos(), listar_todos_pedidos(), PedidoManualCreate, StatusUpdateInput (+4 more)
 
 ### Community 3 - "app.js"
 Cohesion: 0.18
@@ -88,7 +90,7 @@ Cohesion: 0.14
 Nodes (13): 1. INTRODUÇÃO, 2. DIAGRAMA DE ENTIDADE-RELACIONAMENTO (DER), 3.1 Transição de Restrições Check para Enums Nativos (SQLAlchemy), 3.2 Controle de Acesso Baseado em Regras (RBAC), 3.3 Logística e Filas de Trabalho (Painel do Operador), 3. ESPECIFICAÇÃO TÉCNICA DAS MUDANÇAS E JUSTIFICATIVAS, 4. DICIONÁRIO DE DADOS (NOVOS ELEMENTOS E ALTERAÇÕES), 5. DIRETRIZES PARA BACKEND (PYTHON / FASTAPI / SQLALCHEMY) (+5 more)
 
 ### Community 7 - "frete.py"
-Cohesion: 0.31
+Cohesion: 0.27
 Nodes (4): calcular_frete(), CalculoFreteRequest, CalculoFreteResponse, OpcaoFrete
 
 ### Community 8 - "Vevey Doces — E-Commerce & Varejo de Festas (TCC)"
@@ -103,9 +105,17 @@ Nodes (26): idx_usuarios_admin_email, trg_registrar_historico_status, usuarios_a
 Cohesion: 0.13
 Nodes (14): 1. Visão Geral da Arquitetura, 2. Detalhamento de Cada Camada, 3. Fluxo de Vida de uma Compra (End-to-End), 4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase), 5. Justificativa Arquitetural para a Banca do TCC, Arquitetura em 3 Camadas — Vevey Doces (TCC), 🟡 Camada 1: Apresentação (Frontend), 🔵 Camada 2: Lógica de Negócios (Backend API) (+6 more)
 
+### Community 15 - "login"
+Cohesion: 0.12
+Nodes (8): get_admin_me(), get_me(), login(), LoginRequest, register_client(), TokenResponse, validar_cpf(), verify_password()
+
 ### Community 17 - "main.py"
 Cohesion: 0.16
 Nodes (4): custom_403_exception_handler(), health_check(), root(), security_headers_middleware()
+
+### Community 19 - "2. 🎯 O Que Falta Implementar (Backlog Priorizado para a Próxima Sessão)"
+Cohesion: 0.18
+Nodes (10): 1. 🧹 Limpeza de Códigos Mortos e Dependências Realizada Nesta Sessão, 2. 🎯 O Que Falta Implementar (Backlog Priorizado para a Próxima Sessão), 3. 🚀 Guia Rápido de Execução, Como Rodar o Backend:, Como Rodar o Frontend:, Credenciais Padrão (Seed):, Prioridade Alta (Essencial para Apresentação do TCC & Fluxo Completo), Prioridade Baixa / Polimento Final (+2 more)
 
 ## Knowledge Gaps
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
@@ -113,17 +123,17 @@ Nodes (4): custom_403_exception_handler(), health_check(), root(), security_head
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `get_db()` connect `auth.py` to `pedidos.py`, `4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)`?**
-  _High betweenness centrality (0.065) - this node is a cross-community bridge._
+- **Why does `get_db()` connect `auth.py` to `4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)`?**
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `criar_pedido_online()` (e.g. with `Cliente` and `Endereco`) actually correct?**
   _`criar_pedido_online()` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Should `schemas.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.06753246753246753 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06545879602571596 - nodes in this community are weakly interconnected._
 - **Why does `🔵 Camada 2: Lógica de Negócios (Backend API)` connect `4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)` to `auth.py`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Are the 11 inferred relationships involving `criar_pedido_manual_whatsapp()` (e.g. with `Cliente` and `Endereco`) actually correct?**
   _`criar_pedido_manual_whatsapp()` has 11 INFERRED edges - model-reasoned connections that need verification._
 - **Should `auth.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.06801346801346801 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10815602836879433 - nodes in this community are weakly interconnected._
 - **Are the 7 inferred relationships involving `Cliente` (e.g. with `get_current_client()` and `get_me()`) actually correct?**
   _`Cliente` has 7 INFERRED edges - model-reasoned connections that need verification._

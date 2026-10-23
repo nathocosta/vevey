@@ -58,8 +58,8 @@ def calcular_frete(request: Request, dados: CalculoFreteRequest):
         ),
         OpcaoFrete(
             modalidade="RETIRADA",
-            nome="Retirada Grátis na Loja Física (Vevey Co.)",
-            prazo_dias="Disponível em até 2 horas",
+            nome="Retirada Grátis na Loja Física (Santo André - SP)",
+            prazo_dias="Disponível em até 2 horas (Seg-Sex 08h-18h | Sáb 08h-16h)",
             valor=Decimal("0.00"),
             gratis=True,
         ),

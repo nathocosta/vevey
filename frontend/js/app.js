@@ -712,11 +712,11 @@ function initProductPage() {
     pill.addEventListener('click', () => {
       const group = pill.getAttribute('data-group') || 'default';
       document.querySelectorAll(`.variation-pill[data-group="${group}"]`).forEach(p => {
-        p.classList.remove('border-brand-600', 'bg-brand-50', 'text-brand-600', 'ring-2', 'ring-brand-500');
-        p.classList.add('border-gray-200');
+        p.classList.remove('border-[#800F2F]', 'bg-[#800F2F]/10', 'text-[#800F2F]', 'ring-1', 'ring-[#800F2F]');
+        p.classList.add('border-[#EAE3D9]', 'text-[#665A5B]');
       });
-      pill.classList.remove('border-gray-200');
-      pill.classList.add('border-brand-600', 'bg-brand-50', 'text-brand-600', 'ring-2', 'ring-brand-500');
+      pill.classList.remove('border-[#EAE3D9]', 'text-[#665A5B]');
+      pill.classList.add('border-[#800F2F]', 'bg-[#800F2F]/10', 'text-[#800F2F]', 'ring-1', 'ring-[#800F2F]');
     });
   });
 
@@ -738,11 +738,11 @@ function initProductPage() {
     btn.addEventListener('click', () => {
       const targetId = btn.getAttribute('data-tab-target');
       tabButtons.forEach(b => {
-        b.classList.remove('border-brand-600', 'text-brand-600', 'font-bold');
-        b.classList.add('border-transparent', 'text-gray-500');
+        b.classList.remove('border-[#800F2F]', 'text-[#800F2F]', 'font-bold');
+        b.classList.add('border-transparent', 'text-[#665A5B]');
       });
-      btn.classList.add('border-brand-600', 'text-brand-600', 'font-bold');
-      btn.classList.remove('border-transparent', 'text-gray-500');
+      btn.classList.add('border-[#800F2F]', 'text-[#800F2F]', 'font-bold');
+      btn.classList.remove('border-transparent', 'text-[#665A5B]');
 
       document.querySelectorAll('.tab-pane').forEach(pane => {
         pane.classList.add('hidden');
@@ -1510,6 +1510,53 @@ function initAccountPage() {
     });
   }
 
+  // Sincroniza pedido recente do localStorage na tela do cliente se houver
+  const lastOrder = JSON.parse(localStorage.getItem('vevey_last_order') || 'null');
+  const ordersSection = document.querySelector('section.lg\\:col-span-8');
+  if (lastOrder && ordersSection && !document.getElementById('account-recent-order-card')) {
+    const isRetirada = lastOrder.tipoEntrega && lastOrder.tipoEntrega.includes('Retirada');
+    const recentCard = document.createElement('article');
+    recentCard.id = 'account-recent-order-card';
+    recentCard.setAttribute('data-order-status', 'andamento');
+    recentCard.className = 'bg-white rounded-2xl border-2 border-[#800F2F] shadow-md p-5 space-y-4 relative overflow-hidden mb-4';
+    recentCard.innerHTML = `
+      <div class="absolute top-0 right-0 bg-[#800F2F] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+        Pedido Recente
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#F4EFEB] pb-3 pt-2">
+        <div>
+          <span class="text-xs text-[#665A5B] font-mono">Pedido:</span>
+          <h3 class="order-id text-base font-extrabold text-[#800F2F]">${lastOrder.orderId}</h3>
+          <p class="text-xs text-[#665A5B]">Realizado em ${lastOrder.date} • Pagamento via <strong>${lastOrder.formaPagamento || 'Pix'}</strong></p>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-[#665A5B]">Valor Total:</span>
+          <p class="text-lg font-black text-[#201516]">R$ ${Number(lastOrder.total || 0).toFixed(2).replace('.', ',')}</p>
+          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> ${isRetirada ? 'Pronto p/ Retirada no Balcão' : 'Em Separação no Estoque'}
+          </span>
+        </div>
+      </div>
+      <div class="bg-[#FAF7F2] p-3 rounded-xl border border-[#EAE3D9] flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#800F2F] text-[20px]">${isRetirada ? 'storefront' : 'pin_drop'}</span>
+          <div>
+            <span class="font-bold text-[#201516]">${isRetirada ? 'Retirada na Loja (Santo André - SP):' : 'Endereço de Entrega:'}</span>
+            <p class="text-[#665A5B]">${lastOrder.endereco}</p>
+          </div>
+        </div>
+        <a href="https://wa.me/5511978257360?text=${encodeURIComponent('Olá! Gostaria de consultar o status do meu pedido ' + lastOrder.orderId)}" target="_blank" rel="noopener noreferrer" class="bg-[#25D366] hover:bg-[#1EBE5D] text-white px-3 py-1.5 rounded-full font-bold text-[11px] shadow-sm flex items-center gap-1 transition-colors">
+          <span class="material-symbols-outlined text-[14px]">chat</span>
+          <span>Acompanhar no WhatsApp</span>
+        </a>
+      </div>
+    `;
+    const filterBar = ordersSection.firstElementChild;
+    if (filterBar) {
+      filterBar.insertAdjacentElement('afterend', recentCard);
+    }
+  }
+
   // Filtro por abas de status
   const statusFilterBtns = document.querySelectorAll('[data-status-filter]');
   const orderCards = document.querySelectorAll('[data-order-status]');
@@ -1519,11 +1566,11 @@ function initAccountPage() {
     btn.addEventListener('click', () => {
       const status = btn.getAttribute('data-status-filter');
       statusFilterBtns.forEach(b => {
-        b.classList.remove('bg-brand-600', 'text-white', 'font-bold');
-        b.classList.add('border', 'border-gray-200', 'text-gray-600', 'bg-white');
+        b.classList.remove('bg-[#800F2F]', 'text-white', 'font-bold');
+        b.classList.add('border', 'border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
       });
-      btn.classList.add('bg-brand-600', 'text-white', 'font-bold');
-      btn.classList.remove('border-gray-200', 'text-gray-600', 'bg-white');
+      btn.classList.add('bg-[#800F2F]', 'text-white', 'font-bold');
+      btn.classList.remove('border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
 
       orderCards.forEach(card => {
         const cardStatus = card.getAttribute('data-order-status');

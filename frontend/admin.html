@@ -997,21 +997,23 @@
       if (lastCheckoutOrder && lastCheckoutOrder.orderId) {
         const exists = orders.some(o => o.id === lastCheckoutOrder.orderId || o.id === lastCheckoutOrder.orderId.replace('#', ''));
         if (!exists) {
+          const isRetirada = lastCheckoutOrder.tipoEntrega && lastCheckoutOrder.tipoEntrega.includes('Retirada');
           orders.unshift({
             id: lastCheckoutOrder.orderId.replace('#', ''),
             data: 'Hoje - ' + (new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })),
-            cliente: 'Nathan Costa Santos (Online)',
-            telefone: '(11) 97825-7360',
-            endereco: 'Entrega Padrão',
-            origem: 'Site Online',
+            cliente: (lastCheckoutOrder.cliente || 'Cliente Online') + (isRetirada ? ' (Retirada)' : ' (Online)'),
+            telefone: lastCheckoutOrder.telefone || '(11) 97825-7360',
+            endereco: lastCheckoutOrder.endereco || (isRetirada ? 'Retirada no Balcão Loja Física (Santo André - SP)' : 'Entrega Padrão'),
+            origem: isRetirada ? 'Retirada Loja' : 'Site Online',
             total: lastCheckoutOrder.total || 184.70,
-            status: 'Pago',
-            rastreio: '',
+            status: 'Em Separação',
+            rastreio: isRetirada ? 'RETIRADA-BALCAO' : '',
             itens: lastCheckoutOrder.items || []
           });
           localStorage.setItem('vevey_admin_orders', JSON.stringify(orders));
         }
       }
+
 
       return orders;
     }

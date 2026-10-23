@@ -986,12 +986,21 @@ function initCheckoutPage() {
   // Submissão do Pedido
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
+      const nomeInput = document.getElementById('checkout-nome')?.value?.trim();
+      const emailInput = document.getElementById('checkout-email')?.value?.trim();
+      const telInput = document.getElementById('checkout-telefone')?.value?.trim();
+      const selectedShipping = document.querySelector('input[name="shipping_method"]:checked')?.value;
+      const isRetirada = selectedShipping === 'retirada';
+
       const orderId = '#VV-' + Math.floor(10000 + Math.random() * 90000);
       const orderData = {
         orderId,
         date: new Date().toLocaleDateString('pt-BR'),
+        cliente: nomeInput || 'Cliente Online',
+        email: emailInput || 'cliente@exemplo.com.br',
+        telefone: telInput || '(11) 97825-7360',
+        tipoEntrega: isRetirada ? 'Retirada na Loja' : 'Envio Transportadora',
+        endereco: isRetirada ? 'Retirada no Balcão Loja Física (Santo André - SP)' : 'Avenida Paulista, 1000 - Apto 42 - São Paulo / SP',
         items: cart,
         total: subtotal
       };
@@ -1003,6 +1012,7 @@ function initCheckoutPage() {
       updateCartBadge();
 
       window.location.href = 'confirmacao.html';
+
     });
   }
 }

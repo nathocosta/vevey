@@ -24,8 +24,9 @@ def listar_produtos(
     busca: Optional[str] = Query(None, description="Busca por nome do produto (RF002 / UC05)"),
     categoria: Optional[str] = Query(None, description="Slug da categoria"),
     apenas_disponiveis: bool = Query(False, description="Filtrar apenas itens com estoque > 0"),
-    skip: int = 0,
-    limit: int = 50,
+    skip: int = Query(0, ge=0, description="Offset de paginação"),
+    limit: int = Query(50, ge=1, le=100, description="Limite máximo por página (máx. 100)"),
+
 ) -> Any:
     """RF002 / UC05: Catálogo de produtos com busca e filtragem por categoria"""
     query = db.query(Produto).filter(Produto.ativo == True)

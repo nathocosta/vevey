@@ -1,15 +1,32 @@
 from datetime import timedelta
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token
+from app.core.limiter import limiter
 from app.models import Cliente, UsuarioAdmin
 from app.schemas import ClienteCreate, ClienteResponse
 from app.api.deps import get_current_client
 
 router = APIRouter()
+
+
+def validar_cpf(cpf: str) -> bool:
+    """Valida cálculo formal dos dígitos verificadores do CPF (módulo 11)"""
+    cpf_limpo = "".join(filter(str.isdigit, cpf))
+    if len(cpf_limpo) != 11:
+        return False
+    if cpf_limpo == cpf_limpo[0] * 11:
+        return False
+    soma = sum(int(cpf_limpo[i]) * (10 - i) for i in range(9))
+    d1 = (soma * 10 % 11) % 10
+    if d1 != int(cpf_limpo[9]):
+        return False
+    soma = sum(int(cpf_limpo[i]) * (11 - i) for i in range(10))
+    d2 = (soma * 10 % 11) % 10
+    return d2 == int(cpf_limpo[10])
 
 
 class LoginRequest(BaseModel):
@@ -25,21 +42,21 @@ class TokenResponse(BaseModel):
 
 
 @router.post("/register", response_model=ClienteResponse, status_code=status.HTTP_201_CREATED)
-def register_client(cliente_in: ClienteCreate, db: Session = Depends(get_db)) -> Any:
-    """RF001 / UC01: Cadastro de novos clientes com hash de senha seguro"""
-    # Valida se email já existe
-    if db.query(Cliente).filter(Cliente.email == cliente_in.email).first():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Já existe um cadastro associado a este e-mail.",
-        )
-    
-    # Valida se CPF já existe
+@limiter.limit("10/minute")
+def register_client(request: Request, cliente_in: ClienteCreate, db: Session = Depends(get_db)) -> Any:
+    """RF001 / UC01: Cadastro de novos clientes com validação estrita de CPF e hash de senha"""
     cpf_limpo = "".join(filter(str.isdigit, cliente_in.cpf))
-    if db.query(Cliente).filter(Cliente.cpf == cpf_limpo).first():
+    if not validar_cpf(cpf_limpo):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Já existe um cadastro associado a este CPF.",
+            detail="CPF inválido. Verifique os dígitos informados.",
+        )
+
+    # Previne enumeração de usuários agregando verificação
+    if db.query(Cliente).filter((Cliente.email == cliente_in.email) | (Cliente.cpf == cpf_limpo)).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Já existe uma conta cadastrada com este e-mail ou CPF.",
         )
 
     novo_cliente = Cliente(
@@ -57,8 +74,10 @@ def register_client(cliente_in: ClienteCreate, db: Session = Depends(get_db)) ->
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(login_data: LoginRequest, db: Session = Depends(get_db)) -> Any:
-    """UC01: Autentica cliente ou funcionário do administrativo e emite token JWT"""
+@limiter.limit("5/minute")
+def login(request: Request, login_data: LoginRequest, db: Session = Depends(get_db)) -> Any:
+    """UC01: Autentica cliente ou funcionário com proteção contra força bruta (Rate Limit)"""
+
     # 1. Verifica se é cliente
     cliente = db.query(Cliente).filter(Cliente.email == login_data.email).first()
     if cliente and cliente.ativo:

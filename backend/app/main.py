@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.core.limiter import limiter
 from app.core.config import settings
 from app.api.v1.api import api_router
 
@@ -12,6 +15,11 @@ app = FastAPI(
     docs_url=None if is_production else f"{settings.API_V1_STR}/docs",
     redoc_url=None if is_production else f"{settings.API_V1_STR}/redoc",
 )
+
+# Integração do Limiter de taxa (Rate Limit) contra DoS / Brute-force
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 # Middleware de cabeçalhos de segurança HTTP (OWASP / Checklist)
 @app.middleware("http")

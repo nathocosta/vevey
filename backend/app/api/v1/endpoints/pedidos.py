@@ -1,10 +1,11 @@
 from typing import List, Optional, Any
 from decimal import Decimal
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.core.limiter import limiter
 from app.models import (
     Pedido,
     ItemPedido,
@@ -54,12 +55,14 @@ class StatusUpdateInput(BaseModel):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 def criar_pedido_online(
+    request: Request,
     dados: PedidoOnlineCreate,
     db: Session = Depends(get_db),
     cliente: Cliente = Depends(get_current_client),
 ) -> Any:
-    """UC02 / RF004: Realizar checkout online, validação de estoque e registro de pedido"""
+    """UC02 / RF004: Realizar checkout online com rate limiting e validação estrita de estoque"""
     if not dados.itens:
         raise HTTPException(status_code=400, detail="O pedido deve conter pelo menos um item.")
 
@@ -75,7 +78,7 @@ def criar_pedido_online(
     for item in dados.itens:
         produto = db.query(Produto).filter(Produto.id == item.produto_id).first()
         if not produto or not produto.ativo:
-            raise HTTPException(status_code=400, detail=f"Produto ID {item.produto_id} indisponível.")
+            raise HTTPException(status_code=400, detail="Um dos produtos selecionados não está mais disponível no catálogo.")
         
         if produto.estoque < item.quantidade:
             raise HTTPException(
@@ -200,7 +203,8 @@ def criar_pedido_manual_whatsapp(
     for item in dados.itens:
         produto = db.query(Produto).filter(Produto.id == item.produto_id).first()
         if not produto or produto.estoque < item.quantidade:
-            raise HTTPException(status_code=400, detail=f"Estoque insuficiente para o produto ID {item.produto_id}.")
+            nome_prod = produto.nome if produto else "Item selecionado"
+            raise HTTPException(status_code=400, detail=f"Estoque insuficiente para o produto '{nome_prod}'.")
         
         produto.estoque -= item.quantidade
         subtotal += produto.preco * item.quantidade

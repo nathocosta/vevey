@@ -20,7 +20,60 @@ document.addEventListener('DOMContentLoaded', () => {
   initCheckoutPage();
   initConfirmationPage();
   initAccountPage();
+  initCookieConsent();
 });
+
+/* ==========================================================================
+   0.1 AVISO DE COOKIES & LGPD
+   ========================================================================== */
+
+function initCookieConsent() {
+  if (localStorage.getItem('vevey_cookie_consent')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'vevey-cookie-banner';
+  banner.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md bg-white/95 backdrop-blur-md border border-[#EAE3D9] p-5 rounded-2xl shadow-2xl z-50 transition-all duration-300 font-sans text-xs text-[#201516] flex flex-col gap-3.5';
+  banner.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-xl bg-[#FAF7F2] border border-[#EAE3D9] text-[#800F2F] flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-[20px]">cookie</span>
+      </div>
+      <div>
+        <p class="font-bold text-sm text-[#800F2F] leading-tight">Privacidade &amp; Cookies (LGPD)</p>
+        <p class="text-[#665A5B] mt-1 leading-relaxed">
+          Utilizamos cookies essenciais para garantir navegação segura, integridade do carrinho e respeito à LGPD.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 pt-1 border-t border-[#F4EFEB]">
+      <button id="btn-accept-cookies" class="flex-1 py-2 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs transition-colors shadow-sm active:scale-95 text-center">
+        Aceitar Todos
+      </button>
+      <button id="btn-decline-cookies" class="py-2 px-3 rounded-full bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#665A5B] font-semibold text-xs transition-colors text-center">
+        Apenas Essenciais
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(banner);
+
+  const closeBanner = () => {
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(15px)';
+    setTimeout(() => banner.remove(), 300);
+  };
+
+  document.getElementById('btn-accept-cookies')?.addEventListener('click', () => {
+    localStorage.setItem('vevey_cookie_consent', 'all');
+    closeBanner();
+  });
+
+  document.getElementById('btn-decline-cookies')?.addEventListener('click', () => {
+    localStorage.setItem('vevey_cookie_consent', 'essential');
+    closeBanner();
+  });
+}
+
 
 /* ==========================================================================
    0. GESTÃO DE USUÁRIO & CABEÇALHO DINÂMICO

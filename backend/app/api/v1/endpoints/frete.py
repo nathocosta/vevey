@@ -1,7 +1,8 @@
 from typing import List, Optional
 from decimal import Decimal
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
+from app.core.limiter import limiter
 
 router = APIRouter()
 
@@ -25,8 +26,10 @@ class CalculoFreteResponse(BaseModel):
 
 
 @router.post("/calcular", response_model=CalculoFreteResponse)
-def calcular_frete(dados: CalculoFreteRequest):
-    """RF005 / UC02: Cálculo de frete e prazos por CEP com suporte a PAC, Sedex e Retirada na Loja"""
+@limiter.limit("20/minute")
+def calcular_frete(request: Request, dados: CalculoFreteRequest):
+    """RF005 / UC02: Cálculo de frete e prazos por CEP com proteção contra abuso de requisições"""
+
     cep_limpo = "".join(filter(str.isdigit, dados.cep_destino))
     if len(cep_limpo) != 8:
         raise HTTPException(status_code=400, detail="CEP inválido. Deve conter 8 dígitos numéricos.")

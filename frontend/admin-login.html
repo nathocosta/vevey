@@ -231,11 +231,13 @@
 
         // Validação Estrita de Papel (Role)
         if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
-          showAlert('Acesso Restrito: Sua conta possui perfil de cliente comum e não tem autorização para o painel de lojista.', 'error');
-          btn.disabled = false;
-          btnText.textContent = 'Autenticar & Acessar Painel';
+          showAlert('Acesso Não Permitido: Sua conta possui perfil de cliente comum. Redirecionando...', 'error');
+          setTimeout(() => {
+            window.location.href = 'acesso-negado.html';
+          }, 1200);
           return;
         }
+
 
 
         // Armazena credenciais autorizadas

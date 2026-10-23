@@ -770,7 +770,14 @@
           }
         });
 
-        if (res.status === 401 || res.status === 403) {
+        if (res.status === 403) {
+          localStorage.removeItem('vevey_admin_token');
+          localStorage.removeItem('vevey_admin_user');
+          window.location.href = 'acesso-negado.html';
+          return;
+        }
+
+        if (res.status === 401) {
           localStorage.removeItem('vevey_admin_token');
           localStorage.removeItem('vevey_admin_user');
           window.location.href = 'admin-login.html?error=unauthorized';
@@ -780,9 +787,10 @@
         if (res.ok) {
           const data = await res.json();
           if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
-            window.location.href = 'admin-login.html?error=unauthorized';
+            window.location.href = 'acesso-negado.html';
             return;
           }
+
 
 
           // Atualiza dados na tela com os valores autenticados no servidor

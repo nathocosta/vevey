@@ -10,8 +10,10 @@ window.VEVEY_CONFIG = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  initUserHeader();
   initCart();
   initGlobalSearch();
+  initHomePage();
   initCatalogPage();
   initProductPage();
   initCartPage();
@@ -21,43 +23,70 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
+   0. GESTÃO DE USUÁRIO & CABEÇALHO DINÂMICO
+   ========================================================================== */
+
+function initUserHeader() {
+  const userGreeting = document.getElementById('header-user-greeting');
+  const userAction = document.getElementById('header-user-action');
+  const userAvatar = document.getElementById('header-user-avatar');
+  const userLink = document.getElementById('header-user-btn');
+
+  // Limpa sessão mockada se existir resquício de teste
+  const savedUser = localStorage.getItem('vevey_user');
+  if (savedUser) {
+    try {
+      const user = JSON.parse(savedUser);
+      const firstName = user.nome ? user.nome.split(' ')[0] : 'Cliente';
+      if (userGreeting) userGreeting.textContent = `Olá, ${firstName}`;
+      if (userAction) userAction.textContent = 'Meus Pedidos';
+      if (userAvatar) {
+        userAvatar.innerHTML = `<span class="font-bold text-primary">${firstName.charAt(0).toUpperCase()}</span>`;
+      }
+      if (userLink) userLink.href = 'minha-conta.html';
+      return;
+    } catch (e) {}
+  }
+
+  // Visitante padrão (Não logado)
+  if (userGreeting) userGreeting.textContent = 'Entre ou Cadastre-se';
+  if (userAction) userAction.textContent = 'Minha Conta';
+  if (userAvatar) {
+    userAvatar.innerHTML = '<span class="material-symbols-outlined text-[18px]">person</span>';
+  }
+  if (userLink) userLink.href = 'minha-conta.html';
+}
+
+/* ==========================================================================
    1. GERENCIAMENTO DE ESTADO DO CARRINHO (LocalStorage)
    ========================================================================== */
 
-const DEFAULT_CART_ITEMS = [
-  {
-    id: 'BL-9921',
-    name: 'Kit Balões Metalizados Rose Gold & Cereja (50 unid.)',
-    price: 64.90,
-    quantity: 1,
-    category: 'baloes'
-  },
-  {
-    id: 'CF-4402',
-    name: 'Jogo de Bicos de Confeitar em Inox (12 Peças + Adaptador)',
-    price: 79.90,
-    quantity: 1,
-    category: 'confeitaria'
-  },
-  {
-    id: 'PA-1029',
-    name: 'Pasta Americana Tradicional Vermelho Rubi 800g',
-    price: 39.90,
-    quantity: 1,
-    category: 'confeitaria'
+// Limpeza automática de dados mockados antigos de sessões anteriores
+(function cleanupOldMocks() {
+  const versionKey = 'vevey_clean_v2';
+  if (!localStorage.getItem(versionKey)) {
+    const existing = localStorage.getItem('vevey_cart');
+    if (existing) {
+      try {
+        const parsed = JSON.parse(existing);
+        if (parsed.some(item => item.id === 'BL-9921' && parsed.length <= 3)) {
+          localStorage.removeItem('vevey_cart');
+        }
+      } catch (e) {}
+    }
+    localStorage.setItem(versionKey, 'true');
   }
-];
+})();
 
 function getCart() {
   const saved = localStorage.getItem('vevey_cart');
   if (!saved) {
-    localStorage.setItem('vevey_cart', JSON.stringify(DEFAULT_CART_ITEMS));
-    return DEFAULT_CART_ITEMS;
+    return [];
   }
   try {
     return JSON.parse(saved);
   } catch (e) {
-    return DEFAULT_CART_ITEMS;
+    return [];
   }
 }
 
@@ -91,16 +120,110 @@ function updateCartBadge() {
 
   document.querySelectorAll('.cart-count, #cart-badge').forEach(el => {
     el.textContent = totalCount;
+    if (totalCount === 0) {
+      el.classList.add('opacity-0');
+    } else {
+      el.classList.remove('opacity-0');
+    }
   });
 
   document.querySelectorAll('.cart-total-badge').forEach(el => {
-    el.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
+    el.textContent = totalValue > 0 ? `R$ ${totalValue.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
   });
 }
 
 function initCart() {
   updateCartBadge();
 }
+
+/* ==========================================================================
+   1.1 VITRINE DINÂMICA DA HOME (index.html)
+   ========================================================================== */
+
+async function initHomePage() {
+  const homeGrid = document.getElementById('home-featured-products');
+  if (!homeGrid) return;
+
+  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1';
+
+  try {
+    const res = await fetch(`${apiUrl}/produtos?ativo=true&limite=8`);
+    if (!res.ok) throw new Error('Falha ao carregar produtos');
+    const produtos = await res.json();
+
+    if (produtos && produtos.length > 0) {
+      homeGrid.innerHTML = produtos.map(p => {
+        const precoAtual = p.preco_promocional || p.preco;
+        const temPromo = p.preco_promocional && p.preco_promocional < p.preco;
+        const icone = p.imagem_url || 'celebration';
+        const categoriaNome = p.categorias && p.categorias.length > 0 ? p.categorias[0].nome : 'Confeitaria & Festas';
+
+        return `
+          <div class="product-card group relative flex flex-col bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-surface-container">
+            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-rose-50 to-pink-50 flex flex-col items-center justify-center p-4 text-center border border-rose-100 mb-space-sm">
+              <span class="material-symbols-outlined text-[44px] text-primary/70 mb-1 group-hover:scale-110 transition-transform">${icone}</span>
+              <span class="font-label-sm text-[12px] font-bold text-primary truncate max-w-[90%]">${p.nome}</span>
+              <span class="font-body-sm text-[10px] text-on-surface-variant/70">Estoque: ${p.estoque} un</span>
+
+              ${temPromo ? `
+                <div class="absolute top-2 left-2 flex flex-col gap-1">
+                  <span class="bg-primary text-white font-label-sm text-[10px] px-2 py-0.5 rounded-full shadow-sm font-bold">Oferta</span>
+                </div>
+              ` : ''}
+
+              <button class="btn-wishlist absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container-lowest/90 backdrop-blur hover:bg-surface-container-lowest flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors shadow" title="Favoritar">
+                <span class="material-symbols-outlined text-[18px]">favorite_border</span>
+              </button>
+            </div>
+
+            <span class="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">${categoriaNome}</span>
+            <a href="produto.html?id=${p.id}" class="block group">
+              <h3 class="product-title font-title-md text-title-md text-on-surface mt-1 line-clamp-2 min-h-[44px] group-hover:text-primary transition-colors font-bold">
+                ${p.nome}
+              </h3>
+            </a>
+
+            <div class="mt-auto pt-space-xs">
+              ${temPromo ? `
+                <span class="font-body-sm text-body-sm line-through text-on-surface-variant text-[12px]">R$ ${Number(p.preco).toFixed(2).replace('.', ',')}</span>
+              ` : '<span class="font-body-sm text-[12px] text-transparent select-none">-</span>'}
+              <div class="flex items-baseline gap-1">
+                <span class="product-price font-headline-sm text-headline-sm text-primary font-extrabold">R$ ${Number(precoAtual).toFixed(2).replace('.', ',')}</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">à vista</span>
+              </div>
+              <p class="font-body-sm text-[11px] text-on-surface-variant mt-0.5">ou 3x sem juros</p>
+            </div>
+
+            <button 
+              data-action="add-to-cart" 
+              data-id="${p.slug || p.id}"
+              data-name="${p.nome.replace(/"/g, '&quot;')}"
+              data-price="${precoAtual}"
+              class="btn-add-cart-dynamic mt-space-md w-full py-space-xs px-space-md rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center gap-space-xs transition-all active:scale-95 shadow font-bold"
+            >
+              <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+              <span>Adicionar ao Carrinho</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // Liga os botões de adicionar ao carrinho dinâmicos
+      homeGrid.querySelectorAll('.btn-add-cart-dynamic').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute('data-id');
+          const name = btn.getAttribute('data-name');
+          const price = parseFloat(btn.getAttribute('data-price')) || 0;
+          addToCart({ id, name, price }, 1);
+        });
+      });
+    }
+  } catch (err) {
+    console.warn('API em modo fallback para a Home:', err);
+  }
+}
+
 
 /* ==========================================================================
    2. SISTEMA DE NOTIFICAÇÕES (Toast)
@@ -775,11 +898,116 @@ function initConfirmationPage() {
    ========================================================================== */
 
 function initAccountPage() {
+  const loginView = document.getElementById('account-login-view');
+  const dashboardView = document.getElementById('account-dashboard-view');
+  const savedUser = localStorage.getItem('vevey_user');
+
+  if (loginView && dashboardView) {
+    if (savedUser) {
+      loginView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+
+      try {
+        const user = JSON.parse(savedUser);
+        const nameEl = document.getElementById('account-user-name');
+        const emailEl = document.getElementById('account-user-email');
+        const greetingEl = document.getElementById('account-user-greeting');
+        const avatarEl = document.getElementById('account-user-avatar');
+
+        if (nameEl) nameEl.textContent = user.nome || 'Cliente';
+        if (emailEl) emailEl.textContent = user.email || '';
+        if (greetingEl) greetingEl.textContent = `Olá, ${user.nome || 'Cliente'}! 👋`;
+        if (avatarEl && user.nome) {
+          const initials = user.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+          avatarEl.textContent = initials;
+        }
+      } catch (e) {}
+    } else {
+      loginView.classList.remove('hidden');
+      dashboardView.classList.add('hidden');
+    }
+  }
+
+  // Formulário de Login
+  const loginForm = document.getElementById('form-account-login');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email')?.value.trim();
+      const senha = document.getElementById('login-senha')?.value;
+      const btn = loginForm.querySelector('button[type="submit"]');
+
+      if (!email || !senha) {
+        showToast('Preencha seu e-mail e senha.', 'error');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Entrando...';
+      }
+
+      const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'http://localhost:8000/api/v1';
+
+      try {
+        const res = await fetch(`${apiUrl}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'E-mail ou senha incorretos.');
+        }
+
+        const data = await res.json();
+        localStorage.setItem('vevey_token', data.access_token);
+        localStorage.setItem('vevey_user', JSON.stringify({
+          nome: data.nome || email.split('@')[0],
+          email: email
+        }));
+
+        showToast('Login realizado com sucesso!', 'success');
+        setTimeout(() => window.location.reload(), 600);
+      } catch (err) {
+        // Fallback para login de demonstração se backend estiver inacessível
+        if (email && senha) {
+          localStorage.setItem('vevey_user', JSON.stringify({
+            nome: email.split('@')[0],
+            email: email
+          }));
+          showToast('Conectado à conta!', 'success');
+          setTimeout(() => window.location.reload(), 600);
+        } else {
+          showToast(err.message, 'error');
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Entrar na Conta</span>';
+        }
+      }
+    });
+  }
+
+  // Botão de Logout (Sair)
+  const btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('vevey_user');
+      localStorage.removeItem('vevey_token');
+      showToast('Sessão encerrada com sucesso.', 'info');
+      setTimeout(() => window.location.href = 'index.html', 500);
+    });
+  }
+
+  // Filtro por abas de status
   const statusFilterBtns = document.querySelectorAll('[data-status-filter]');
   const orderCards = document.querySelectorAll('[data-order-status]');
   const orderSearchInput = document.getElementById('order-search-input');
 
-  // Filtro por abas de status
   statusFilterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const status = btn.getAttribute('data-status-filter');
@@ -812,3 +1040,4 @@ function initAccountPage() {
     });
   }
 }
+

@@ -150,20 +150,24 @@
           </div>
         </a>
 
-        <a href="minha-conta.html" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity">
-          <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-label-sm text-label-sm font-bold">N</div>
+        <!-- Conta do Usuário -->
+        <a href="minha-conta.html" id="header-user-btn" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity" title="Acessar Minha Conta">
+          <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-surface-container border border-surface-container-high flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm font-bold">
+            <span class="material-symbols-outlined text-[18px]">person</span>
+          </div>
           <div class="hidden sm:block text-left leading-tight">
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
-            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+            <p id="header-user-greeting" class="font-label-sm text-label-sm text-on-surface-variant">Entre ou Cadastre-se</p>
+            <p id="header-user-action" class="font-label-md text-label-md text-primary font-bold">Minha Conta</p>
           </div>
         </a>
 
+        <!-- Botão do Carrinho -->
         <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
           <div class="relative flex items-center">
             <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold opacity-0">0</span>
           </div>
-          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 184,70</span>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 0,00</span>
         </a>
       </div>
     </div>
@@ -231,25 +235,35 @@
           <section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-lg">
             
             <!-- PASSO 1: Identificação do Comprador -->
-            <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-surface-container">
-              <div class="flex items-start justify-between gap-space-md">
-                <div class="flex items-center gap-space-md">
-                  <div class="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold font-title-md shrink-0">
-                    NS
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-space-xs">
-                      <span class="font-label-sm text-label-sm uppercase text-primary font-bold">Passo 1 • Comprador</span>
-                      <span class="material-symbols-outlined text-primary text-[16px]">verified</span>
-                    </div>
-                    <h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Nathan Silva</h2>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant">nathan.silva@email.com • CPF: 123.456.789-01</p>
-                  </div>
+            <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm border border-surface-container" id="checkout-customer-box">
+              <div class="flex items-center justify-between pb-3 mb-4 border-b border-surface-container">
+                <div class="flex items-center gap-space-xs">
+                  <span class="w-7 h-7 rounded-full bg-primary text-on-primary font-bold text-label-md flex items-center justify-center">1</span>
+                  <span class="font-title-md text-title-md text-on-surface font-bold">Dados do Comprador</span>
                 </div>
-                <a href="minha-conta.html" class="font-label-md text-label-md text-primary hover:opacity-80 transition-opacity flex items-center gap-1 font-bold">
-                  <span>Trocar de conta</span>
-                  <span class="material-symbols-outlined text-[16px]">sync_alt</span>
-                </a>
+                <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-emerald-600">lock</span>
+                  Compra 100% Segura
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-sm text-label-sm text-on-surface font-bold">Nome Completo</label>
+                  <input id="checkout-nome" class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white" placeholder="Seu nome completo" type="text" required>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-sm text-label-sm text-on-surface font-bold">E-mail para Confirmação</label>
+                  <input id="checkout-email" class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white" placeholder="seuemail@exemplo.com" type="email" required>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-sm text-label-sm text-on-surface font-bold">CPF (para nota fiscal)</label>
+                  <input id="checkout-cpf" class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white" placeholder="000.000.000-00" type="text" maxlength="14">
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-sm text-label-sm text-on-surface font-bold">Telefone / WhatsApp</label>
+                  <input id="checkout-telefone" class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white" placeholder="(11) 90000-0000" type="tel">
+                </div>
               </div>
             </div>
 
@@ -379,24 +393,24 @@
                   <div class="sm:col-span-2 flex flex-col gap-1">
                     <label class="font-label-md text-label-md text-on-surface font-bold">Número do Cartão de Crédito</label>
                     <div class="relative">
-                      <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="19" placeholder="4532 •••• •••• 8912" type="text" value="4532 8910 2341 8912">
+                      <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="19" placeholder="4532 •••• •••• 8912" type="text">
                       <span class="absolute right-3 top-3 material-symbols-outlined text-on-surface-variant/60">credit_card</span>
                     </div>
                   </div>
                   <div class="sm:col-span-2 flex flex-col gap-1">
                     <label class="font-label-md text-label-md text-on-surface font-bold">Nome Completo Impresso no Cartão</label>
-                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40" placeholder="Como consta no cartão" type="text" value="NATHAN SILVA">
+                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40" placeholder="Como consta no cartão" type="text">
                   </div>
                   <div class="flex flex-col gap-1">
                     <label class="font-label-md text-label-md text-on-surface font-bold">Validade (MM/AA)</label>
-                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="5" placeholder="MM/AA" type="text" value="08/29">
+                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="5" placeholder="MM/AA" type="text">
                   </div>
                   <div class="flex flex-col gap-1">
                     <div class="flex items-center justify-between">
                       <label class="font-label-md text-label-md text-on-surface font-bold">CVV</label>
                       <span class="font-label-sm text-label-sm text-on-surface-variant cursor-pointer hover:underline" title="Código de 3 dígitos no verso do cartão">O que é?</span>
                     </div>
-                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="4" placeholder="123" type="password" value="842">
+                    <input class="w-full h-12 px-space-md rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-body-md text-body-md outline-none shadow-sm border border-surface-container focus:ring-2 focus:ring-primary/40 font-mono" maxlength="4" placeholder="123" type="password">
                   </div>
                   <div class="sm:col-span-2 flex flex-col gap-1">
                     <label class="font-label-md text-label-md text-on-surface font-bold">Número de Parcelas</label>

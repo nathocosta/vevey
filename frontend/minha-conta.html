@@ -160,11 +160,13 @@
         </a>
 
         <!-- Conta Ativa -->
-        <a href="minha-conta.html" class="flex items-center gap-space-xs border-b-2 border-primary pb-1">
-          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-label-sm text-label-sm font-bold shadow-sm">N</div>
+        <a href="minha-conta.html" id="header-user-btn" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity" title="Acessar Minha Conta">
+          <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-surface-container border border-surface-container-high flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm font-bold">
+            <span class="material-symbols-outlined text-[18px]">person</span>
+          </div>
           <div class="hidden sm:block text-left leading-tight">
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
-            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+            <p id="header-user-greeting" class="font-label-sm text-label-sm text-on-surface-variant">Entre ou Cadastre-se</p>
+            <p id="header-user-action" class="font-label-md text-label-md text-primary font-bold">Minha Conta</p>
           </div>
         </a>
 
@@ -172,9 +174,9 @@
         <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
           <div class="relative flex items-center">
             <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold opacity-0">0</span>
           </div>
-          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 184,70</span>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 0,00</span>
         </a>
       </div>
     </div>
@@ -186,76 +188,107 @@
   <main class="w-full pt-32 bg-surface min-h-screen pb-space-3xl">
     <div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop">
       
-      <!-- Saudação e Banner Superior -->
-      <div class="bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-low p-space-lg rounded-2xl border border-surface-container shadow-sm mb-space-lg flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-        <div>
-          <span class="bg-primary/10 text-primary font-label-sm text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Painel do Cliente</span>
-          <h1 class="font-headline-lg text-headline-lg font-extrabold text-on-surface mt-2">
-            Olá, Nathan Costa Santos! 👋
-          </h1>
-          <p class="text-on-surface-variant text-sm mt-1">
-            Acompanhe o status dos seus pedidos, prazos de entrega e histórico de compras na Vevey Doces.
-          </p>
+      <!-- VISÃO 1: TELA DE LOGIN / ACESSO PARA VISITANTES -->
+      <div id="account-login-view" class="max-w-md mx-auto my-12 bg-surface-container-lowest p-8 rounded-3xl shadow-xl border border-surface-container space-y-6">
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-2 shadow-sm">
+            <span class="material-symbols-outlined text-[32px]">lock</span>
+          </div>
+          <h1 class="font-headline-sm text-headline-sm font-extrabold text-on-surface">Acesse sua Conta</h1>
+          <p class="font-body-sm text-sm text-on-surface-variant">Entre com seu e-mail e senha para acompanhar seus pedidos e histórico de compras.</p>
         </div>
 
-        <!-- Card Alerta de Pedido a Caminho -->
-        <div class="bg-surface-container-lowest p-space-md rounded-xl border border-primary/20 shadow-sm flex items-center gap-space-sm shrink-0">
-          <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center">
-            <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+        <form id="form-account-login" class="space-y-4">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-sm text-sm font-bold text-on-surface">E-mail</label>
+            <input id="login-email" type="email" required placeholder="seu@email.com" class="w-full h-12 px-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white text-sm">
           </div>
-          <div class="text-xs">
-            <span class="font-bold text-on-surface block">1 Pedido em Andamento</span>
-            <span class="text-primary font-semibold">Previsão: Amanhã até às 18h</span>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-sm text-sm font-bold text-on-surface">Senha</label>
+            <input id="login-senha" type="password" required placeholder="••••••••" class="w-full h-12 px-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 outline-none border border-surface-container focus:ring-2 focus:ring-primary/40 focus:bg-white text-sm">
           </div>
+          <button type="submit" class="w-full h-12 rounded-full bg-primary-container hover:bg-primary text-on-primary font-label-md font-bold text-sm shadow-md transition-all active:scale-95 flex items-center justify-center">
+            <span>Entrar na Conta</span>
+          </button>
+        </form>
+
+        <div class="pt-4 border-t border-surface-container text-center space-y-2">
+          <p class="text-xs text-on-surface-variant">
+            Acesso rápido de teste:
+          </p>
+          <button type="button" class="text-xs text-primary font-bold hover:underline" onclick="document.getElementById('login-email').value='nathan@exemplo.com.br'; document.getElementById('login-senha').value='cliente123'; document.getElementById('form-account-login').requestSubmit();">
+            Preencher dados de demonstração (Nathan)
+          </button>
         </div>
       </div>
 
-      <!-- Estrutura Principal: Menu Lateral (3 Colunas) + Conteúdo (9 Colunas) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
-        
-        <!-- SIDEBAR DO PERFIL (3 Colunas) -->
-        <aside class="lg:col-span-4 space-y-space-md">
-          
-          <!-- Card de Dados do Usuário -->
-          <div class="bg-surface-container-lowest p-space-md rounded-2xl border border-surface-container shadow-sm flex items-center gap-space-md">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center font-headline-sm font-bold shadow-md">
-              NC
-            </div>
-            <div class="flex-1 overflow-hidden">
-              <h2 class="font-title-md text-sm font-bold text-on-surface truncate">Nathan Costa Santos</h2>
-              <p class="font-body-sm text-xs text-on-surface-variant truncate">natahncosta@gmail.com</p>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold">Cliente VIP</span>
-                <span class="text-[10px] text-on-surface-variant/80">Desde 2026</span>
-              </div>
-            </div>
+      <!-- VISÃO 2: PAINEL DO CLIENTE (Exibido apenas quando logado) -->
+      <div id="account-dashboard-view" class="hidden">
+
+        <!-- Saudação e Banner Superior -->
+        <div class="bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-low p-space-lg rounded-2xl border border-surface-container shadow-sm mb-space-lg flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+          <div>
+            <span class="bg-primary/10 text-primary font-label-sm text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Painel do Cliente</span>
+            <h1 id="account-user-greeting" class="font-headline-lg text-headline-lg font-extrabold text-on-surface mt-2">
+              Olá! 👋
+            </h1>
+            <p class="text-on-surface-variant text-sm mt-1">
+              Acompanhe o status dos seus pedidos, prazos de entrega e histórico de compras na Vevey Doces.
+            </p>
           </div>
 
-          <!-- Menu de Navegação da Conta -->
-          <nav class="bg-surface-container-lowest rounded-2xl border border-surface-container p-2 shadow-sm space-y-1">
-            <a href="minha-conta.html" class="flex items-center justify-between p-space-sm rounded-xl bg-primary text-on-primary font-label-md font-bold transition-colors">
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[20px]">package_2</span> Meus Pedidos
-              </span>
-              <span class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">3</span>
-            </a>
-            <a href="#dados" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
-              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">person</span> Meus Dados &amp; Senha
-            </a>
-            <a href="#enderecos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
-              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">home_pin</span> Endereços de Entrega (2)
-            </a>
-            <a href="#pagamentos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
-              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">credit_card</span> Formas de Pagamento
-            </a>
-            <a href="#favoritos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
-              <span class="material-symbols-outlined text-[20px] text-on-surface-variant">favorite</span> Lista de Desejos (5)
-            </a>
-            <hr class="border-surface-container my-1">
-            <a href="index.html" class="flex items-center gap-2 p-space-sm rounded-xl text-red-600 hover:bg-red-50 font-label-md font-semibold transition-colors">
-              <span class="material-symbols-outlined text-[20px]">logout</span> Sair da Conta
-            </a>
-          </nav>
+          <!-- Card Alerta de Pedido a Caminho -->
+          <div class="bg-surface-container-lowest p-space-md rounded-xl border border-primary/20 shadow-sm flex items-center gap-space-sm shrink-0">
+            <div class="w-10 h-10 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+            </div>
+            <div class="text-xs">
+              <span class="font-bold text-on-surface block">1 Pedido em Andamento</span>
+              <span class="text-primary font-semibold">Previsão: Amanhã até às 18h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estrutura Principal: Menu Lateral (3 Colunas) + Conteúdo (9 Colunas) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+          
+          <!-- SIDEBAR DO PERFIL (3 Colunas) -->
+          <aside class="lg:col-span-4 space-y-space-md">
+            
+            <!-- Card de Dados do Usuário -->
+            <div class="bg-surface-container-lowest p-space-md rounded-2xl border border-surface-container shadow-sm flex items-center gap-space-md">
+              <div id="account-user-avatar" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-primary-container text-white flex items-center justify-center font-headline-sm font-bold shadow-md">
+                CL
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <h2 id="account-user-name" class="font-title-md text-sm font-bold text-on-surface truncate">Cliente</h2>
+                <p id="account-user-email" class="font-body-sm text-xs text-on-surface-variant truncate">cliente@exemplo.com</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold">Cliente VIP</span>
+                  <span class="text-[10px] text-on-surface-variant/80">Conta Ativa</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Menu de Navegação da Conta -->
+            <nav class="bg-surface-container-lowest rounded-2xl border border-surface-container p-2 shadow-sm space-y-1">
+              <a href="minha-conta.html" class="flex items-center justify-between p-space-sm rounded-xl bg-primary text-on-primary font-label-md font-bold transition-colors">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">package_2</span> Meus Pedidos
+                </span>
+                <span class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">1</span>
+              </a>
+              <a href="#dados" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+                <span class="material-symbols-outlined text-[20px] text-on-surface-variant">person</span> Meus Dados
+              </a>
+              <a href="#enderecos" class="flex items-center gap-2 p-space-sm rounded-xl text-on-surface hover:bg-surface-container-low font-label-md font-semibold transition-colors">
+                <span class="material-symbols-outlined text-[20px] text-on-surface-variant">home_pin</span> Endereços de Entrega
+              </a>
+              <hr class="border-surface-container my-1">
+              <button id="btn-logout" class="w-full flex items-center gap-2 p-space-sm rounded-xl text-red-600 hover:bg-red-50 font-label-md font-semibold transition-colors">
+                <span class="material-symbols-outlined text-[20px]">logout</span> Sair da Conta
+              </button>
+            </nav>
 
           <!-- Banner de Suporte WhatsApp Dedicado -->
           <div class="bg-emerald-50 rounded-2xl p-space-md border border-emerald-200 text-emerald-900 space-y-2">
@@ -266,8 +299,8 @@
             <p class="text-xs text-emerald-800 leading-relaxed">
               Nossa equipe de atendimento da loja física está disponível para tirar dúvidas sobre seus pedidos em tempo real.
             </p>
-            <a href="https://wa.me/5511987654321?text=Ol%C3%A1!%20Sou%20o%20Nathan%20e%20preciso%20de%20ajuda%20com%20meu%20pedido%20na%20Vevey." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:underline">
-              Falar com Juliana no WhatsApp <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            <a href="https://wa.me/5511987654321?text=Ol%C3%A1!%20Preciso%20de%20ajuda%20com%20meu%20pedido%20na%20Vevey." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:underline">
+              Falar com Atendimento no WhatsApp <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
             </a>
           </div>
 
@@ -487,7 +520,9 @@
 
         </section>
 
-      </div>
+        </div>
+
+      </div> <!-- Fim de #account-dashboard-view -->
 
     </div>
   </main>

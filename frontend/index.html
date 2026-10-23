@@ -163,11 +163,13 @@
         </a>
 
         <!-- Conta do Usuário -->
-        <a href="minha-conta.html" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity">
-          <div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-label-sm text-label-sm font-bold">N</div>
+        <a href="minha-conta.html" id="header-user-btn" class="flex items-center gap-space-xs hover:opacity-85 transition-opacity" title="Acessar Minha Conta">
+          <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-surface-container border border-surface-container-high flex items-center justify-center text-on-surface-variant font-label-sm text-label-sm font-bold">
+            <span class="material-symbols-outlined text-[18px]">person</span>
+          </div>
           <div class="hidden sm:block text-left leading-tight">
-            <p class="font-label-sm text-label-sm text-on-surface-variant">Olá, Nathan</p>
-            <p class="font-label-md text-label-md text-primary font-bold">Meus Pedidos</p>
+            <p id="header-user-greeting" class="font-label-sm text-label-sm text-on-surface-variant">Entre ou Cadastre-se</p>
+            <p id="header-user-action" class="font-label-md text-label-md text-primary font-bold">Minha Conta</p>
           </div>
         </a>
 
@@ -175,9 +177,9 @@
         <a class="flex items-center gap-space-xs bg-primary-container text-on-primary py-space-xs px-space-md rounded-full shadow-[0_4px_12px_rgba(225,29,72,0.25)] hover:scale-105 transition-transform" href="carrinho.html">
           <div class="relative flex items-center">
             <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+            <span id="cart-badge" class="cart-count absolute -top-2 -right-2 bg-secondary-container text-on-secondary-container font-label-sm text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold opacity-0">0</span>
           </div>
-          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 184,70</span>
+          <span class="cart-total-badge font-label-md text-label-md hidden sm:inline">R$ 0,00</span>
         </a>
       </div>
     </div>
@@ -266,50 +268,65 @@
               </div>
             </div>
 
-            <!-- Coluna Visual Conceitual (Leve, sem imagens pesadas) -->
+            <!-- Coluna Visual: Vitrine de Destaque Premium -->
             <div class="lg:col-span-5 relative">
               <div class="relative mx-auto max-w-md lg:max-w-none">
-                <!-- Brilho de Fundo Decorativo -->
-                <div class="absolute inset-0 bg-gradient-to-tr from-secondary-container/20 to-primary-container/25 rounded-3xl transform rotate-3 scale-105 filter blur-xl"></div>
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/15 via-secondary-container/20 to-primary-container/20 rounded-3xl transform rotate-2 scale-105 filter blur-xl"></div>
                 
-                <div class="relative bg-surface-container-lowest p-space-sm rounded-3xl shadow-xl border border-surface-container">
-                  
-                  <!-- Bloco Conceitual Festivo Leve -->
-                  <div class="w-full h-80 sm:h-96 rounded-2xl bg-gradient-to-br from-primary-light via-surface-container to-tertiary-light flex flex-col items-center justify-center text-center p-6 gap-space-sm border border-dashed border-primary/20">
-                    <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center text-primary mb-1">
-                      <span class="material-symbols-outlined text-[42px]">celebration</span>
-                    </div>
-                    <span class="font-label-lg text-primary font-bold">Vitrine de Celebração &amp; Confeitaria</span>
-                    <p class="font-body-sm text-on-surface-variant text-xs max-w-xs leading-relaxed">
-                      Espaço dedicado para destaque da coleção principal: Bolos artesanais, kits de balões premium e topos temáticos.
-                    </p>
-                    <div class="flex gap-2 mt-2">
-                      <span class="px-2.5 py-1 bg-white/80 rounded-full text-[11px] font-semibold text-secondary flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">auto_awesome</span> Tendência 2025
-                      </span>
-                      <span class="px-2.5 py-1 bg-white/80 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">verified</span> Linha Chef
-                      </span>
-                    </div>
+                <div class="relative bg-surface-container-lowest p-6 rounded-3xl shadow-xl border border-surface-container space-y-4">
+                  <div class="flex items-center justify-between pb-3 border-b border-surface-container">
+                    <span class="font-label-sm text-primary uppercase font-bold tracking-wider flex items-center gap-1.5 text-xs">
+                      <span class="material-symbols-outlined text-[18px]">verified</span>
+                      Destaques da Confeitaria
+                    </span>
+                    <span class="bg-primary text-white font-label-sm text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-sm">
+                      Até 35% OFF
+                    </span>
                   </div>
 
-                  <!-- Tag Flutuante Inferior -->
-                  <div class="absolute -bottom-4 -left-4 bg-surface-container-lowest text-on-surface p-space-sm rounded-2xl shadow-xl flex items-center gap-space-sm border border-surface-container">
-                    <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold">
-                      <span class="material-symbols-outlined text-[20px]">celebration</span>
+                  <!-- Item Destaque 1 -->
+                  <a href="catalogo.html?categoria=baloes" class="flex items-center gap-3.5 p-3 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors group">
+                    <div class="w-14 h-14 rounded-xl bg-white border border-rose-100 flex items-center justify-center text-primary shrink-0 shadow-sm">
+                      <span class="material-symbols-outlined text-[30px] group-hover:scale-110 transition-transform">celebration</span>
                     </div>
-                    <div>
-                      <p class="font-label-sm text-label-sm text-primary uppercase font-bold">+5.000 Festas</p>
-                      <p class="font-title-md text-title-md leading-none font-bold">Realizadas com Amor</p>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-title-md text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">Kit Balões Metalizados Rose Gold</h4>
+                      <p class="font-body-sm text-[11px] text-on-surface-variant">50 unid. com fita para arco</p>
+                      <div class="flex items-baseline gap-2 mt-0.5">
+                        <span class="text-[11px] line-through text-on-surface-variant/60">R$ 64,90</span>
+                        <span class="font-bold text-sm text-primary">R$ 49,90</span>
+                      </div>
                     </div>
-                  </div>
+                    <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+                  </a>
 
-                  <!-- Tag Flutuante Superior -->
-                  <div class="absolute -top-3 -right-3 bg-primary-container text-on-primary font-label-lg text-label-lg px-space-md py-1.5 rounded-full shadow-lg flex items-center gap-1 font-bold">
-                    <span class="material-symbols-outlined text-[16px]">percent</span>
-                    <span>Até 35% OFF</span>
-                  </div>
+                  <!-- Item Destaque 2 -->
+                  <a href="catalogo.html?categoria=confeitaria" class="flex items-center gap-3.5 p-3 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-colors group">
+                    <div class="w-14 h-14 rounded-xl bg-white border border-amber-100 flex items-center justify-center text-secondary-container shrink-0 shadow-sm">
+                      <span class="material-symbols-outlined text-[30px] group-hover:scale-110 transition-transform">cake</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-title-md text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">Jogo Bicos de Confeitar em Inox</h4>
+                      <p class="font-body-sm text-[11px] text-on-surface-variant">12 peças sem emenda + engate</p>
+                      <div class="flex items-baseline gap-2 mt-0.5">
+                        <span class="text-[11px] line-through text-on-surface-variant/60">R$ 79,90</span>
+                        <span class="font-bold text-sm text-primary">R$ 69,90</span>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors text-[18px]">arrow_forward</span>
+                  </a>
 
+                  <!-- Rodapé do Card -->
+                  <div class="pt-2 flex items-center justify-between text-xs text-on-surface-variant border-t border-surface-container">
+                    <span class="flex items-center gap-1 font-semibold text-emerald-700">
+                      <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                      Pronta entrega no Brasil
+                    </span>
+                    <a href="catalogo.html" class="font-bold text-primary hover:underline flex items-center gap-0.5">
+                      Ver Catálogo
+                      <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -409,8 +426,8 @@
             </div>
           </div>
 
-          <!-- Grid de Cards de Produto -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+          <!-- Grid de Cards de Produto (Carregamento Dinâmico via API Supabase) -->
+          <div id="home-featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
             
             <!-- CARD 1: Kit Balões Metalizados Rose Gold -->
             <div class="product-card group relative flex flex-col bg-surface-container-lowest rounded-2xl p-space-md shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-surface-container">

@@ -8,7 +8,8 @@ from app.core.security import verify_password, get_password_hash, create_access_
 from app.core.limiter import limiter
 from app.models import Cliente, UsuarioAdmin
 from app.schemas import ClienteCreate, ClienteResponse
-from app.api.deps import get_current_client
+from app.api.deps import get_current_client, get_current_admin
+
 
 router = APIRouter()
 
@@ -113,3 +114,17 @@ def login(request: Request, login_data: LoginRequest, db: Session = Depends(get_
 def get_me(current_client: Cliente = Depends(get_current_client)) -> Any:
     """Retorna dados cadastrais do cliente autenticado"""
     return current_client
+
+
+@router.get("/admin/me")
+def get_admin_me(current_admin: UsuarioAdmin = Depends(get_current_admin)) -> Any:
+    """Valida no servidor se o token JWT pertence a um ADMIN ou OPERADOR legítimo"""
+    role_str = current_admin.cargo.value if hasattr(current_admin.cargo, "value") else str(current_admin.cargo)
+    return {
+        "id": current_admin.id,
+        "nome": current_admin.nome,
+        "email": current_admin.email,
+        "role": role_str,
+        "autenticado": True,
+    }
+

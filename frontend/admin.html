@@ -93,7 +93,7 @@
   </style>
 </head>
 
-<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<body class="bg-surface text-on-surface min-h-screen flex flex-col opacity-0 transition-opacity duration-300" id="admin-body">
 
   <!-- ==========================================================================
        HEADER DO BACKOFFICE / PAINEL ADMINISTRATIVO
@@ -131,6 +131,11 @@
           <span>Ver Catálogo</span>
           <span class="material-symbols-outlined text-[14px]">open_in_new</span>
         </a>
+
+        <button onclick="handleAdminLogout()" title="Encerrar sessão administrativa" class="text-xs text-red-700 bg-red-50 hover:bg-red-100 font-bold px-3 py-1.5 rounded-lg border border-red-200 flex items-center gap-1 transition-colors">
+          <span class="material-symbols-outlined text-[14px]">logout</span>
+          <span>Sair</span>
+        </button>
       </div>
 
     </div>
@@ -744,18 +749,69 @@
        SCRIPT CENTRALIZADO DO PAINEL ADMINISTRATIVO
        ========================================================================== -->
   <script>
-    // Verificação RBAC (Redirecionamento para 403 se for perfil comum de cliente)
-    (function checkAdminAccess() {
-      const savedUser = localStorage.getItem('vevey_user');
-      if (savedUser) {
-        try {
-          const user = JSON.parse(savedUser);
-          if (user.role === 'cliente') {
-            window.location.href = '403.html';
-          }
-        } catch (e) {}
+    const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:8000/api/v1'
+      : 'https://vevey-api.onrender.com/api/v1';
+
+    // 1. Verificação Estrita Server-Side (Bloqueio sem Token ou Perfil Inválido)
+    async function verifyAdminAuth() {
+      const adminToken = localStorage.getItem('vevey_admin_token');
+      if (!adminToken) {
+        // Redireciona imediatamente para a tela de login administrativo
+        window.location.href = 'admin-login.html';
+        return;
       }
-    })();
+
+      try {
+        // Validação real no servidor (backend checa assinatura do JWT e papel ADMIN/OPERADOR)
+        const res = await fetch(`${API_URL}/auth/admin/me`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`
+          }
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('vevey_admin_token');
+          localStorage.removeItem('vevey_admin_user');
+          window.location.href = '403.html';
+          return;
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
+            window.location.href = '403.html';
+            return;
+          }
+
+          // Atualiza dados na tela com os valores autenticados no servidor
+          const nameEl = document.getElementById('operator-name');
+          const roleEl = document.getElementById('operator-role');
+          const selector = document.getElementById('role-selector');
+          if (nameEl) nameEl.textContent = `${data.nome}`;
+          if (roleEl) roleEl.textContent = `Cargo: ${data.role} • Autenticado via JWT Server-Side`;
+          if (selector) {
+            selector.value = data.role.toLowerCase() === 'admin' ? 'miriam' : 'juliana';
+          }
+        }
+
+        // Libera visualização do painel
+        document.body.classList.remove('opacity-0');
+      } catch (err) {
+        // Fallback defensivo para contingência
+        console.warn('Aviso: Verificação em modo offline.', err);
+        document.body.classList.remove('opacity-0');
+      }
+    }
+
+    verifyAdminAuth();
+
+    function handleAdminLogout() {
+      localStorage.removeItem('vevey_admin_token');
+      localStorage.removeItem('vevey_admin_user');
+      window.location.href = 'admin-login.html';
+    }
+
 
     /* ==========================================================================
        1. ESTADO CENTRAL (PRODUTOS & PEDIDOS)

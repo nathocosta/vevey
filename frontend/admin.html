@@ -696,7 +696,7 @@
         <div>
           <span class="text-[10px] uppercase font-bold text-gray-500 block">Cliente:</span>
           <p id="comanda-client-name" class="font-bold text-xs">Nathan Costa Santos</p>
-          <p id="comanda-client-phone" class="text-[11px] text-gray-600">(11) 98765-4321</p>
+          <p id="comanda-client-phone" class="text-[11px] text-gray-600">(11) 97825-7360</p>
           <p id="comanda-address" class="text-[11px] text-gray-600 mt-0.5">Av. Paulista, 1000 - Bela Vista - São Paulo / SP</p>
         </div>
 
@@ -844,7 +844,7 @@
         id: 'VV-2026-9812',
         data: 'Hoje - 14:32',
         cliente: 'Nathan Costa Santos',
-        telefone: '(11) 98765-4321',
+        telefone: '(11) 97825-7360',
         endereco: 'Av. Paulista, 1000 - Bela Vista - São Paulo / SP',
         origem: 'Site Online',
         total: 184.70,
@@ -923,7 +923,7 @@
             id: lastCheckoutOrder.orderId.replace('#', ''),
             data: 'Hoje - ' + (new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })),
             cliente: 'Nathan Costa Santos (Online)',
-            telefone: '(11) 98765-4321',
+            telefone: '(11) 97825-7360',
             endereco: 'Entrega Padrão',
             origem: 'Site Online',
             total: lastCheckoutOrder.total || 184.70,
@@ -1507,7 +1507,7 @@
       document.getElementById('comanda-order-id').textContent = '#' + order.id;
       document.getElementById('comanda-date').textContent = 'Data: ' + order.data;
       document.getElementById('comanda-client-name').textContent = order.cliente;
-      document.getElementById('comanda-client-phone').textContent = order.telefone || '(11) 98765-4321';
+      document.getElementById('comanda-client-phone').textContent = order.telefone || '(11) 97825-7360';
       document.getElementById('comanda-address').textContent = order.endereco || 'Endereço cadastrado';
       document.getElementById('comanda-total').textContent = 'R$ ' + Number(order.total).toFixed(2).replace('.', ',');
 

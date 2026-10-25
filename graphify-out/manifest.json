@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "frontend/admin.html": {
-    "mtime": 1792949930.9635499,
-    "seen": 1792950065.1897075,
-    "ast_hash": "f67506708437d7a874b9cbf2f3c67449",
+    "mtime": 1792953001.5179644,
+    "seen": 1792953015.1606333,
+    "ast_hash": "d2db1445ae47ce0f59ee15cb37bf5e79",
     "semantic_hash": ""
   },
   "frontend/carrinho.html": {
@@ -168,15 +168,15 @@
     "semantic_hash": ""
   },
   "frontend/minha-conta.html": {
-    "mtime": 1792947708.2670708,
-    "seen": 1792947787.956294,
-    "ast_hash": "a2102ad74d0cb188d5437d909e1fd223",
+    "mtime": 1792951896.078893,
+    "seen": 1792951937.4959862,
+    "ast_hash": "d36134dab1a6971ce455ec3bb35b762a",
     "semantic_hash": ""
   },
   "frontend/produto.html": {
-    "mtime": 1792947603.7573042,
-    "seen": 1792947787.9562957,
-    "ast_hash": "f2470aa08d4115637052c137eb3a54d5",
+    "mtime": 1792951870.6549382,
+    "seen": 1792951937.4959881,
+    "ast_hash": "190b3f9007a4042347180cdcaf8f5743",
     "semantic_hash": ""
   },
   "database/alteracoes_schema.sql": {
@@ -222,9 +222,9 @@
     "semantic_hash": ""
   },
   "frontend/admin-login.html": {
-    "mtime": 1792950713.6145675,
-    "seen": 1792950728.5591562,
-    "ast_hash": "a8ee2e362938fe0358d67331588c9405",
+    "mtime": 1792951798.375587,
+    "seen": 1792951937.4959729,
+    "ast_hash": "1dda9289b0d0af9112a41353d1dabe3f",
     "semantic_hash": ""
   },
   "frontend/404.html": {
@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "frontend/acesso-negado.html": {
-    "mtime": 1792785176.9377117,
-    "seen": 1792785309.6025023,
-    "ast_hash": "7bd70d2a7787d82232c6d71ec4494240",
+    "mtime": 1792951849.0442867,
+    "seen": 1792951937.4959702,
+    "ast_hash": "af5371c24f4e1375a84ca814d4ee226c",
     "semantic_hash": ""
   },
   "ROADMAP_PROXIMA_SESSAO.md": {

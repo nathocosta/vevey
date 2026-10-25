@@ -197,8 +197,8 @@
       <!-- Linha de Cards de Métricas Dinâmicas -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Faturamento Calculado -->
-        <div class="bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+        <!-- Faturamento Calculado (Exclusivo Administrador) -->
+        <div class="admin-only bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
           <div>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Vendas Hoje</span>
             <p id="metric-faturamento" class="font-display text-2xl font-black text-on-surface mt-1">R$ 0,00</p>
@@ -208,6 +208,20 @@
           </div>
           <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
             <span class="material-symbols-outlined text-[28px]">payments</span>
+          </div>
+        </div>
+
+        <!-- Expedição do Dia (Exclusivo para Colaboradores Operacionais) -->
+        <div class="colab-only hidden bg-surface-container-lowest p-5 rounded-2xl border border-surface-container shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Despachados Hoje</span>
+            <p id="metric-despachados" class="font-display text-2xl font-black text-emerald-700 mt-1">0 pedidos</p>
+            <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
+              <span class="material-symbols-outlined text-[14px]">task_alt</span> Expedição concluída
+            </span>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">local_shipping</span>
           </div>
         </div>
 
@@ -274,7 +288,7 @@
                 <th class="p-3">ID Pedido</th>
                 <th class="p-3">Cliente</th>
                 <th class="p-3">Origem</th>
-                <th class="p-3">Total</th>
+                <th class="p-3" id="th-dashboard-total">Total</th>
                 <th class="p-3">Status</th>
                 <th class="p-3 text-right">Ação Rápida</th>
               </tr>
@@ -730,7 +744,7 @@
                 <th class="p-3">Data / Hora</th>
                 <th class="p-3">Cliente</th>
                 <th class="p-3">Modalidade</th>
-                <th class="p-3">Valor Total</th>
+                <th class="p-3" id="th-orders-total">Valor Total</th>
                 <th class="p-3">Status Operacional</th>
                 <th class="p-3">Código Rastreio</th>
                 <th class="p-3 text-right">Ações Rápidas de Expedição</th>
@@ -847,12 +861,12 @@
         </div>
 
         <div class="flex justify-between font-bold text-xs pt-1">
-          <span>TOTAL DO PEDIDO:</span>
+          <span id="comanda-total-label">TOTAL DO PEDIDO:</span>
           <span id="comanda-total" class="text-primary font-black">R$ 184,70</span>
         </div>
 
         <div class="text-center pt-2 text-[10px] text-gray-500">
-          <p>Conferido por: Juliana (Atendente)</p>
+          <p id="comanda-operator-info">Conferido por: Juliana (Atendente)</p>
           <p class="mt-1 font-mono tracking-widest">||||||||||||||||||||||||||||||||</p>
         </div>
       </div>
@@ -1413,7 +1427,7 @@
       currentActiveRole = (role || 'ADMIN').toUpperCase();
       const isSuperAdmin = currentActiveRole === 'ADMIN';
 
-      // Mostra ou esconde elementos exclusivos de Admin
+      // Mostra ou esconde elementos exclusivos de Admin (como faturamento em R$)
       document.querySelectorAll('.admin-only').forEach(el => {
         if (isSuperAdmin) {
           el.classList.remove('hidden');
@@ -1421,6 +1435,21 @@
           el.classList.add('hidden');
         }
       });
+
+      // Mostra elementos operacionais para Colaboradores (Logística / Balcão)
+      document.querySelectorAll('.colab-only').forEach(el => {
+        if (!isSuperAdmin) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      // Atualiza cabeçalhos das tabelas conforme a permissão
+      const thDashTotal = document.getElementById('th-dashboard-total');
+      const thOrdersTotal = document.getElementById('th-orders-total');
+      if (thDashTotal) thDashTotal.textContent = isSuperAdmin ? 'Total' : 'Volumes';
+      if (thOrdersTotal) thOrdersTotal.textContent = isSuperAdmin ? 'Valor Total' : 'Volumes / Itens';
 
       // Banner operacional para funcionários de Logística
       const logisticaBanner = document.getElementById('logistica-operational-banner');
@@ -1432,7 +1461,11 @@
         }
       }
 
-      // Se for funcionário, redireciona o foco para a gestão de pedidos
+      // Re-renderiza tabelas e métricas com o nível de confidencialidade correto
+      updateDashboardMetrics();
+      renderOrdersTable();
+
+      // Se for funcionário, redireciona o foco para a gestão operacional de pedidos
       if (!isSuperAdmin) {
         openTab('tab-pedidos');
       }
@@ -2557,6 +2590,11 @@
 
         const isProntoRetirada = o.status === 'Pronto para Retirada';
         const isEnviadoTransp = o.status === 'Enviado para a Transportadora' || o.status === 'Enviado';
+        const isAdmin = currentActiveRole === 'ADMIN';
+        const itemsCount = (o.itens && o.itens.length > 0) ? o.itens.reduce((acc, i) => acc + (i.qtd || i.quantity || 1), 0) : 1;
+        const totalDisplay = isAdmin 
+          ? `R$ ${Number(o.total).toFixed(2).replace('.', ',')}` 
+          : `<span class="bg-surface-container text-on-surface px-2.5 py-1 rounded-lg font-mono font-bold text-[11px] inline-flex items-center gap-1" title="Quantidade física de volumes para separação"><span class="material-symbols-outlined text-[13px] text-gray-500">inventory_2</span> ${itemsCount} vol.</span>`;
 
         return `
           <tr class="hover:bg-surface-container-low/50">
@@ -2567,7 +2605,7 @@
               <span class="text-[10px] text-gray-500">${o.telefone || ''}</span>
             </td>
             <td class="p-3">${originBadge}</td>
-            <td class="p-3 font-bold">R$ ${Number(o.total).toFixed(2).replace('.', ',')}</td>
+            <td class="p-3 font-bold">${totalDisplay}</td>
             <td class="p-3">
               <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-1 ${statusBadge}">
                 ${o.status}
@@ -2717,18 +2755,36 @@
       const order = orders.find(o => o.id === orderId) || orders[0];
       if (!order) return;
 
+      const isAdmin = currentActiveRole === 'ADMIN';
+      const itemsCount = (order.itens || []).reduce((acc, i) => acc + (i.qtd || i.quantity || 1), 0);
+
       document.getElementById('comanda-order-id').textContent = '#' + order.id;
       document.getElementById('comanda-date').textContent = 'Data: ' + order.data;
       document.getElementById('comanda-client-name').textContent = order.cliente;
       document.getElementById('comanda-client-phone').textContent = order.telefone || '(11) 97825-7360';
       document.getElementById('comanda-address').textContent = order.endereco || 'Endereço cadastrado';
-      document.getElementById('comanda-total').textContent = 'R$ ' + Number(order.total).toFixed(2).replace('.', ',');
+      
+      const totalLabelEl = document.getElementById('comanda-total-label');
+      const totalValEl = document.getElementById('comanda-total');
+      if (isAdmin) {
+        if (totalLabelEl) totalLabelEl.textContent = 'TOTAL DO PEDIDO:';
+        if (totalValEl) totalValEl.textContent = 'R$ ' + Number(order.total).toFixed(2).replace('.', ',');
+      } else {
+        if (totalLabelEl) totalLabelEl.textContent = 'VOLUMES PARA CONFERÊNCIA:';
+        if (totalValEl) totalValEl.textContent = `${itemsCount} itens`;
+      }
+
+      const adminUser = JSON.parse(localStorage.getItem('vevey_admin_user') || 'null');
+      const opInfoEl = document.getElementById('comanda-operator-info');
+      if (opInfoEl) {
+        opInfoEl.textContent = `Conferido por: ${adminUser && adminUser.nome ? adminUser.nome : 'Equipe de Expedição'}`;
+      }
 
       const itemsContainer = document.getElementById('comanda-items-list');
       itemsContainer.innerHTML = (order.itens || []).map(i => `
         <div class="flex justify-between text-[11px]">
           <span>${i.qtd || i.quantity || 1}x ${i.nome || i.name}</span>
-          <span>R$ ${((i.preco || i.price || 0) * (i.qtd || i.quantity || 1)).toFixed(2).replace('.', ',')}</span>
+          <span>${isAdmin ? `R$ ${((i.preco || i.price || 0) * (i.qtd || i.quantity || 1)).toFixed(2).replace('.', ',')}` : `Qtd: ${i.qtd || i.quantity || 1}`}</span>
         </div>
       `).join('') || '<p class="text-gray-400 text-[10px]">Itens padrão em conferência.</p>';
 
@@ -2749,10 +2805,17 @@
     function updateDashboardMetrics() {
       const orders = getAdminOrders();
       const products = getAdminProducts();
+      const isAdmin = currentActiveRole === 'ADMIN';
 
-      // Faturamento total dos pedidos pagos/em separação
+      // Faturamento total dos pedidos pagos/em separação (Apenas ADMIN)
       const faturamento = orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
-      document.getElementById('metric-faturamento').textContent = 'R$ ' + faturamento.toFixed(2).replace('.', ',');
+      const metricFatEl = document.getElementById('metric-faturamento');
+      if (metricFatEl) metricFatEl.textContent = 'R$ ' + faturamento.toFixed(2).replace('.', ',');
+
+      // Despachados / Entregues hoje (Métrica operacional para colaboradores)
+      const despachados = orders.filter(o => o.status === 'Enviado para a Transportadora' || o.status === 'Enviado' || o.status === 'Pronto para Retirada' || o.status === 'Entregue');
+      const despachadosEl = document.getElementById('metric-despachados');
+      if (despachadosEl) despachadosEl.textContent = `${despachados.length} pedidos`;
 
       // Pedidos a separar
       const aSeparar = orders.filter(o => o.status === 'Pago' || o.status === 'Em Separação');
@@ -2778,20 +2841,27 @@
             </tr>
           `;
         } else {
-          tbody.innerHTML = aSeparar.slice(0, 5).map(o => `
-            <tr class="hover:bg-surface-container-low/50">
-              <td class="p-3 font-mono font-bold text-primary">#${o.id}</td>
-              <td class="p-3">${o.cliente}</td>
-              <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">${o.origem}</span></td>
-              <td class="p-3 font-bold">R$ ${Number(o.total).toFixed(2).replace('.', ',')}</td>
-              <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">${o.status}</span></td>
-              <td class="p-3 text-right">
-                <button onclick="openComandaModal('${o.id}')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container text-[11px]">
-                  Imprimir Comanda
-                </button>
-              </td>
-            </tr>
-          `).join('');
+          tbody.innerHTML = aSeparar.slice(0, 5).map(o => {
+            const itemsCount = (o.itens && o.itens.length > 0) ? o.itens.reduce((acc, i) => acc + (i.qtd || i.quantity || 1), 0) : 1;
+            const totalDisplay = isAdmin 
+              ? `R$ ${Number(o.total).toFixed(2).replace('.', ',')}` 
+              : `<span class="bg-surface-container text-on-surface px-2.5 py-1 rounded-lg font-mono font-bold text-[11px] inline-flex items-center gap-1" title="Quantidade de volumes"><span class="material-symbols-outlined text-[13px] text-gray-500">inventory_2</span> ${itemsCount} vol.</span>`;
+
+            return `
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="p-3 font-mono font-bold text-primary">#${o.id}</td>
+                <td class="p-3">${o.cliente}</td>
+                <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">${o.origem}</span></td>
+                <td class="p-3 font-bold">${totalDisplay}</td>
+                <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">${o.status}</span></td>
+                <td class="p-3 text-right">
+                  <button onclick="openComandaModal('${o.id}')" class="bg-primary text-white px-3 py-1 rounded-full font-bold hover:bg-primary-container text-[11px]">
+                    Imprimir Comanda
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
         }
       }
     }

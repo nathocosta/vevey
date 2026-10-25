@@ -1,7 +1,7 @@
 import os
-from typing import List, Union
+from typing import List
 from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, field_validator
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):

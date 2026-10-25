@@ -40,7 +40,8 @@ ON CONFLICT (produto_id, categoria_id) DO NOTHING;
 -- Hash gerado com bcrypt compatível com passlib
 INSERT INTO usuarios_admin (id, nome, email, senha_hash, cargo, created_at, updated_at) VALUES
   (1, 'Miriam Sócia', 'miriam@veveydoces.com.br', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'ADMIN', NOW(), NOW()),
-  (2, 'Juliana Atendente', 'juliana@veveydoces.com.br', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'OPERADOR', NOW(), NOW())
+  (2, 'Juliana Atendente', 'juliana@veveydoces.com.br', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'OPERADOR', NOW(), NOW()),
+  (3, 'Carlos Logística', 'carlos@veveydoces.com.br', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'LOGISTICA', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Cliente de Demonstração (Senha inicial: "cliente123")

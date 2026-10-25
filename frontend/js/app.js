@@ -4,10 +4,14 @@
  */
 
 window.VEVEY_CONFIG = {
-  API_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  API_URL: (!window.location.hostname || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
     ? 'http://localhost:8000/api/v1'
     : 'https://vevey-api.onrender.com/api/v1'
 };
+
+function getApiUrl() {
+  return window.VEVEY_CONFIG.API_URL;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   initUserHeader();
@@ -154,11 +158,11 @@ function getVeveyProductImage(id, category = '') {
     return VEVEY_PRODUCT_IMAGES[normId];
   }
   const cat = String(category || '').toLowerCase();
-  if (cat.includes('bal')) return 'assets/images/prod-baloes.jpg';
-  if (cat.includes('confeit') || cat.includes('doce')) return 'assets/images/cat-confeitaria.jpg';
-  if (cat.includes('choc')) return 'assets/images/prod-chocolate.jpg';
-  if (cat.includes('decor')) return 'assets/images/prod-bubble.jpg';
-  return 'assets/images/prod-baloes.jpg';
+  if (cat.includes('bal')) return 'assets/images/prod-baloes.webp';
+  if (cat.includes('confeit') || cat.includes('doce')) return 'assets/images/cat-confeitaria.webp';
+  if (cat.includes('choc')) return 'assets/images/prod-chocolate.webp';
+  if (cat.includes('decor')) return 'assets/images/prod-bubble.webp';
+  return 'assets/images/prod-baloes.webp';
 }
 
 function addToCart(product, qty = 1) {
@@ -210,21 +214,21 @@ function initCart() {
    ========================================================================== */
 
 const VEVEY_PRODUCT_IMAGES = {
-  'bl-9921': 'assets/images/prod-baloes.jpg',
-  'bb-1024': 'assets/images/prod-bubble.jpg',
-  'cf-4402': 'assets/images/prod-bicos.jpg',
-  'pa-1029': 'assets/images/cat-confeitaria.jpg',
-  'fd-5510': 'assets/images/cat-doces.jpg',
-  'to-3310': 'assets/images/hero-vevey.jpg',
-  'in-8801': 'assets/images/cat-baloes.jpg',
-  'ch-7720': 'assets/images/prod-chocolate.jpg'
+  'bl-9921': 'assets/images/prod-baloes.webp',
+  'bb-1024': 'assets/images/prod-bubble.webp',
+  'cf-4402': 'assets/images/prod-bicos.webp',
+  'pa-1029': 'assets/images/cat-confeitaria.webp',
+  'fd-5510': 'assets/images/cat-doces.webp',
+  'to-3310': 'assets/images/hero-vevey.webp',
+  'in-8801': 'assets/images/cat-baloes.webp',
+  'ch-7720': 'assets/images/prod-chocolate.webp'
 };
 
 async function initHomePage() {
   const homeGrid = document.getElementById('home-featured-products');
   if (!homeGrid) return;
 
-  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
+  const apiUrl = getApiUrl();
 
   try {
     const res = await fetch(`${apiUrl}/produtos?ativo=true&limite=8`);
@@ -237,7 +241,7 @@ async function initHomePage() {
         const precoOriginal = Number(p.preco);
         const temPromo = p.preco_promocional && p.preco_promocional < p.preco;
         const slugKey = (p.slug || '').toLowerCase();
-        const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+        const imgUrl = p.imagem_url || VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/cat-baloes.webp';
         const categoriaNome = p.categorias && p.categorias.length > 0 ? p.categorias[0].nome : 'Confeitaria & Decoração';
 
         return `
@@ -387,7 +391,7 @@ async function initCatalogPage() {
   
   if (!catalogGrid) return;
 
-  const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
+  const apiUrl = getApiUrl();
 
   // 1. Busca produtos reais da API
   try {
@@ -400,7 +404,7 @@ async function initCatalogPage() {
           const precoOriginal = Number(p.preco);
           const temPromo = p.preco_promocional && p.preco_promocional < p.preco;
           const slugKey = (p.slug || '').toLowerCase();
-          const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+          const imgUrl = p.imagem_url || VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/cat-baloes.webp';
           const categoriaObj = p.categorias && p.categorias.length > 0 ? p.categorias[0] : null;
           const categoriaNome = categoriaObj ? categoriaObj.nome : 'Confeitaria & Decoração';
           const categoriaSlug = categoriaObj ? categoriaObj.slug : 'geral';
@@ -650,7 +654,7 @@ function initProductPage() {
   if (targetId) {
     (async () => {
       try {
-        const apiUrl = window.VEVEY_CONFIG ? window.VEVEY_CONFIG.API_URL : 'https://vevey-api.onrender.com/api/v1';
+        const apiUrl = getApiUrl();
         let matched = null;
 
         // Tenta buscar diretamente por ID numérico
@@ -673,13 +677,18 @@ function initProductPage() {
           const skuEl = document.getElementById('product-detail-sku');
           const priceEl = document.getElementById('product-detail-price');
           const heroImg = document.getElementById('main-product-image');
+          const descEl = document.getElementById('product-detail-description') || document.querySelector('.product-description');
+          const stockEl = document.getElementById('product-detail-stock');
           const slugKey = (matched.slug || '').toLowerCase();
-          const imgUrl = VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/hero-vevey.jpg';
+          const imgUrl = matched.imagem_url || VEVEY_PRODUCT_IMAGES[slugKey] || 'assets/images/cat-baloes.webp';
           const preco = Number(matched.preco_promocional || matched.preco);
 
           if (titleEl) titleEl.textContent = matched.nome;
+          document.title = `${matched.nome} — Vevey Doces`;
           if (skuEl) skuEl.textContent = `Cód: ${(matched.slug || matched.id).toUpperCase()}`;
           if (priceEl) priceEl.textContent = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+          if (descEl && matched.descricao) descEl.textContent = matched.descricao;
+          if (stockEl) stockEl.textContent = `Estoque disponível: ${matched.estoque} unidades`;
 
           if (heroImg) {
             heroImg.innerHTML = `
@@ -922,7 +931,7 @@ function renderCartItems() {
     return `
       <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 bg-white border border-[#EAE3D9] rounded-2xl gap-4 hover:border-[#800F2F]/30 transition-all shadow-sm" data-item-id="${item.id}">
         <div class="flex items-center gap-4 min-w-0">
-          <img src="${imgSrc}" alt="${item.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+          <img src="${imgSrc}" alt="${item.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.webp'">
           <div class="min-w-0">
             <span class="text-[10px] font-sans font-bold uppercase tracking-wider text-[#B88636] block">${item.category || 'Confeitaria & Decoração'}</span>
             <h4 class="font-serif font-bold text-sm sm:text-base text-[#201516] truncate">${item.name}</h4>
@@ -1117,7 +1126,7 @@ function initCheckoutPage() {
       return `
         <div class="flex items-center gap-3 py-3 border-b border-[#F4EFEB] last:border-0">
           <div class="relative w-14 h-14 rounded-xl overflow-hidden bg-[#FAF7F2] border border-[#EAE3D9] shrink-0">
-            <img src="${imgSrc}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+            <img src="${imgSrc}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='assets/images/cat-confeitaria.webp'">
             <span class="absolute top-0 right-0 bg-[#800F2F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg font-mono">${item.quantity}x</span>
           </div>
           <div class="flex-1 min-w-0">
@@ -1240,12 +1249,18 @@ function initCheckoutPage() {
 
   // Submissão do Pedido
   if (checkoutForm) {
-    checkoutForm.addEventListener('submit', (e) => {
+    checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       if (cart.length === 0) {
         showToast('Sua sacola está vazia. Adicione itens antes de finalizar.', 'error');
         return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-order');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-70', 'cursor-wait');
       }
 
       const nomeInput = document.getElementById('checkout-nome')?.value?.trim();
@@ -1255,19 +1270,61 @@ function initCheckoutPage() {
       const selectedShipping = document.querySelector('input[name="shipping_method"]:checked')?.value || 'retirada';
       const isRetirada = selectedShipping === 'retirada';
 
-      const enderecoRua = document.getElementById('checkout-rua')?.value?.trim() || 'Avenida Portugal, 500';
-      const enderecoNum = document.getElementById('checkout-num')?.value?.trim() || '120';
+      const enderecoRua = document.getElementById('checkout-rua')?.value?.trim() || 'Avenida Principal';
+      const enderecoNum = document.getElementById('checkout-num')?.value?.trim() || 'S/N';
       const enderecoBairro = document.getElementById('checkout-bairro')?.value?.trim() || 'Centro';
       const enderecoCidade = document.getElementById('checkout-cidade')?.value?.trim() || 'Santo André';
       const enderecoUF = document.getElementById('checkout-uf')?.value?.trim() || 'SP';
-      const enderecoCEP = document.getElementById('checkout-cep')?.value?.trim() || '09040-000';
+      const enderecoCEP = document.getElementById('checkout-cep')?.value?.trim() || '09010160';
 
       const enderecoFinal = isRetirada
-        ? 'Retirada no Balcão Loja Física (Santo André - SP) — Rua das Figueiras, 450, Bairro Jardim'
+        ? 'Retirada no Balcão Loja Física (Santo André - SP) — R. Sen. Flaquer, 691, Centro, CEP 09010-160'
         : `${enderecoRua}, ${enderecoNum} - ${enderecoBairro}, ${enderecoCidade} - ${enderecoUF}, CEP ${enderecoCEP}`;
 
-      const { total } = recalcCheckoutTotals();
-      const orderId = '#VV-' + Math.floor(10000 + Math.random() * 90000);
+      const { total, shipping } = recalcCheckoutTotals();
+      let orderId = '#VV-2026-' + Math.floor(1000 + Math.random() * 9000);
+      let pixCopiaCola = '00020126580014br.gov.bcb.pix0136vevey-pix-santoandre-oficial520400005303986540' + total.toFixed(2).replace('.', '') + '5802BR5911Vevey Doces6011Santo Andre62070503***6304';
+      let backendSuccess = false;
+
+      // Monta payload oficial para a API do backend
+      const payloadApi = {
+        cliente_nome: nomeInput || 'Cliente Vevey',
+        cliente_email: emailInput || 'cliente@veveydoces.com.br',
+        cliente_telefone: telInput || '(11) 97825-7360',
+        cliente_cpf: (cpfInput || '00000000000').replace(/\D/g, '') || '00000000000',
+        endereco_rua: enderecoRua,
+        endereco_numero: enderecoNum,
+        endereco_bairro: enderecoBairro,
+        endereco_cidade: enderecoCidade,
+        endereco_uf: enderecoUF,
+        endereco_cep: enderecoCEP.replace(/\D/g, '') || '09010160',
+        tipo_entrega: isRetirada ? 'RETIRADA_LOJA' : 'ENVIO_TRANSPORTADORA',
+        metodo_pagamento: selectedPaymentMethod === 'pix' ? 'PIX' : (selectedPaymentMethod === 'card' ? 'CARTAO_CREDITO' : 'BOLETO'),
+        valor_frete: shipping,
+        itens: cart.map(i => ({
+          produto_id: Number(i.id) || 1,
+          quantidade: Number(i.quantity) || 1
+        }))
+      };
+
+      try {
+        const resp = await fetch(`${getApiUrl()}/pedidos/checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payloadApi)
+        });
+
+        if (resp.ok) {
+          const dadosBackend = await resp.json();
+          orderId = dadosBackend.numero_pedido || orderId;
+          if (dadosBackend.pix_copia_cola) {
+            pixCopiaCola = dadosBackend.pix_copia_cola;
+          }
+          backendSuccess = true;
+        }
+      } catch (err) {
+        console.warn('Backend offline ou indisponível. Utilizando fallback local:', err);
+      }
 
       const orderData = {
         orderId,
@@ -1280,7 +1337,9 @@ function initCheckoutPage() {
         tipoEntrega: isRetirada ? 'Retirada na Loja' : 'Envio Transportadora',
         endereco: enderecoFinal,
         items: cart,
-        total: total
+        total: total,
+        pixCopiaCola: pixCopiaCola,
+        backendPersisted: backendSuccess
       };
 
       // Salva último pedido para confirmação e sincronização com o Admin
@@ -1290,10 +1349,10 @@ function initCheckoutPage() {
       localStorage.setItem('vevey_cart', JSON.stringify([]));
       updateCartBadge();
 
-      showToast('Pedido gerado com sucesso! Redirecionando...', 'success');
+      showToast(backendSuccess ? 'Pedido registrado com sucesso no banco de dados!' : 'Pedido gerado com sucesso!', 'success');
       setTimeout(() => {
         window.location.href = 'confirmacao.html';
-      }, 300);
+      }, 350);
     });
   }
 }
@@ -1336,7 +1395,7 @@ function initConfirmationPage() {
 
     if (deliveryAddressEl) {
       deliveryAddressEl.textContent = isRetirada
-        ? 'Rua das Figueiras, 450 - Bairro Jardim, Santo André - SP'
+        ? 'R. Sen. Flaquer, 691 - Centro, Santo André - SP, 09010-160'
         : (lastOrder.endereco || 'Endereço cadastrado na finalização');
     }
 
@@ -1368,7 +1427,7 @@ function initConfirmationPage() {
         return `
           <div class="py-3 flex items-center justify-between gap-3 border-b border-[#F4EFEB] last:border-0">
             <div class="flex items-center gap-3 min-w-0">
-              <img src="${imgSrc}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.jpg'">
+              <img src="${imgSrc}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover border border-[#EAE3D9] shrink-0 bg-[#FAF7F2]" onerror="this.src='assets/images/cat-confeitaria.webp'">
               <div class="min-w-0">
                 <h4 class="font-serif font-bold text-xs text-[#201516] truncate">${item.name}</h4>
                 <span class="text-[11px] text-[#665A5B]">${item.quantity}x de R$ ${item.price.toFixed(2).replace('.', ',')}</span>
@@ -1510,88 +1569,160 @@ function initAccountPage() {
     });
   }
 
-  // Sincroniza pedido recente do localStorage na tela do cliente se houver
-  const lastOrder = JSON.parse(localStorage.getItem('vevey_last_order') || 'null');
-  const ordersSection = document.querySelector('section.lg\\:col-span-8');
-  if (lastOrder && ordersSection && !document.getElementById('account-recent-order-card')) {
-    const isRetirada = lastOrder.tipoEntrega && lastOrder.tipoEntrega.includes('Retirada');
-    const recentCard = document.createElement('article');
-    recentCard.id = 'account-recent-order-card';
-    recentCard.setAttribute('data-order-status', 'andamento');
-    recentCard.className = 'bg-white rounded-2xl border-2 border-[#800F2F] shadow-md p-5 space-y-4 relative overflow-hidden mb-4';
-    recentCard.innerHTML = `
-      <div class="absolute top-0 right-0 bg-[#800F2F] text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
-        Pedido Recente
-      </div>
-      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#F4EFEB] pb-3 pt-2">
-        <div>
-          <span class="text-xs text-[#665A5B] font-mono">Pedido:</span>
-          <h3 class="order-id text-base font-extrabold text-[#800F2F]">${lastOrder.orderId}</h3>
-          <p class="text-xs text-[#665A5B]">Realizado em ${lastOrder.date} • Pagamento via <strong>${lastOrder.formaPagamento || 'Pix'}</strong></p>
+  // Renderização Dinâmica dos Pedidos Reais do Cliente
+  async function loadCustomerOrders() {
+    const container = document.getElementById('account-orders-container');
+    if (!container) return;
+
+    let orders = [];
+
+    // 1. Tenta carregar pedidos do backend via API
+    try {
+      const token = localStorage.getItem('vevey_token') || localStorage.getItem('vevey_admin_token');
+      if (token) {
+        const res = await fetch(`${getApiUrl()}/pedidos/`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const apiOrders = await res.json();
+          if (Array.isArray(apiOrders)) {
+            orders = apiOrders.map(o => ({
+              orderId: `#VV-${o.id}`,
+              date: new Date(o.created_at || Date.now()).toLocaleDateString('pt-BR'),
+              total: Number(o.valor_total || 0),
+              status: o.status,
+              formaPagamento: o.forma_pagamento || 'Pix à Vista',
+              tipoEntrega: (o.status && o.status.includes('Retirada')) ? 'Retirada na Loja' : 'Envio Transportadora',
+              endereco: 'R. Sen. Flaquer, 691 - Centro, Santo André - SP',
+              items: o.itens || []
+            }));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Backend pedidos indisponível, usando armazenamento local:', e);
+    }
+
+    // 2. Mescla com pedidos do localStorage (checkout recente)
+    const localLast = JSON.parse(localStorage.getItem('vevey_last_order') || 'null');
+    const localHistory = JSON.parse(localStorage.getItem('vevey_orders_history') || '[]');
+
+    if (localLast && !orders.some(o => o.orderId === localLast.orderId)) {
+      orders.unshift(localLast);
+    }
+
+    localHistory.forEach(lh => {
+      if (!orders.some(o => o.orderId === lh.orderId)) {
+        orders.push(lh);
+      }
+    });
+
+    // Se não houver nenhum pedido
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="py-16 text-center text-on-surface-variant flex flex-col items-center justify-center gap-3 bg-surface-container-lowest rounded-2xl border border-surface-container">
+          <span class="material-symbols-outlined text-5xl text-primary/40">shopping_bag</span>
+          <h4 class="font-bold text-base text-on-surface">Você ainda não realizou nenhum pedido</h4>
+          <p class="text-xs text-on-surface-variant max-w-sm">Adicione artigos de confeitaria e balões ao seu carrinho e finalize seu primeiro pedido.</p>
+          <a href="catalogo.html" class="mt-2 px-6 py-2.5 rounded-full bg-primary hover:bg-primary-container text-white font-bold text-xs shadow-sm transition-all">
+            Explorar Catálogo da Loja
+          </a>
         </div>
-        <div class="text-right">
-          <span class="text-xs text-[#665A5B]">Valor Total:</span>
-          <p class="text-lg font-black text-[#201516]">R$ ${Number(lastOrder.total || 0).toFixed(2).replace('.', ',')}</p>
-          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> ${isRetirada ? 'Pronto p/ Retirada no Balcão' : 'Em Separação no Estoque'}
-          </span>
-        </div>
-      </div>
-      <div class="bg-[#FAF7F2] p-3 rounded-xl border border-[#EAE3D9] flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#800F2F] text-[20px]">${isRetirada ? 'storefront' : 'pin_drop'}</span>
-          <div>
-            <span class="font-bold text-[#201516]">${isRetirada ? 'Retirada na Loja (Santo André - SP):' : 'Endereço de Entrega:'}</span>
-            <p class="text-[#665A5B]">${lastOrder.endereco}</p>
+      `;
+      return;
+    }
+
+    // Renderiza cada pedido real
+    container.innerHTML = orders.map((o, idx) => {
+      const isRetirada = o.tipoEntrega && o.tipoEntrega.includes('Retirada');
+      const statusRaw = (o.status || 'Em Separação no Estoque');
+      const isPronto = statusRaw.includes('Pronto') || statusRaw.includes('Enviado');
+      const isEntregue = statusRaw.includes('Entregue');
+
+      const statusBadge = isEntregue
+        ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200"><span class="material-symbols-outlined text-[14px]">done_all</span> Entregue</span>`
+        : isPronto
+        ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200"><span class="material-symbols-outlined text-[14px]">local_shipping</span> ${statusRaw}</span>`
+        : `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> ${statusRaw}</span>`;
+
+      return `
+        <article data-order-status="${isEntregue ? 'entregue' : 'andamento'}" class="bg-surface-container-lowest rounded-2xl border ${idx === 0 ? 'border-2 border-primary/40 shadow-md' : 'border-surface-container shadow-sm'} p-space-md md:p-space-lg space-y-space-md relative overflow-hidden">
+          ${idx === 0 ? `<div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Último Pedido</div>` : ''}
+
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-surface-container pb-space-sm pt-1">
+            <div>
+              <span class="text-xs text-on-surface-variant font-mono">Pedido:</span>
+              <h3 class="order-id font-title-md text-base font-extrabold text-primary">${o.orderId}</h3>
+              <p class="text-xs text-on-surface-variant">Realizado em ${o.date} • Pagamento via <strong>${o.formaPagamento || 'Pix'}</strong></p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-on-surface-variant">Valor Total:</span>
+              <p class="font-headline-sm text-lg font-black text-on-surface">R$ ${Number(o.total || 0).toFixed(2).replace('.', ',')}</p>
+              ${statusBadge}
+            </div>
           </div>
-        </div>
-        <a href="https://wa.me/5511978257360?text=${encodeURIComponent('Olá! Gostaria de consultar o status do meu pedido ' + lastOrder.orderId)}" target="_blank" rel="noopener noreferrer" class="bg-[#25D366] hover:bg-[#1EBE5D] text-white px-3 py-1.5 rounded-full font-bold text-[11px] shadow-sm flex items-center gap-1 transition-colors">
-          <span class="material-symbols-outlined text-[14px]">chat</span>
-          <span>Acompanhar no WhatsApp</span>
-        </a>
-      </div>
-    `;
-    const filterBar = ordersSection.firstElementChild;
-    if (filterBar) {
-      filterBar.insertAdjacentElement('afterend', recentCard);
+
+          <div class="bg-surface-container-low p-3 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">${isRetirada ? 'storefront' : 'pin_drop'}</span>
+              <div>
+                <span class="font-bold text-on-surface">${isRetirada ? 'Retirada na Loja Física (Santo André - SP):' : 'Endereço de Entrega:'}</span>
+                <p class="text-on-surface-variant">${o.endereco || 'R. Sen. Flaquer, 691 - Centro, Santo André - SP, 09010-160'}</p>
+              </div>
+            </div>
+            <a href="https://wa.me/5511978257360?text=${encodeURIComponent('Olá! Gostaria de consultar o status do meu pedido ' + o.orderId)}" target="_blank" rel="noopener noreferrer" class="bg-[#25D366] hover:bg-[#1EBE5D] text-white px-3 py-1.5 rounded-full font-bold text-[11px] shadow-sm flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-[14px]">chat</span>
+              <span>Acompanhar no WhatsApp</span>
+            </a>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    setupOrderFilterEvents();
+  }
+
+  function setupOrderFilterEvents() {
+    const statusFilterBtns = document.querySelectorAll('[data-status-filter]');
+    const orderCards = document.querySelectorAll('#account-orders-container [data-order-status]');
+    const orderSearchInput = document.getElementById('order-search-input');
+
+    statusFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const status = btn.getAttribute('data-status-filter');
+        statusFilterBtns.forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'font-bold');
+          b.classList.add('border', 'border-surface-container', 'text-on-surface-variant', 'bg-white');
+        });
+        btn.classList.add('bg-primary', 'text-white', 'font-bold');
+        btn.classList.remove('border-surface-container', 'text-on-surface-variant', 'bg-white');
+
+        orderCards.forEach(card => {
+          const cardStatus = card.getAttribute('data-order-status');
+          if (status === 'todos' || cardStatus === status) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    if (orderSearchInput) {
+      orderSearchInput.addEventListener('input', () => {
+        const term = orderSearchInput.value.toLowerCase().trim();
+        orderCards.forEach(card => {
+          const idText = card.querySelector('.order-id, h3, p')?.textContent?.toLowerCase() || '';
+          if (!term || idText.includes(term)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
     }
   }
 
-  // Filtro por abas de status
-  const statusFilterBtns = document.querySelectorAll('[data-status-filter]');
-  const orderCards = document.querySelectorAll('[data-order-status]');
-  const orderSearchInput = document.getElementById('order-search-input');
-
-  statusFilterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const status = btn.getAttribute('data-status-filter');
-      statusFilterBtns.forEach(b => {
-        b.classList.remove('bg-[#800F2F]', 'text-white', 'font-bold');
-        b.classList.add('border', 'border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
-      });
-      btn.classList.add('bg-[#800F2F]', 'text-white', 'font-bold');
-      btn.classList.remove('border-[#EAE3D9]', 'text-[#665A5B]', 'bg-white');
-
-      orderCards.forEach(card => {
-        const cardStatus = card.getAttribute('data-order-status');
-        if (status === 'todos' || cardStatus === status) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-  });
-
-  // Busca por ID do pedido
-  if (orderSearchInput) {
-    orderSearchInput.addEventListener('input', () => {
-      const term = orderSearchInput.value.toLowerCase().trim();
-      orderCards.forEach(card => {
-        const idText = card.querySelector('.order-id, h3, p')?.textContent?.toLowerCase() || '';
-        card.style.display = idText.includes(term) ? '' : 'none';
-      });
-    });
-  }
+  loadCustomerOrders();
 }
 

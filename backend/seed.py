@@ -170,7 +170,8 @@ def run_seed():
         admin_pass = get_password_hash("admin123")
         admins = [
             {"id": 1, "nome": "Miriam Sócia", "email": "miriam@veveydoces.com.br", "cargo": CargoAdmin.ADMIN},
-            {"id": 2, "nome": "Juliana Atendente", "email": "juliana@veveydoces.com.br", "cargo": CargoAdmin.OPERADOR}
+            {"id": 2, "nome": "Juliana Atendente", "email": "juliana@veveydoces.com.br", "cargo": CargoAdmin.OPERADOR},
+            {"id": 3, "nome": "Carlos Logística", "email": "carlos@veveydoces.com.br", "cargo": CargoAdmin.LOGISTICA}
         ]
         for a in admins:
             if not db.query(UsuarioAdmin).filter(UsuarioAdmin.email == a["email"]).first():

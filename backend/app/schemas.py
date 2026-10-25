@@ -1,4 +1,3 @@
-import enum
 from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
@@ -117,6 +116,8 @@ class ProdutoBase(BaseModel):
 
 
 class ProdutoCreate(ProdutoBase):
+    categoria_ids: Optional[List[int]] = None
+
     @model_validator(mode='after')
     def validate_precos(self) -> 'ProdutoCreate':
         if self.preco_promocional is not None and self.preco_promocional >= self.preco:
@@ -133,6 +134,7 @@ class ProdutoUpdate(BaseModel):
     imagem_url: Optional[str] = Field(None, max_length=500)
     estoque: Optional[int] = Field(None, ge=0)
     ativo: Optional[bool] = None
+    categoria_ids: Optional[List[int]] = None
 
     @model_validator(mode='after')
     def validate_precos(self) -> 'ProdutoUpdate':
@@ -373,7 +375,16 @@ class HistoricoStatusPedidoResponse(HistoricoStatusPedidoBase):
 class UsuarioAdminBase(BaseModel):
     nome: str = Field(..., max_length=150)
     email: EmailStr = Field(..., max_length=150)
-    cargo: CargoAdmin = Field(..., description="Função administrativa do colaborador: ADMIN ou OPERADOR")
+    cargo: CargoAdmin = Field(..., description="Função administrativa do colaborador: ADMIN ou LOGISTICA")
+
+    @field_validator("cargo", mode="before")
+    @classmethod
+    def normalizar_cargo(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            v_upper = v.strip().upper()
+            if v_upper in ["ADMIN", "LOGISTICA", "OPERADOR"]:
+                return CargoAdmin(v_upper)
+        return v
 
 
 class UsuarioAdminCreate(UsuarioAdminBase):
@@ -385,6 +396,15 @@ class UsuarioAdminUpdate(BaseModel):
     email: Optional[EmailStr] = Field(None, max_length=150)
     cargo: Optional[CargoAdmin] = None
     senha: Optional[str] = Field(None, min_length=6)
+
+    @field_validator("cargo", mode="before")
+    @classmethod
+    def normalizar_cargo(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            v_upper = v.strip().upper()
+            if v_upper in ["ADMIN", "LOGISTICA", "OPERADOR"]:
+                return CargoAdmin(v_upper)
+        return v
 
 
 class UsuarioAdminResponse(UsuarioAdminBase):

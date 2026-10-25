@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/deps.py": {
-    "mtime": 1791927192.9485044,
-    "seen": 1792712053.7851717,
-    "ast_hash": "05eab328e5e3b24cb4318aa30bb23d2c",
+    "mtime": 1792949037.621352,
+    "seen": 1792950065.1896498,
+    "ast_hash": "6e8209fa7b0b5b5dd05be7805131f517",
     "semantic_hash": ""
   },
   "backend/app/api/v1/__init__.py": {
@@ -24,9 +24,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/api.py": {
-    "mtime": 1791927317.854067,
-    "seen": 1792712053.785175,
-    "ast_hash": "6d6e7337e76587e99246df53b7bfa526",
+    "mtime": 1792942088.7936888,
+    "seen": 1792943879.809792,
+    "ast_hash": "5cddf3ad9e6e06b46cbb43bfd9c725f5",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/__init__.py": {
@@ -36,69 +36,69 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/auth.py": {
-    "mtime": 1792784293.2920785,
-    "seen": 1792784547.7066376,
-    "ast_hash": "df96956b4aceb7636110b4156c959655",
+    "mtime": 1792949053.7222257,
+    "seen": 1792950065.1896586,
+    "ast_hash": "7764a27d278d342bc56d509bba6ee8a0",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/frete.py": {
-    "mtime": 1792788476.2069347,
-    "seen": 1792788730.3288128,
-    "ast_hash": "62164fd66042eba8f5d976da20e81422",
+    "mtime": 1792949073.4989707,
+    "seen": 1792950065.1896603,
+    "ast_hash": "14f50a72d6077bfb1cd8cfda8e901502",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/pedidos.py": {
-    "mtime": 1792784002.9509525,
-    "seen": 1792784137.1360617,
-    "ast_hash": "2aa03c6b3ef0964143d58ef1e404a4a8",
+    "mtime": 1792949765.6319957,
+    "seen": 1792950065.189664,
+    "ast_hash": "129720e0c4b04f5b598f106a894ab05b",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/produtos.py": {
-    "mtime": 1792783910.874234,
-    "seen": 1792784137.1360633,
-    "ast_hash": "39f0a81228a77fb593bc1d49840f3f4b",
+    "mtime": 1792949685.3024747,
+    "seen": 1792950065.1896656,
+    "ast_hash": "68f691160982847fc8fdf67d9689a324",
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1792783381.6156273,
-    "seen": 1792784137.136065,
-    "ast_hash": "1109ea17ea444dce0e7d4fb8615b88fa",
+    "mtime": 1792949019.5977619,
+    "seen": 1792950065.1896677,
+    "ast_hash": "c3825a1bb6912a064dab49e133a640cd",
     "semantic_hash": ""
   },
   "backend/app/core/database.py": {
-    "mtime": 1792775412.7242768,
-    "seen": 1792780232.1515353,
-    "ast_hash": "1a9664b922527481276e7fb648110427",
+    "mtime": 1792949002.4433784,
+    "seen": 1792950065.1896691,
+    "ast_hash": "5dbb12a9c4c3d1bbe583b5c9e0374212",
     "semantic_hash": ""
   },
   "backend/app/core/security.py": {
-    "mtime": 1791927117.3251605,
-    "seen": 1792712053.7851858,
-    "ast_hash": "1c0b3f9dad27781e2e554cc681e286d1",
+    "mtime": 1792943622.64791,
+    "seen": 1792943879.8098216,
+    "ast_hash": "aa37158d2df754bfe188edb67129d36e",
     "semantic_hash": ""
   },
   "backend/app/main.py": {
-    "mtime": 1792785249.5584755,
-    "seen": 1792785309.6024742,
-    "ast_hash": "636784fffa6b66dcb3480589d5f7f690",
+    "mtime": 1792949666.1340659,
+    "seen": 1792950065.1896749,
+    "ast_hash": "d4db615c61b110af6df948faf2d975e9",
     "semantic_hash": ""
   },
   "backend/app/models.py": {
-    "mtime": 1786395520.58003,
-    "seen": 1792712053.7851887,
-    "ast_hash": "df865677c6700e3a63f62321e2275d85",
+    "mtime": 1792942010.5626564,
+    "seen": 1792943879.8098266,
+    "ast_hash": "de3e523e0b6fe9b03e60f57e1c2d2a79",
     "semantic_hash": ""
   },
   "backend/app/schemas.py": {
-    "mtime": 1791927131.3377523,
-    "seen": 1792712053.7851899,
-    "ast_hash": "3382c4ca29708f5b6ff685152202c127",
+    "mtime": 1792949090.3041048,
+    "seen": 1792950065.1896782,
+    "ast_hash": "18190eda68d38bb9f5ee1696d7b297a5",
     "semantic_hash": ""
   },
   "frontend/js/app.js": {
-    "mtime": 1792788574.003599,
-    "seen": 1792788730.3288417,
-    "ast_hash": "47dd2058bd03fda6f61753388fcb6e0b",
+    "mtime": 1792949807.979352,
+    "seen": 1792950065.1896887,
+    "ast_hash": "6c649090cb30b548bf425b6a25b62a8c",
     "semantic_hash": ""
   },
   "README.md": {
@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
-    "mtime": 1792788411.2588704,
-    "seen": 1792788730.3288488,
-    "ast_hash": "975ebd064c553710a4ae7a75deddf977",
+    "mtime": 1792944874.6056364,
+    "seen": 1792945672.4398968,
+    "ast_hash": "b43f0b319586d409bc45346972ed0d0d",
     "semantic_hash": ""
   },
   "database/documentacao_modelagem.md": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "frontend/admin.html": {
-    "mtime": 1792785620.3854215,
-    "seen": 1792785680.7937422,
-    "ast_hash": "b88530ed07ce7fbdc4d9e1ea2e84cca3",
+    "mtime": 1792949930.9635499,
+    "seen": 1792950065.1897075,
+    "ast_hash": "f67506708437d7a874b9cbf2f3c67449",
     "semantic_hash": ""
   },
   "frontend/carrinho.html": {
@@ -138,27 +138,27 @@
     "semantic_hash": ""
   },
   "frontend/catalogo.html": {
-    "mtime": 1792786325.6754253,
-    "seen": 1792786389.5789483,
-    "ast_hash": "5863da495e83ec7b5f598b8c17963308",
+    "mtime": 1792947603.7553034,
+    "seen": 1792947787.9562862,
+    "ast_hash": "d9338d913a202277ef60ef00a2ec75d4",
     "semantic_hash": ""
   },
   "frontend/checkout.html": {
-    "mtime": 1792786261.0985024,
-    "seen": 1792786389.5789497,
-    "ast_hash": "226195eb73e77ec7009eed277d80f105",
+    "mtime": 1792946596.2672882,
+    "seen": 1792946672.9655633,
+    "ast_hash": "19148532edfaf02ba489784d5c7d6889",
     "semantic_hash": ""
   },
   "frontend/confirmacao.html": {
-    "mtime": 1792786304.9800444,
-    "seen": 1792786389.5789514,
-    "ast_hash": "a54b0186c2665f97d4cca1516f832957",
+    "mtime": 1792946610.1174226,
+    "seen": 1792946672.965565,
+    "ast_hash": "c7a65a2220f1869f230671dd8decab91",
     "semantic_hash": ""
   },
   "frontend/index.html": {
-    "mtime": 1792783601.6436331,
-    "seen": 1792784137.136107,
-    "ast_hash": "f6b9c3c3c6af0c8d3e2f926c97fd92a5",
+    "mtime": 1792949215.2231102,
+    "seen": 1792950065.1897151,
+    "ast_hash": "4ab06b783af0643fb8ecde877f00cfd6",
     "semantic_hash": ""
   },
   "frontend/meus-pedidos.html": {
@@ -168,21 +168,21 @@
     "semantic_hash": ""
   },
   "frontend/minha-conta.html": {
-    "mtime": 1792786357.4313836,
-    "seen": 1792786389.5789564,
-    "ast_hash": "395562cd70d5f6a034f04bdbc2d13d78",
+    "mtime": 1792947708.2670708,
+    "seen": 1792947787.956294,
+    "ast_hash": "a2102ad74d0cb188d5437d909e1fd223",
     "semantic_hash": ""
   },
   "frontend/produto.html": {
-    "mtime": 1792786342.3111143,
-    "seen": 1792786389.5789573,
-    "ast_hash": "562cf1881202deec1a13c8f6c2ce7fae",
+    "mtime": 1792947603.7573042,
+    "seen": 1792947787.9562957,
+    "ast_hash": "f2470aa08d4115637052c137eb3a54d5",
     "semantic_hash": ""
   },
   "database/alteracoes_schema.sql": {
-    "mtime": 1786392777.2261288,
-    "seen": 1792712134.790442,
-    "ast_hash": "e43c1bb6cf4ea3a33cf915e9d58a9ccd",
+    "mtime": 1792942805.7546163,
+    "seen": 1792943879.809837,
+    "ast_hash": "314b425fac77838b1e0605a661971cb9",
     "semantic_hash": ""
   },
   "database/schema.sql": {
@@ -192,75 +192,27 @@
     "semantic_hash": ""
   },
   "database/seed.sql": {
-    "mtime": 1792788439.597979,
-    "seen": 1792788730.3288403,
-    "ast_hash": "64b64a61b42b620d0f88b0f5c29fb10f",
+    "mtime": 1792942437.4967093,
+    "seen": 1792943879.8098419,
+    "ast_hash": "cea1e9e9bf3d2cfe9809f964cc37dc7b",
     "semantic_hash": ""
   },
   "backend/seed.py": {
-    "mtime": 1792715419.7014227,
-    "seen": 1792780232.151545,
-    "ast_hash": "0adf097220d827c14b3ad1906ebbbcb7",
+    "mtime": 1792942449.7780883,
+    "seen": 1792943879.8098316,
+    "ast_hash": "2fb0cc8909633003141f0f4935f526af",
     "semantic_hash": ""
   },
   "backend/seed.sql": {
-    "mtime": 1792715386.8789957,
-    "seen": 1792780232.151547,
-    "ast_hash": "64b64a61b42b620d0f88b0f5c29fb10f",
+    "mtime": 1792949150.2139237,
+    "seen": 1792950065.1896813,
+    "ast_hash": "cea1e9e9bf3d2cfe9809f964cc37dc7b",
     "semantic_hash": ""
   },
   "ARQUITETURA_3_CAMADAS.md": {
     "mtime": 1792715624.2470996,
     "seen": 1792780232.1515565,
     "ast_hash": "f33b4010830df473283e1d44cded3cc0",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/cat-baloes.jpg": {
-    "mtime": 1792778700.2697084,
-    "seen": 1792780232.151578,
-    "ast_hash": "bd774af35c687db1c7b35d41737132c6",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/cat-confeitaria.jpg": {
-    "mtime": 1792778723.8198516,
-    "seen": 1792780232.1515794,
-    "ast_hash": "31652c76e72a8aa440b6b421875c17d7",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/cat-doces.jpg": {
-    "mtime": 1792778750.7384768,
-    "seen": 1792780232.1515806,
-    "ast_hash": "b32bc601f7cd28ad7c0f77e74298b9d0",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/hero-vevey.jpg": {
-    "mtime": 1792778638.959923,
-    "seen": 1792780232.151582,
-    "ast_hash": "575bc1834d92b3cdd547128b67803e04",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/prod-baloes.jpg": {
-    "mtime": 1792778700.2697084,
-    "seen": 1792780232.1515832,
-    "ast_hash": "bd774af35c687db1c7b35d41737132c6",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/prod-bicos.jpg": {
-    "mtime": 1792778818.389806,
-    "seen": 1792780232.1515846,
-    "ast_hash": "9b06abde5798807f790c50d9a5a645c9",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/prod-bubble.jpg": {
-    "mtime": 1792778847.894015,
-    "seen": 1792780232.1515858,
-    "ast_hash": "a19a6f23fad640b7b6562cb529a862ef",
-    "semantic_hash": ""
-  },
-  "frontend/assets/images/prod-chocolate.jpg": {
-    "mtime": 1792778925.0951726,
-    "seen": 1792780232.1515887,
-    "ast_hash": "0b68cfa18ae9ef7af74cef61523137c8",
     "semantic_hash": ""
   },
   "backend/app/core/limiter.py": {
@@ -270,9 +222,9 @@
     "semantic_hash": ""
   },
   "frontend/admin-login.html": {
-    "mtime": 1792785199.1843576,
-    "seen": 1792785309.6025045,
-    "ast_hash": "f654796f3571da81e7784174f13c5085",
+    "mtime": 1792950713.6145675,
+    "seen": 1792950728.5591562,
+    "ast_hash": "a8ee2e362938fe0358d67331588c9405",
     "semantic_hash": ""
   },
   "frontend/404.html": {
@@ -288,9 +240,69 @@
     "semantic_hash": ""
   },
   "ROADMAP_PROXIMA_SESSAO.md": {
-    "mtime": 1792788707.0319693,
-    "seen": 1792788730.3288472,
-    "ast_hash": "fbc3959fec561153eb4ea317c03787ca",
+    "mtime": 1792946659.5200307,
+    "seen": 1792946672.9655466,
+    "ast_hash": "42b3484c4d8fe7924373fc7b3d00b682",
+    "semantic_hash": ""
+  },
+  "backend/app/api/v1/endpoints/funcionarios.py": {
+    "mtime": 1792942071.2181165,
+    "seen": 1792943879.8098052,
+    "ast_hash": "46ac046748205cba462c08304c47bce6",
+    "semantic_hash": ""
+  },
+  "frontend/js/image-converter.js": {
+    "mtime": 1792944810.566219,
+    "seen": 1792945672.4398894,
+    "ast_hash": "e2aeaabaac82ae296bf3000a9a719819",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-baloes.webp": {
+    "mtime": 1792949175.5988202,
+    "seen": 1792950065.1897218,
+    "ast_hash": "1cd1e36a5e6de2477729d96324cc9392",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-confeitaria.webp": {
+    "mtime": 1792949175.9182422,
+    "seen": 1792950065.1897235,
+    "ast_hash": "56e635e7255c16b9615f6a5e753003da",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/cat-doces.webp": {
+    "mtime": 1792949176.2217596,
+    "seen": 1792950065.1897247,
+    "ast_hash": "d49fb74d694dd09d47bea8639b576bfc",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/hero-vevey.webp": {
+    "mtime": 1792949176.4609263,
+    "seen": 1792950065.1897259,
+    "ast_hash": "5a5bdad33dcf04415835b5146d86a85d",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-baloes.webp": {
+    "mtime": 1792949176.7304137,
+    "seen": 1792950065.1897273,
+    "ast_hash": "1cd1e36a5e6de2477729d96324cc9392",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-bicos.webp": {
+    "mtime": 1792949176.9451616,
+    "seen": 1792950065.1897285,
+    "ast_hash": "bac9d52c3ab5de8d810b5587478fffa6",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-bubble.webp": {
+    "mtime": 1792949177.1820657,
+    "seen": 1792950065.1897297,
+    "ast_hash": "cecbc9b0052a778e6a023e35e611bb72",
+    "semantic_hash": ""
+  },
+  "frontend/assets/images/prod-chocolate.webp": {
+    "mtime": 1792949177.4929476,
+    "seen": 1792950065.1897311,
+    "ast_hash": "0eb0eb2b5aa77c16f26d9ba2e7799438",
     "semantic_hash": ""
   }
 }

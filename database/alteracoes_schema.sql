@@ -77,3 +77,16 @@ CREATE TYPE tipo_entrega AS ENUM ('RETIRADA_LOJA', 'ENVIO_TRANSPORTADORA');
 -- Definido um valor padrão ('ENVIO_TRANSPORTADORA') para manter compatibilidade com registros existentes
 ALTER TABLE pedidos 
   ADD COLUMN tipo_entrega tipo_entrega NOT NULL DEFAULT 'ENVIO_TRANSPORTADORA';
+
+
+-- ==========================================
+-- 4. EXPANSÃO DE ENUMS: LOGÍSTICA & FLUXO DE PEDIDOS
+-- ==========================================
+
+-- A) Adicionando cargo 'LOGISTICA' ao enum cargo_admin
+ALTER TYPE cargo_admin ADD VALUE IF NOT EXISTS 'LOGISTICA';
+
+-- B) Adicionando status 'Pronto para Retirada' e 'Enviado para a Transportadora' ao enum status_pedido
+ALTER TYPE status_pedido ADD VALUE IF NOT EXISTS 'Pronto para Retirada';
+ALTER TYPE status_pedido ADD VALUE IF NOT EXISTS 'Enviado para a Transportadora';
+

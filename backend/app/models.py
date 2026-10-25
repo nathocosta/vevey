@@ -26,12 +26,15 @@ Base = declarative_base()
 class CargoAdmin(enum.Enum):
     ADMIN = 'ADMIN'
     OPERADOR = 'OPERADOR'
+    LOGISTICA = 'LOGISTICA'
 
 
 class StatusPedido(enum.Enum):
     PENDENTE = 'Pendente'
     AGUARDANDO_PAGAMENTO = 'Aguardando Pagamento'
     PAGO = 'Pago'
+    PRONTO_RETIRADA = 'Pronto para Retirada'
+    ENVIADO_TRANSPORTADORA = 'Enviado para a Transportadora'
     ENVIADO = 'Enviado'
     ENTREGUE = 'Entregue'
     CANCELADO = 'Cancelado'

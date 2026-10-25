@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 # Garante compatibilidade de driver (psycopg2) caso venha postgres:// ou postgresql://

@@ -1,10 +1,10 @@
-from typing import Generator, Optional
+from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import decode_access_token
-from app.models import Cliente, UsuarioAdmin, CargoAdmin
+from app.models import Cliente, UsuarioAdmin
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
@@ -41,7 +41,7 @@ def get_current_admin(
     db: Session = Depends(get_db),
     token: Optional[str] = Depends(oauth2_scheme)
 ) -> UsuarioAdmin:
-    """Valida token JWT e retorna o usuário administrativo (ADMIN ou OPERADOR)"""
+    """Valida token JWT e retorna o usuário administrativo (ADMIN, OPERADOR ou LOGISTICA)"""
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +50,7 @@ def get_current_admin(
         )
     
     payload = decode_access_token(token)
-    if not payload or payload.get("role") not in ["ADMIN", "OPERADOR"]:
+    if not payload or payload.get("role") not in ["ADMIN", "OPERADOR", "LOGISTICA"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Acesso não autorizado para este perfil.",
@@ -62,3 +62,17 @@ def get_current_admin(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário administrativo não encontrado.")
     
     return admin
+
+
+def require_admin_role(
+    current_admin: UsuarioAdmin = Depends(get_current_admin),
+) -> UsuarioAdmin:
+    """Valida se o usuário autenticado possui cargo de ADMIN exclusivamente"""
+    role_str = current_admin.cargo.value if hasattr(current_admin.cargo, "value") else str(current_admin.cargo)
+    if role_str.upper() != "ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso negado: operação exclusiva para administradores gerais (ADMIN).",
+        )
+    return current_admin
+

@@ -222,7 +222,7 @@
         <div class="lg:col-span-5 relative">
           <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-[#EAE3D9] aspect-[4/3] sm:aspect-square lg:aspect-[4/5] bg-[#FAF7F2]">
             <img 
-              src="assets/images/hero-vevey.jpg" 
+              src="assets/images/hero-vevey.webp" 
               alt="Mesa de confeitaria e celebração Vevey Doces" 
               class="w-full h-full object-cover"
               loading="eager"
@@ -262,7 +262,7 @@
         <!-- Coleção 1: Balões & Arcos -->
         <a href="catalogo.html?categoria=baloes" class="group relative rounded-2xl overflow-hidden aspect-[4/3] shadow-sm hover:shadow-xl transition-all duration-300 border border-[#EAE3D9] bg-white flex flex-col justify-end p-6">
           <img 
-            src="assets/images/cat-baloes.jpg" 
+            src="assets/images/cat-baloes.webp" 
             alt="Balões metalizados e arcos de festa" 
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
@@ -277,7 +277,7 @@
         <!-- Coleção 2: Confeitaria Artística -->
         <a href="catalogo.html?categoria=confeitaria" class="group relative rounded-2xl overflow-hidden aspect-[4/3] shadow-sm hover:shadow-xl transition-all duration-300 border border-[#EAE3D9] bg-white flex flex-col justify-end p-6">
           <img 
-            src="assets/images/cat-confeitaria.jpg" 
+            src="assets/images/cat-confeitaria.webp" 
             alt="Confeitaria artística e bicos de confeitar" 
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
@@ -292,7 +292,7 @@
         <!-- Coleção 3: Doces & Mesa Posta -->
         <a href="catalogo.html?categoria=decoracao" class="group relative rounded-2xl overflow-hidden aspect-[4/3] shadow-sm hover:shadow-xl transition-all duration-300 border border-[#EAE3D9] bg-white flex flex-col justify-end p-6">
           <img 
-            src="assets/images/cat-doces.jpg" 
+            src="assets/images/cat-doces.webp" 
             alt="Doces finos, brigadeiros gourmet e forminhas" 
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           >
@@ -324,102 +324,12 @@
 
       <!-- Grade Dinâmica preenchida via initHomePage() do app.js -->
       <div id="home-featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        <!-- CARD INICIAL 1 (Real) -->
-        <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300">
-          <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
-            <img src="assets/images/prod-baloes.jpg" alt="Kit Balões Metalizados Rose Gold" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <span class="absolute top-2.5 left-2.5 bg-[#800F2F] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">Oferta</span>
-          </div>
-          <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">Balões &amp; Festas</span>
-          <a href="catalogo.html" class="block mt-1">
-            <h3 class="font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
-              Kit Balões Metalizados Rose Gold &amp; Cereja (50 unid.)
-            </h3>
-          </a>
-          <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-extrabold text-[#800F2F]">R$ 49,90</span>
-              <span class="text-xs text-[#665A5B] line-through">R$ 64,90</span>
-            </div>
-            <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 3x sem juros</p>
-          </div>
-          <button type="button" data-action="add-to-cart" data-id="bl-9921" data-name="Kit Balões Metalizados Rose Gold & Cereja (50 unid.)" data-price="49.90" class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
-            <span>Adicionar à Sacola</span>
-          </button>
+        <!-- Loading dinâmico da Home -->
+        <div class="col-span-full py-12 text-center text-[#665A5B] flex flex-col items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-3xl text-[#800F2F] animate-spin">progress_activity</span>
+          <p class="text-xs font-bold text-[#201516]">Carregando destaques do catálogo...</p>
         </div>
-
-        <!-- CARD INICIAL 2 (Real) -->
-        <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300">
-          <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
-            <img src="assets/images/prod-bicos.jpg" alt="Jogo de Bicos de Confeitar em Inox" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-            <span class="absolute top-2.5 left-2.5 bg-[#800F2F] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">Oferta</span>
-          </div>
-          <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">Confeitaria Artística</span>
-          <a href="catalogo.html" class="block mt-1">
-            <h3 class="font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
-              Jogo de Bicos de Confeitar em Inox (12 Peças + Adaptador)
-            </h3>
-          </a>
-          <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-extrabold text-[#800F2F]">R$ 69,90</span>
-              <span class="text-xs text-[#665A5B] line-through">R$ 79,90</span>
-            </div>
-            <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 3x sem juros</p>
-          </div>
-          <button type="button" data-action="add-to-cart" data-id="cf-4402" data-name="Jogo de Bicos de Confeitar em Inox (12 Peças + Adaptador)" data-price="69.90" class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
-            <span>Adicionar à Sacola</span>
-          </button>
-        </div>
-
-        <!-- CARD INICIAL 3 (Real) -->
-        <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300">
-          <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
-            <img src="assets/images/prod-bubble.jpg" alt="Balão Bubble Cristal Transparente" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-          </div>
-          <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">Balões &amp; Festas</span>
-          <a href="catalogo.html" class="block mt-1">
-            <h3 class="font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
-              Balão Bubble Cristal Transparente com Confetes (24 pol.)
-            </h3>
-          </a>
-          <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-extrabold text-[#800F2F]">R$ 29,90</span>
-            </div>
-            <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 2x sem juros</p>
-          </div>
-          <button type="button" data-action="add-to-cart" data-id="bb-1024" data-name="Balão Bubble Cristal Transparente com Confetes (24 pol.)" data-price="29.90" class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
-            <span>Adicionar à Sacola</span>
-          </button>
-        </div>
-
-        <!-- CARD INICIAL 4 (Real) -->
-        <div class="product-card group flex flex-col p-4 bg-white rounded-2xl border border-[#EAE3D9] hover:border-[#800F2F]/40 shadow-sm hover:shadow-xl transition-all duration-300">
-          <div class="product-image-wrap relative w-full aspect-square rounded-xl overflow-hidden bg-[#FAF7F2] mb-3">
-            <img src="assets/images/prod-chocolate.jpg" alt="Chocolate Nobre Gotas Meio Amargo" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-          </div>
-          <span class="text-[11px] font-semibold text-[#B88636] uppercase tracking-wider">Confeitaria Artística</span>
-          <a href="catalogo.html" class="block mt-1">
-            <h3 class="font-bold text-sm text-[#201516] line-clamp-2 min-h-[40px] group-hover:text-[#800F2F] transition-colors leading-snug">
-              Chocolate Nobre Gotas Meio Amargo 1,01kg
-            </h3>
-          </a>
-          <div class="mt-auto pt-3 border-t border-[#F4EFEB]">
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-extrabold text-[#800F2F]">R$ 54,90</span>
-            </div>
-            <p class="text-[11px] text-[#665A5B] mt-0.5">Em até 3x sem juros</p>
-          </div>
-          <button type="button" data-action="add-to-cart" data-id="ch-7720" data-name="Chocolate Nobre Gotas Meio Amargo 1,01kg" data-price="54.90" class="btn-add-cart-dynamic mt-3 w-full py-2.5 px-4 rounded-full bg-[#800F2F] hover:bg-[#5E0921] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
-            <span>Adicionar à Sacola</span>
-          </button>
-        </div>
+      </div>
 
       </div>
     </section>

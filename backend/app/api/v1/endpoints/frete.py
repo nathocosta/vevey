@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from decimal import Decimal
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -58,7 +58,7 @@ def calcular_frete(request: Request, dados: CalculoFreteRequest):
         ),
         OpcaoFrete(
             modalidade="RETIRADA",
-            nome="Retirada Grátis na Loja Física (Santo André - SP)",
+            nome="Retirada Grátis na Loja (R. Sen. Flaquer, 691 - Centro, Santo André - SP)",
             prazo_dias="Disponível em até 2 horas (Seg-Sex 08h-18h | Sáb 08h-16h)",
             valor=Decimal("0.00"),
             gratis=True,

@@ -1,6 +1,8 @@
+import os
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
@@ -59,6 +61,11 @@ async def custom_403_exception_handler(request: Request, exc):
 
 # Registra todos os endpoints da API v1
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Monta diretório de assets para servir imagens de produtos (WebP)
+frontend_assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "assets"))
+if os.path.exists(frontend_assets_dir):
+    app.mount("/assets", StaticFiles(directory=frontend_assets_dir), name="assets")
 
 
 @app.get("/")

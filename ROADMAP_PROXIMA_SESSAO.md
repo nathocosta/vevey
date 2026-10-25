@@ -2,7 +2,7 @@
 
 > **Projeto**: E-commerce & Gestão Omnichannel Vevey Doces e Festas (TCC)  
 > **Data do Handover**: 23/10/2026  
-> **Localização & Unidade**: Rua das Figueiras, 450 - Bairro Jardim, Santo André - SP  
+> **Localização & Unidade**: R. Sen. Flaquer, 691 - Centro, Santo André - SP, 09010-160  
 > **Horário de Atendimento**: Segunda a Sexta das 08h às 18h | Sábado das 08h às 16h  
 > **Identidade Visual**: Borgonha Luxury (`#800F2F`), Dourado Nobre (`#B88636`), Off-White (`#FAF7F2`), Neutros Quentes (`#EAE3D9` / `#201516`), Fontes *Playfair Display* e *Plus Jakarta Sans*.
 

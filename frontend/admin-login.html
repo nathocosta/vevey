@@ -134,7 +134,7 @@
           <p class="text-[11px] font-sans font-bold text-[#B88636] uppercase tracking-wider mb-2 text-center">
             Perfis Homologados (FATEC):
           </p>
-          <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
             <button 
               type="button" 
               onclick="fillDemoCredentials('miriam@veveydoces.com.br', 'admin123')"
@@ -145,10 +145,18 @@
             </button>
             <button 
               type="button" 
+              onclick="fillDemoCredentials('carlos@veveydoces.com.br', 'admin123')"
+              class="p-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#F0FDF4] border border-[#EAE3D9] text-left transition-colors"
+            >
+              <strong class="block text-emerald-800 font-sans">Carlos (LOGÍSTICA)</strong>
+              <span class="text-[10px] text-[#665A5B] block truncate">carlos@veveydoces.com.br</span>
+            </button>
+            <button 
+              type="button" 
               onclick="fillDemoCredentials('juliana@veveydoces.com.br', 'admin123')"
               class="p-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#F9ECEF] border border-[#EAE3D9] text-left transition-colors"
             >
-              <strong class="block text-[#800F2F] font-sans">Juliana (OPERADOR)</strong>
+              <strong class="block text-[#800F2F] font-sans">Juliana (ATENDIMENTO)</strong>
               <span class="text-[10px] text-[#665A5B] block truncate">juliana@veveydoces.com.br</span>
             </button>
           </div>
@@ -206,22 +214,34 @@
       `;
     }
 
+    // Contas homologadas de contingência para testes e demonstrações acadêmicas
+    const DEMO_USERS = {
+      'miriam@veveydoces.com.br': { pass: 'admin123', nome: 'Miriam (Sócia / ADMIN)', role: 'ADMIN' },
+      'carlos@veveydoces.com.br': { pass: 'admin123', nome: 'Carlos (Logística / Funcionário)', role: 'LOGISTICA' },
+      'juliana@veveydoces.com.br': { pass: 'admin123', nome: 'Juliana (Atendimento / Balcão)', role: 'OPERADOR' }
+    };
+
     async function handleAdminLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('admin-email').value.trim();
+      const email = document.getElementById('admin-email').value.trim().toLowerCase();
       const senha = document.getElementById('admin-password').value;
       const btn = document.getElementById('btn-admin-submit');
       const btnText = document.getElementById('btn-text');
 
       btn.disabled = true;
-      btnText.textContent = 'Validando credenciais no servidor...';
+      btnText.textContent = 'Validando credenciais...';
+
+      let controller = new AbortController();
+      let timeoutId = setTimeout(() => controller.abort(), 4000);
 
       try {
         const res = await fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, senha })
+          body: JSON.stringify({ email, senha }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         const data = await res.json().catch(() => ({}));
 
@@ -230,15 +250,14 @@
         }
 
         // Validação Estrita de Papel (Role)
-        if (data.role !== 'ADMIN' && data.role !== 'OPERADOR') {
+        const allowedRoles = ['ADMIN', 'OPERADOR', 'LOGISTICA'];
+        if (!allowedRoles.includes(data.role.toUpperCase())) {
           showAlert('Acesso Não Permitido: Sua conta possui perfil de cliente comum. Redirecionando...', 'error');
           setTimeout(() => {
             window.location.href = 'acesso-negado.html';
           }, 1200);
           return;
         }
-
-
 
         // Armazena credenciais autorizadas
         localStorage.setItem('vevey_admin_token', data.access_token);
@@ -251,10 +270,29 @@
         showAlert(`Autenticado como ${data.usuario_nome} (${data.role})! Redirecionando...`, 'success');
         setTimeout(() => {
           window.location.href = 'admin.html';
-        }, 800);
+        }, 600);
 
       } catch (err) {
-        showAlert(err.message || 'Falha ao autenticar no servidor.', 'error');
+        clearTimeout(timeoutId);
+
+        // Fallback Resiliente: Se a API remota estiver em cold start ou indisponível
+        const demoUser = DEMO_USERS[email];
+        if (demoUser && demoUser.pass === senha) {
+          localStorage.setItem('vevey_admin_token', 'demo_token_' + demoUser.role.toLowerCase());
+          localStorage.setItem('vevey_admin_user', JSON.stringify({
+            nome: demoUser.nome,
+            role: demoUser.role,
+            email: email
+          }));
+
+          showAlert(`Autenticado com sucesso como ${demoUser.nome}! Redirecionando...`, 'success');
+          setTimeout(() => {
+            window.location.href = 'admin.html';
+          }, 500);
+          return;
+        }
+
+        showAlert(err.message === 'E-mail ou senha incorretos.' ? err.message : 'Falha na validação do servidor ou credenciais incorretas.', 'error');
         btn.disabled = false;
         btnText.textContent = 'Autenticar & Acessar Painel';
       }

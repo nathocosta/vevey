@@ -1,21 +1,22 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Any, Union
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 from app.core.config import settings
-
-# Contexto de criptografia para hash de senhas
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica se a senha em texto plano bate com o hash salvo"""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8")[:72], hashed_password.encode("utf-8"))
+    except Exception:
+        return False
 
 
 def get_password_hash(password: str) -> str:
     """Gera hash seguro (bcrypt) da senha"""
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def create_access_token(

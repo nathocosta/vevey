@@ -1,12 +1,12 @@
 {
   "0": "schemas.py",
   "1": "auth.py",
-  "2": "pedidos.py",
+  "2": "models.py",
   "3": "app.js",
   "4": "criar_produto",
   "5": "Design System & Guia de Estilos — Vevey Doces",
   "6": "E-COMMERCE VEVEY: DOCUMENTO DE ESPECIFICAÇÃO E MODELAGEM DE BANCO DE DADOS",
-  "7": "frete.py",
+  "7": "login",
   "8": "Vevey Doces — E-Commerce & Varejo de Festas (TCC)",
   "9": "schema.sql",
   "10": "app/__init__.py",
@@ -14,9 +14,10 @@
   "12": "v1/__init__.py",
   "13": "seed.sql",
   "14": "4. Checklist Prático para a Próxima Sessão (Conexão com o Supabase)",
-  "15": "login",
+  "15": "image-converter.js",
   "16": "backend/seed.sql",
   "17": "main.py",
   "18": "Settings",
-  "19": "2. 🎯 O Que Falta Implementar (Backlog Priorizado para a Próxima Sessão)"
+  "19": "2. 🎯 O Que Falta Implementar (Backlog Priorizado para a Próxima Sessão)",
+  "20": "atualizar_funcionario"
 }

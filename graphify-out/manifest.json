@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792715638.6486316,
-    "seen": 1792780232.1515582,
-    "ast_hash": "071ebc081efe46c720b971e2650a549e",
+    "mtime": 1793060225.7515602,
+    "seen": 1793060335.749682,
+    "ast_hash": "ea392ca96670021a901b015b38567e48",
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "ARQUITETURA_3_CAMADAS.md": {
-    "mtime": 1792715624.2470996,
-    "seen": 1792780232.1515565,
-    "ast_hash": "f33b4010830df473283e1d44cded3cc0",
+    "mtime": 1793060284.1476953,
+    "seen": 1793060335.749679,
+    "ast_hash": "4ffd4918f49b90b7a4c946ca8838d97c",
     "semantic_hash": ""
   },
   "backend/app/core/limiter.py": {
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "ROADMAP_PROXIMA_SESSAO.md": {
-    "mtime": 1792946659.5200307,
-    "seen": 1792946672.9655466,
-    "ast_hash": "42b3484c4d8fe7924373fc7b3d00b682",
+    "mtime": 1793060313.4202065,
+    "seen": 1793060335.7496836,
+    "ast_hash": "787b8d73918a4772674faf920bc12fe7",
     "semantic_hash": ""
   },
   "backend/app/api/v1/endpoints/funcionarios.py": {

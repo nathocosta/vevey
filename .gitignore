@@ -28,6 +28,8 @@ wheels/
 .env.*
 *.env
 .venv
+!backend/.env
+
 
 
 # Logs e temporários

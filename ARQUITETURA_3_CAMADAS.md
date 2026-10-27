@@ -45,20 +45,20 @@ flowchart TD
 ## 2. Detalhamento de Cada Camada
 
 ### 🟡 Camada 1: Apresentação (Frontend)
-* **Localização no repositório**: diretório [`frontend/`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend)
+* **Localização no repositório**: diretório [`frontend/`](./frontend)
 * **Hospedagem em Produção**: **Vercel** ou **Netlify** (CDN Global distribuído)
 * **Tecnologias**: HTML5, Vanilla JavaScript (ES6+), Tailwind CSS via CDN, Google Fonts (*Plus Jakarta Sans* e *Inter*), Material Symbols.
 * **Telas do Sistema**:
-  - [`index.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/index.html): Home institucional, banners e categorias.
-  - [`catalogo.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/catalogo.html): Catálogo geral com busca em tempo real, filtros de categorias, ordenação de preços e favoritos.
-  - [`produto.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/produto.html): Detalhes do produto dinâmico via `?id=SKU` com cálculo de frete via API.
-  - [`carrinho.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/carrinho.html): Gestão de quantidades, cálculo de subtotal e cupom de desconto.
-  - [`checkout.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/checkout.html): Formulário de entrega e seleção de pagamento (Pix, Cartão, Boleto).
-  - [`confirmacao.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/confirmacao.html): Tela de sucesso com código Pix Copia-e-Cola e número do pedido.
-  - [`minha-conta.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/minha-conta.html): Histórico de compras do cliente e rastreamento.
-  - [`admin.html`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/admin.html): Backoffice unificado (Dashboard, Pedido Manual WhatsApp Juliana, Ajuste de Estoque Balcão e Cadastro de Produtos).
+  - [`index.html`](./frontend/index.html): Home institucional, banners e categorias.
+  - [`catalogo.html`](./frontend/catalogo.html): Catálogo geral com busca em tempo real, filtros de categorias, ordenação de preços e favoritos.
+  - [`produto.html`](./frontend/produto.html): Detalhes do produto dinâmico via `?id=SKU` com cálculo de frete via API.
+  - [`carrinho.html`](./frontend/carrinho.html): Gestão de quantidades, cálculo de subtotal e cupom de desconto.
+  - [`checkout.html`](./frontend/checkout.html): Formulário de entrega e seleção de pagamento (Pix, Cartão, Boleto).
+  - [`confirmacao.html`](./frontend/confirmacao.html): Tela de sucesso com código Pix Copia-e-Cola e número do pedido.
+  - [`minha-conta.html`](./frontend/minha-conta.html): Histórico de compras do cliente e rastreamento.
+  - [`admin.html`](./frontend/admin.html): Backoffice unificado (Dashboard, Pedido Manual WhatsApp Juliana, Ajuste de Estoque Balcão e Cadastro de Produtos).
 * **Comunicação com a API**:
-  - Centralizada em [`frontend/js/app.js`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/frontend/js/app.js) através do objeto global `window.VEVEY_CONFIG`:
+  - Centralizada em [`frontend/js/app.js`](./frontend/js/app.js) através do objeto global `window.VEVEY_CONFIG`:
     ```javascript
     window.VEVEY_CONFIG = {
       API_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -71,16 +71,16 @@ flowchart TD
 ---
 
 ### 🔵 Camada 2: Lógica de Negócios (Backend API)
-* **Localização no repositório**: diretório [`backend/`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend)
+* **Localização no repositório**: diretório [`backend/`](./backend)
 * **Hospedagem em Produção**: **Render** (Web Service rodando `uvicorn app.main:app --host 0.0.0.0 --port $PORT`)
 * **Tecnologias**: Python 3.10+, **FastAPI**, **SQLAlchemy 2.0**, **Pydantic v2**, **PyJWT**, **Passlib (BCrypt)**.
 * **Módulos Principais**:
-  - [`backend/app/main.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/main.py): Ponto de entrada, configuração de middlewares CORS, rotas `/api/v1` e documentação interativa Swagger UI em `/docs`.
-  - [`backend/app/core/database.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/core/database.py): Criação do `engine` SQLAlchemy com pool de conexões e injeção de dependência `get_db()`.
-  - [`backend/app/core/security.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/core/security.py): Criptografia de senhas (BCrypt) e emissão de tokens JWT com expiração.
-  - [`backend/app/models.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/models.py): Mapeamento ORM relacional do banco.
-  - [`backend/app/schemas.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/schemas.py): Validação estrita de entradas e saídas (validação de CPF, CEP, senhas, etc.).
-  - [`backend/app/api/v1/endpoints/`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/app/api/v1/endpoints/):
+  - [`backend/app/main.py`](./backend/app/main.py): Ponto de entrada, configuração de middlewares CORS, rotas `/api/v1` e documentação interativa Swagger UI em `/docs`.
+  - [`backend/app/core/database.py`](./backend/app/core/database.py): Criação do `engine` SQLAlchemy com pool de conexões e injeção de dependência `get_db()`.
+  - [`backend/app/core/security.py`](./backend/app/core/security.py): Criptografia de senhas (BCrypt) e emissão de tokens JWT com expiração.
+  - [`backend/app/models.py`](./backend/app/models.py): Mapeamento ORM relacional do banco.
+  - [`backend/app/schemas.py`](./backend/app/schemas.py): Validação estrita de entradas e saídas (validação de CPF, CEP, senhas, etc.).
+  - [`backend/app/api/v1/endpoints/`](./backend/app/api/v1/endpoints/):
     - `produtos.py`: Listagem, busca, filtro por categoria, cadastro, atualização de estoque e status.
     - `pedidos.py`: Checkout online, criação de pedido manual WhatsApp (Juliana) e atualização de status/rastreio.
     - `auth.py`: Login com geração de Bearer Token JWT e registro de clientes.
@@ -89,7 +89,7 @@ flowchart TD
 ---
 
 ### 🟢 Camada 3: Persistência de Dados (Database)
-* **Localização no repositório**: diretório [`database/`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/database) e scripts auxiliares em `backend/`
+* **Localização no repositório**: diretório [`database/`](./database) e scripts auxiliares em `backend/`
 * **Hospedagem em Produção**: **Supabase** (PostgreSQL 15+ em nuvem AWS com pooling Supavisor/PgBouncer)
 * **Estrutura Relacional (10 Tabelas Principais)**:
   1. `categorias`: Categorias de produtos (`baloes`, `confeitaria`, `descartaveis`, etc.).
@@ -103,9 +103,9 @@ flowchart TD
   9. `pagamentos`: Transações registradas (Pix, Cartão, Gateway simulado).
   10. `historico_status_pedidos`: Log de auditoria (RNF011) de todas as mudanças de status do pedido.
 * **Scripts de Inicialização e Carga**:
-  - [`backend/seed.sql`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/seed.sql): Script SQL para colar no **Supabase SQL Editor** e criar dados em 1 clique.
-  - [`backend/seed.py`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/seed.py): Script Python automatizado (`python seed.py`) para popular via SQLAlchemy.
-  - [`database/schema.sql`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/database/schema.sql): DDL físico completo com constraints e triggers.
+  - [`backend/seed.sql`](./backend/seed.sql): Script SQL para colar no **Supabase SQL Editor** e criar dados em 1 clique.
+  - [`backend/seed.py`](./backend/seed.py): Script Python automatizado (`python seed.py`) para popular via SQLAlchemy.
+  - [`database/schema.sql`](./database/schema.sql): DDL físico completo com constraints e triggers.
 
 ---
 
@@ -169,7 +169,7 @@ Quando você for conectar o banco de dados na próxima sessão, siga este roteir
 ### Passo 4: Popular o Banco de Dados
 Você pode escolher uma das duas opções:
 * **Opção A (Mais rápida via navegador)**:  
-  Abra o **SQL Editor** no painel do Supabase, copie o conteúdo de [`backend/seed.sql`](file:///c:/Users/Nathan/Documents/Vevey%20-%20tcc/backend/seed.sql), cole e clique em **Run**.
+  Abra o **SQL Editor** no painel do Supabase, copie o conteúdo de [`backend/seed.sql`](./backend/seed.sql), cole e clique em **Run**.
 * **Opção B (Via Python no terminal)**:  
   ```bash
   cd backend

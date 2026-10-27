@@ -76,24 +76,30 @@
 
 ### Como Rodar o Backend:
 ```powershell
-cd "c:\Users\Nathan\Documents\Vevey - tcc\backend"
+cd backend
 # Ativar ambiente virtual (se houver venv):
-# .\venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 uvicorn app.main:app --reload --port 8000
 ```
+- Ou execute diretamente na raiz: `iniciar_backend.bat`
 - Documentação interativa Swagger: `http://localhost:8000/api/v1/docs`
 - Health check: `http://localhost:8000/health`
 
 ### Como Rodar o Frontend:
 ```powershell
-cd "c:\Users\Nathan\Documents\Vevey - tcc\frontend"
+cd frontend
 # Usando Python ou VS Code Live Server:
 python -m http.server 3000
 ```
+- Ou execute diretamente na raiz: `iniciar_frontend.bat`
 - Catálogo: `http://localhost:3000/catalogo.html`
 - Carrinho: `http://localhost:3000/carrinho.html`
 - Login Admin: `http://localhost:3000/admin-login.html`
 - Painel Admin: `http://localhost:3000/admin.html`
 
-### Credenciais Padrão (Seed):
-- **Admin**: `admin@vevey.com.br` | Senha: `admin123`
+### Credenciais Padrão (Seed no Banco Supabase):
+- **Admin**: `miriam@veveydoces.com.br` | Senha: `admin123`
+- **Operador**: `juliana@veveydoces.com.br` | Senha: `admin123`
+- **Logística**: `carlos@veveydoces.com.br` | Senha: `admin123`
+- **Cliente**: `nathan@exemplo.com.br` | Senha: `cliente123`
+

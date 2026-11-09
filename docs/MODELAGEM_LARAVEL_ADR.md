@@ -122,7 +122,8 @@ Se aparecer um segundo local, adiciona `location_id` nas tabelas e, se precisar,
 | note | text nullable | |
 | created_at | timestampTz | |
 
-Unique: `(reference_type, reference_id, reason)` como guarda de idempotência (webhook repetido não baixa duas vezes).
+Unique: `(reference_type, reference_id, reason, product_id)` como guarda de idempotência (webhook repetido não baixa duas vezes).
+Corrigido em 09/11: sem `product_id` na chave, um pedido com mais de um produto não conseguiria gravar a segunda linha `sale`.
 
 Discussão sobre `direction`:
 - Pergunta: não é mais legível ter `qty_in`/`qty_out` em vez de qty negativa? Resposta: duas colunas criam
@@ -145,6 +146,9 @@ Discussão sobre `direction`:
 - Criada no checkout, antes do pagamento. Não toca no ledger.
 - Pagamento confirmado → `fulfilled` + movimento `sale` no ledger (decidido 03/11: saída no pagamento confirmado).
 - Cancelamento / expiração → `released`. Nada no ledger.
+- **Pix pago depois da expiração** (reserva já `released`, pagamento confirmado depois): **adiado (09/11)**, decidir no futuro. Opções:
+  (a) baixar mesmo assim com movimento `sale` e alerta, aceitando saldo negativo como exceção ao "site e WhatsApp não ficam
+  negativos"; (b) só baixar se houver saldo disponível, senão o pedido vai para tratamento manual (estorno ou espera de reposição).
 - **Expiração lazy**: `reserved` conta só `active AND expires_at > now()`. Job no scheduler marca `released`
   periodicamente para limpar, mas a correção não depende do job rodar.
 
@@ -391,6 +395,8 @@ Regra que fica: pedido nasce sempre pelo mesmo serviço, seja a origem o site, u
 | Canal de venda | decidido 03/11: `orders.channel` web, pos, whatsapp |
 | Venda física | decidido 03/11: é pedido `pos`, nunca baixa na mão |
 | Saldo negativo no balcão | decidido 03/11: sim, com alerta; site e WhatsApp não |
+| Unique do ledger | **corrigido 09/11**: `(reference_type, reference_id, reason, product_id)` |
+| Pix pago após expirar a reserva | **adiado 09/11**: baixar com alerta (pode negativar) ou tratamento manual |
 | Saída de estoque | decidido 03/11: no pagamento confirmado |
 | Variantes | decidido 03/11: catálogo plano, cada cor é um produto |
 | Filtro por cor e tipo | decidido 03/11: atributos genéricos; busca por texto com GIN |

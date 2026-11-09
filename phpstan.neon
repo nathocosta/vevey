@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan.modules.php
+
+parameters:
+    level: 7
+
+    paths:
+        - app
+        - app-modules
+
+    excludePaths:
+        - app-modules/*/vendor

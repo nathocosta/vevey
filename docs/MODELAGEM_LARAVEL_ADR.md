@@ -111,12 +111,12 @@ Se aparecer um segundo local, adiciona `location_id` nas tabelas e, se precisar,
 
 | coluna | tipo | nota |
 |---|---|---|
-| id | bigint | |
+| id | uuid | decidido 09/11: UUID em todos os models |
 | product_id | FK products | |
 | qty | integer, signed, NOT NULL, CHECK qty <> 0 | **única verdade**; positivo entra, negativo sai |
 | direction | string, **stored generated** | `CASE WHEN qty > 0 THEN 'in' ELSE 'out' END`; app nunca escreve |
 | reason | string (cast enum PHP) | `purchase`, `sale`, `return`, `adjustment` |
-| reference_type / reference_id | string / bigint | polimórfico: order, purchase, adjustment |
+| reference_type / reference_id | string / uuid (`uuidMorphs`) | polimórfico: order, purchase, adjustment |
 | balance_after | integer | saldo do produto após o movimento, gravado sob lock |
 | user_id | FK users nullable | quem fez |
 | note | text nullable | |
@@ -143,7 +143,7 @@ Discussão sobre `direction`:
 | created_at / updated_at | |
 
 - Criada no checkout, antes do pagamento. Não toca no ledger.
-- Pagamento confirmado → `fulfilled` + movimento `sale` no ledger (ou na expedição, ver aberto).
+- Pagamento confirmado → `fulfilled` + movimento `sale` no ledger (decidido 03/11: saída no pagamento confirmado).
 - Cancelamento / expiração → `released`. Nada no ledger.
 - **Expiração lazy**: `reserved` conta só `active AND expires_at > now()`. Job no scheduler marca `released`
   periodicamente para limpar, mas a correção não depende do job rodar.
@@ -238,7 +238,7 @@ contagem". Consequências: sem CHECK `on_hand >= 0` no banco; a regra "site não
 de reserva (`available > 0`), nunca no banco; `stock_levels.on_hand < 0` é um sinal de divergência a tratar, não um bug.
 Site e WhatsApp continuam bloqueando: o cliente remoto não vê a prateleira.
 
-**Ainda em aberto:** `orders.seller_id` (quem vendeu) depende de o stakeholder querer ranking/comissão.
+**Decidido 04/11:** `orders.seller_id` (quem vendeu) existe como coluna nullable; ranking e comissão ficam para quando o stakeholder pedir (ver ADR 4).
 
 ## 8. ADR 6 — Catálogo plano, atributos para filtro, busca por texto
 
@@ -398,8 +398,12 @@ Regra que fica: pedido nasce sempre pelo mesmo serviço, seja a origem o site, u
 | Pedido por WhatsApp | adiado 03/11 |
 | `seller_id` | decidido 04/11: coluna nullable desde já; uso em ranking/comissão fica para o stakeholder |
 | Cliente sem senha / identidades | decidido 04/11: `customer_identities` (ADR 7), `password` nulo permitido |
-| Arquitetura | decidido 04/11: monólito modular, detalhes depois |
-| Autorização | decidido 04/11: RBAC com módulo que Richard vai compartilhar |
+| Arquitetura | decidido 04/11: monólito modular; divisão em módulos decidida 09/11 (ADR 8) |
+| Autorização | decidido 04/11: RBAC; detalhado 09/11 no ADR 8 (módulo `permissions`, papéis SuperAdmin/Admin/Attendant/Logistics) |
+| Chave primária | **decidido 09/11**: UUID em todos os models (`HasUuids`, v7), FKs `foreignUuid`, morphs `uuidMorphs`; migration de `users` já alterada |
+| Provedor Pix | **pendente 09/11**: ainda não escolhido; só bloqueia o `integration-‹pix›` |
+| Frete | **decidido 09/11**: sem cálculo de frete por enquanto; sem `integration-‹frete›` nem contrato `ShippingQuoter` |
+| Sufixo de DTO | **decidido 09/11**: `Data` (ADR 8) |
 | Login da loja | **decidido 2026-11-08**: padrão Laravel em `customers.email`/`password`; identidades são só contatos |
 
 ---
@@ -424,3 +428,119 @@ media (spatie), activity_log (spatie)
 - `spatie/laravel-activitylog` (auditoria de produto)
 - Filament (painel staff), scheduler do Laravel (expiração de reservas)
 - Postgres com `timestampTz` e colunas geradas via `->storedAs(...)`
+
+---
+
+## 14. ADR 8 — Divisão em módulos (decidido 2026-11-09)
+
+internachi/modular em `app-modules/`, namespace `Vevey\{Studly}`, diretório em kebab-case, nomes em inglês.
+Opções avaliadas: A (fina, 7 módulos de domínio), B (por fluxo, 5) e C (enxuta, 3). **Escolhida B, por enquanto.**
+Página de discussão: https://claude.ai/artifact/5a1SDspnZKgJNmSzG7Sf6i
+
+### Módulos de domínio
+
+| Módulo | Tabelas | Responsabilidade | Depende de |
+|---|---|---|---|
+| `catalog` | categories, products, category_product, attributes, attribute_values, attribute_value_product, media | Produto/SKU, preço e preço promocional, atributos para filtro, busca fullText, auditoria | — |
+| `inventory` | stock_movements, stock_reservations, stock_levels | Reservar, liberar, baixar, ajustar, entrada, inventário, expirar reservas | — (só FK para `products`; trabalha com `product_id`) |
+| `customers` | customers, customer_identities, customer_addresses | Model `Customer` autenticável (guard `customers`), contatos, endereços | — |
+| `orders` | orders, order_items, order_adjustments, order_status_histories, coupons | Serviço único de criação de pedido (web, pos, whatsapp), status, snapshots, cupom, desconto Pix, frete e rastreio (frete sem cálculo por enquanto, ver abaixo) | catalog, inventory, customers, payments |
+| `payments` | payments, payment_events | Cobrança 1:N, Pix com expiração, pagamento manual no balcão, webhook idempotente, estorno; contrato `PaymentGateway` | — (FK `order_id`; avisa por evento `PaymentConfirmed`) |
+| `permissions` | roles, permissions, model_has_roles, model_has_permissions, role_has_permissions | RBAC sobre spatie/laravel-permission, trazido do gil-benefits (ver abaixo) | `User` em `app/` |
+
+### Módulos de interface
+
+| Módulo | O que é |
+|---|---|
+| `panel-admin` | Filament em `/admin` para o staff. O **PDV** (venda no balcão, pedido `pos`) é uma página Filament aqui, sem módulo próprio. |
+| `panel-site` | Frontend público em Blade + Livewire + Tailwind: vitrine, busca, carrinho, checkout **e área do cliente** (`/conta`). Não é painel Filament; o nome segue o padrão `panel-*` de interface. |
+
+### Regras
+
+1. **Resources, páginas e widgets do Filament ficam nos `panel-*`**, nunca no módulo de domínio.
+2. **Código compartilhado fica em `app/`** por enquanto: model `User` (staff), cast Money, helpers. Só vira módulo se crescer.
+3. **Integrações por adapter**: cada provedor é um módulo `integration-*`; a interface (contrato) fica no módulo de domínio e o
+   bind acontece no ServiceProvider da integração. Candidatas: `integration-‹pix›` (`PaymentGateway`, provedor ainda não
+   escolhido) e `integration-whatsapp` (adiado). Frete sem integração por enquanto. Mais de um provedor ao mesmo tempo: decidir quando
+   acontecer (o gil-benefits usa um Manager do Laravel com `extend()`).
+4. **Comunicação entre módulos**: ver a seção abaixo.
+
+### Comunicação entre módulos (decidido 2026-11-09)
+
+**Banco é relacional, código tem direção.** FK entre tabelas de módulos diferentes é normal (`foreignIdFor`/`foreignUuid`,
+`payments.order_id`, `stock_reservations.order_id`). Só `stock_movements` usa morph, porque referencia pedido, compra ou ajuste.
+Cuidado único: a migration da tabela referenciada precisa ter timestamp anterior.
+
+**Camadas do código PHP** (um módulo só importa os de baixo):
+
+```
+panel-admin, panel-site                       ← usam qualquer módulo, inclusive models
+orders                                        ← orquestra a venda (checkout e PDV)
+integration-‹pix›   → payments
+catalog, customers, inventory, payments       ← base, não importam outro módulo de domínio
+permissions, app/                             ← usados por todos
+```
+
+**Regras:**
+1. **Descer = action + DTO.** O módulo de cima chama a action do de baixo passando um DTO e recebe um DTO. Usar quando o
+   chamador precisa da resposta ou da falha na hora: reservar estoque, criar cobrança (devolve o QR Code), ler produto para
+   o snapshot.
+2. **Subir = evento de domínio.** O módulo de baixo anuncia um fato no passado; o de cima tem o listener. Usar quando o
+   emissor não precisa saber quem reage: `PaymentConfirmed`, `PaymentExpired`, `StockBelowReorderPoint`.
+3. **Um sentido por par de módulos.** Escutar um evento também é depender (o listener importa a classe do evento). Então
+   eventos sempre sobem e chamadas sempre descem. Ex.: payments dispara `PaymentConfirmed`; orders escuta, marca pago e ele
+   mesmo chama `FulfillReservation` no inventory.
+4. **Nenhum model atravessa a fronteira entre domínios.** DTOs e eventos levam IDs, valores, enums e outros DTOs. Relações
+   Eloquent entre módulos não são declaradas no domínio.
+5. **Painéis são a exceção.** O Filament precisa de Eloquent: `panel-admin` e `panel-site` usam models de qualquer módulo e,
+   se precisarem de relação entre módulos para exibir (pedido → pagamentos), registram com `resolveRelationUsing` no próprio
+   ServiceProvider. Painéis também podem escutar eventos (ex.: notificar admin em `StockBelowReorderPoint`).
+6. **Integração**: contrato no domínio, bind no `integration-*` (regra 3 da seção anterior).
+7. **Garantia**: teste `tests/Arch/ModuleDependenciesTest.php` com Pest `arch()` e o mapa de camadas; roda no `make check` e na CI.
+
+### Padrão de DTO
+
+- Pasta `src/DTOs/`, namespace `Vevey\{Modulo}\DTOs`.
+- **Sufixo `Data` sempre** (nunca `Dto`, `DTO` ou sem sufixo, a mistura que existe no gil-benefits).
+  Entrada de action: `{Verbo}{Coisa}Data` (`ReserveStockData`, `PlaceOrderData`, `CreateChargeData`).
+  Saída/leitura: `{Coisa}Data` (`ProductData`, `ChargeData`). Item de lista: `{Coisa}ItemData`.
+- `final readonly class` com promoção no construtor; criar com argumentos nomeados.
+- Só escalares, enums, `Money`, `CarbonImmutable` e outros `Data`. Listas tipadas no PHPDoc (`list<StockItemData>`).
+  Nunca model Eloquent, `Request` ou `Collection` de models.
+- Sem regra de negócio nem acesso a banco. Pode ter construtor estático `fromModel()` **só** para model do próprio módulo
+  (`ProductData::fromModel(Product $product)` no catalog).
+- O DTO mora no módulo que oferece a action (quem é chamado); quem chama importa para baixo.
+
+### Padrão de evento de domínio
+
+- Pasta `src/Events/`, nome é fato no passado sem sufixo (`PaymentConfirmed`, `OrderCancelled`).
+- `final readonly class`, `Dispatchable`, implementa `ShouldDispatchAfterCommit` (some se a transação der rollback).
+- Carrega IDs e valores (ou um `Data`), nunca model, para poder ir para fila.
+- Listener em `src/Listeners/` do módulo que reage, nomeado pela ação (`MarkOrderAsPaid`), registrado por discovery.
+
+### RBAC (módulo `permissions`, padrão gil-benefits)
+
+- Base `spatie/laravel-permission` (nova dependência). `Role` e `Permission` estendem os do Spatie; permissão tem `resource`,
+  `resource_group` e `action`.
+- **Papéis** (enum `Roles`, com HasLabel/HasColor): `SuperAdmin` (time de desenvolvimento), `Admin` (dona), `Attendant`
+  (balcão/PDV e pedidos), `Logistics` (separação e entrega).
+- **Permissões** geradas a partir do `Relation::morphMap()`: cada model ganha `{ação}_{alias}` para as ações do
+  `PermissionsEnum` (view, view_any, create, update, delete, restore, force_delete). `resource_group` = nome do módulo.
+  Consequência: **todo model entra no morph map** (`Relation::enforceMorphMap()`).
+- Cada módulo declara `config/rbac.php` (papel → model → ações); `php artisan sync:permissions` sincroniza tudo e dá todas as
+  permissões ao SuperAdmin, atribuindo o papel ao usuário **`admin@vevey.com`**.
+- Guard `web`, só staff (`User`). Cliente (guard `customers`) não usa RBAC: autorização por policy de dono.
+- `RoleResource` fica no `panel-admin`.
+- Adaptações ao trazer: namespace `Vevey\Permissions`, `App\Models\User`, e-mail do seed `admin@vevey.com`, migration já em
+  UUID (`model_id` uuid) e coerente com a decisão de UUID.
+
+### Carrinho
+
+**Decidido 09/11, por enquanto:** só componente Livewire no `panel-site`, em sessão, sem tabela `carts`. O pedido nasce pelo
+serviço de `orders` no checkout. Se vier carrinho entre dispositivos (RF003) ou pedido por link de WhatsApp, a tabela `carts`
+entra em `orders`.
+
+### Adiado
+
+- Ações que não são CRUD (registrar venda no PDV, ajustar estoque, cancelar/estornar pedido, ver relatórios): estender o
+  `PermissionsEnum` ou criar permissões avulsas. Decidir ao implementar.

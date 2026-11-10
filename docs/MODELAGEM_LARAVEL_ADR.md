@@ -452,7 +452,7 @@ Página de discussão: https://claude.ai/artifact/5a1SDspnZKgJNmSzG7Sf6i
 | `customers` | customers, customer_identities, customer_addresses | Model `Customer` autenticável (guard `customers`), contatos, endereços | — |
 | `orders` | orders, order_items, order_adjustments, order_status_histories, coupons | Serviço único de criação de pedido (web, pos, whatsapp), status, snapshots, cupom, desconto Pix, frete e rastreio (frete sem cálculo por enquanto, ver abaixo) | catalog, inventory, customers, payments |
 | `payments` | payments, payment_events | Cobrança 1:N, Pix com expiração, pagamento manual no balcão, webhook idempotente, estorno; contrato `PaymentGateway` | — (FK `order_id`; avisa por evento `PaymentConfirmed`) |
-| `permissions` | roles, permissions, model_has_roles, model_has_permissions, role_has_permissions | RBAC sobre spatie/laravel-permission, trazido do gil-benefits (ver abaixo) | `User` em `app/` |
+| `permissions` | rbac_roles, rbac_permissions, rbac_model_has_roles, rbac_model_has_permissions, rbac_role_has_permissions | RBAC sobre spatie/laravel-permission (ver abaixo) | `User` em `app/` |
 
 ### Módulos de interface
 
@@ -468,7 +468,7 @@ Página de discussão: https://claude.ai/artifact/5a1SDspnZKgJNmSzG7Sf6i
 3. **Integrações por adapter**: cada provedor é um módulo `integration-*`; a interface (contrato) fica no módulo de domínio e o
    bind acontece no ServiceProvider da integração. Candidatas: `integration-‹pix›` (`PaymentGateway`, provedor ainda não
    escolhido) e `integration-whatsapp` (adiado). Frete sem integração por enquanto. Mais de um provedor ao mesmo tempo: decidir quando
-   acontecer (o gil-benefits usa um Manager do Laravel com `extend()`).
+   acontecer (um Manager do Laravel com `extend()` é uma opção).
 4. **Comunicação entre módulos**: ver a seção abaixo.
 
 ### Comunicação entre módulos (decidido 2026-11-09)
@@ -507,7 +507,7 @@ permissions, app/                             ← usados por todos
 ### Padrão de DTO
 
 - Pasta `src/DTOs/`, namespace `Vevey\{Modulo}\DTOs`.
-- **Sufixo `Data` sempre** (nunca `Dto`, `DTO` ou sem sufixo, a mistura que existe no gil-benefits).
+- **Sufixo `Data` sempre** (nunca `Dto`, `DTO` ou sem sufixo).
   Entrada de action: `{Verbo}{Coisa}Data` (`ReserveStockData`, `PlaceOrderData`, `CreateChargeData`).
   Saída/leitura: `{Coisa}Data` (`ProductData`, `ChargeData`). Item de lista: `{Coisa}ItemData`.
 - `final readonly class` com promoção no construtor; criar com argumentos nomeados.
@@ -524,7 +524,7 @@ permissions, app/                             ← usados por todos
 - Carrega IDs e valores (ou um `Data`), nunca model, para poder ir para fila.
 - Listener em `src/Listeners/` do módulo que reage, nomeado pela ação (`MarkOrderAsPaid`), registrado por discovery.
 
-### RBAC (módulo `permissions`, padrão gil-benefits)
+### RBAC (módulo `permissions`)
 
 - Base `spatie/laravel-permission` (nova dependência). `Role` e `Permission` estendem os do Spatie; permissão tem `resource`,
   `resource_group` e `action`.
@@ -537,8 +537,7 @@ permissions, app/                             ← usados por todos
   permissões ao SuperAdmin, atribuindo o papel ao usuário **`admin@vevey.com`**.
 - Guard `web`, só staff (`User`). Cliente (guard `customers`) não usa RBAC: autorização por policy de dono.
 - `RoleResource` fica no `panel-admin`.
-- Adaptações ao trazer: namespace `Vevey\Permissions`, `App\Models\User`, e-mail do seed `admin@vevey.com`, migration já em
-  UUID (`model_id` uuid) e coerente com a decisão de UUID.
+- Tabelas com prefixo `rbac_` e ids em UUID (roles, permissions e `model_id`), coerente com a decisão de UUID.
 
 ### Carrinho
 

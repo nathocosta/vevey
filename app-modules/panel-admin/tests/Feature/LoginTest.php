@@ -2,12 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 use Vevey\PanelAdmin\Filament\Auth\Login;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 test('the login form comes filled with the seeded super admin locally', function (): void {
     app()->instance('env', 'local');

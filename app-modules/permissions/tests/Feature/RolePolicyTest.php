@@ -3,19 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
-use Tests\TestCase;
 use Vevey\Permissions\Enums\Roles;
 use Vevey\Permissions\Models\Role;
-
-use function Pest\Laravel\artisan;
-
-uses(TestCase::class, RefreshDatabase::class);
-
-beforeEach(function (): void {
-    artisan('sync:permissions');
-});
 
 test('only the super admin may manage roles', function (Roles $role, bool $allowed): void {
     $user = User::factory()->create();

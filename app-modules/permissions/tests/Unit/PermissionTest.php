@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Tests\TestCase;
 use Vevey\Permissions\Enums\PermissionsEnum;
 use Vevey\Permissions\Models\Permission;
 use Vevey\Permissions\Models\Role;
-
-uses(TestCase::class);
 
 test('permission names use the morph alias of the model', function (): void {
     expect(PermissionsEnum::ViewAny->buildPermissionFor(User::class))->toBe('view_any_users')

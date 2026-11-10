@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Tests\TestCase;
 use Vevey\Permissions\Enums\PermissionsEnum;
 use Vevey\Permissions\Enums\Roles;
 use Vevey\Permissions\Models\Permission;
 use Vevey\Permissions\Models\Role;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 test('sync creates every role of the Roles enum on the web guard', function (): void {
     expect(Artisan::call('sync:permissions'))->toBe(0);

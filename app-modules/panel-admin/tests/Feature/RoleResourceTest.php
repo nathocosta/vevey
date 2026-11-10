@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 use Vevey\PanelAdmin\Filament\Resources\Roles\Pages\CreateRole;
 use Vevey\PanelAdmin\Filament\Resources\Roles\Pages\EditRole;
 use Vevey\PanelAdmin\Filament\Resources\Roles\Pages\ListRoles;
@@ -15,14 +13,7 @@ use Vevey\Permissions\Models\Permission;
 use Vevey\Permissions\Models\Role;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\artisan;
 use function Pest\Laravel\get;
-
-uses(TestCase::class, RefreshDatabase::class);
-
-beforeEach(function (): void {
-    artisan('sync:permissions');
-});
 
 function staffWithRole(Roles $role): User
 {

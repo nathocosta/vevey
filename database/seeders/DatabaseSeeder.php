@@ -7,7 +7,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Artisan;
 use Vevey\Permissions\Enums\Roles;
 
 class DatabaseSeeder extends Seeder
@@ -20,7 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Artisan::call('sync:permissions');
+        $this->call(PermissionSeeder::class);
 
         $superAdmin = User::factory()->create([
             'name' => 'Super Admin',

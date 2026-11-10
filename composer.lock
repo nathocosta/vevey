@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fbfe09e40b66270f8b1a8d82836b436e",
+    "content-hash": "21034b8a8970925db6db5354e6a3c314",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -9828,6 +9828,38 @@
                 }
             ],
             "time": "2026-10-19T10:48:00+00:00"
+        },
+        {
+            "name": "vevey/panel-admin",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/panel-admin",
+                "reference": "3ccf2db4457658bd162d5f7e6d6568519478cfc7"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\PanelAdmin\\Providers\\AdminPanelProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\PanelAdmin\\": "src/",
+                    "Vevey\\PanelAdmin\\Tests\\": "tests/",
+                    "Vevey\\PanelAdmin\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\PanelAdmin\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "vevey/permissions",

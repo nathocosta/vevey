@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Providers\Filament;
+namespace Vevey\PanelAdmin\Providers;
 
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -20,24 +20,26 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Vevey\PanelAdmin\Filament\Auth\Login;
 
-class AdminPanelProvider extends PanelProvider
+final class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
-            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
+            ->discoverResources(in: __DIR__ . '/../Filament/Resources', for: 'Vevey\PanelAdmin\Filament\Resources')
+            ->discoverPages(in: __DIR__ . '/../Filament/Pages', for: 'Vevey\PanelAdmin\Filament\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\Filament\Admin\Widgets')
+            ->discoverWidgets(in: __DIR__ . '/../Filament/Widgets', for: 'Vevey\PanelAdmin\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,

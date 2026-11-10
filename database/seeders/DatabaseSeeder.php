@@ -7,21 +7,27 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
+use Vevey\Permissions\Enums\Roles;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Seed the application's database: roles and permissions, then the dev team's super admin
+     * (admin@vevey.com / password) to log in at /admin locally.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        Artisan::call('sync:permissions');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $superAdmin = User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'admin@vevey.com',
+            'password' => 'password',
         ]);
+
+        $superAdmin->assignRole(Roles::SuperAdmin);
     }
 }

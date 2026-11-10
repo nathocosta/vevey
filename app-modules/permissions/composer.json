@@ -1,0 +1,24 @@
+{
+	"name": "vevey/permissions",
+	"description": "",
+	"type": "library",
+	"version": "1.0",
+	"license": "proprietary",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"Vevey\\Permissions\\": "src/",
+			"Vevey\\Permissions\\Tests\\": "tests/",
+			"Vevey\\Permissions\\Database\\Factories\\": "database/factories/",
+			"Vevey\\Permissions\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Vevey\\Permissions\\Providers\\PermissionsServiceProvider"
+			]
+		}
+	}
+}

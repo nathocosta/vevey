@@ -1,7 +1,7 @@
 # Vevey — Migração para Laravel + Filament: discussão de modelagem (ADRs)
 
 Data: 2026-11-02 / 2026-11-03 (sincronizado com o artefato v15 em 2026-11-03)
-Artefato visual (mapa do sistema atual + seção "Discussões"): https://claude.ai/artifact/D5RZ1j8AxWj1yDQ7Enmyao (republicado na conta 3pontos em 2026-11-07; original na conta brd: PtMF9CTJ1kAbpXwAHjYVkE)
+Artefato visual (mapa do sistema atual + seção "Discussões"): https://claude.ai/artifact/D5RZ1j8AxWj1yDQ7Enmyao
 
 Este arquivo registra tudo o que foi discutido sobre a nova modelagem antes de migrar o sistema
 de FastAPI + frontend estático para Laravel + Filament. Serve de base para os ADRs do projeto novo

@@ -14,7 +14,10 @@
         "internachi/modular": "^3.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "league/flysystem-aws-s3-v3": "^3.35"
+        "league/flysystem-aws-s3-v3": "^3.35",
+        "spatie/laravel-permission": "^8",
+        "vevey/panel-admin": "*",
+        "vevey/permissions": "*"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.7",

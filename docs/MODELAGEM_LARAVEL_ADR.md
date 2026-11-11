@@ -1,7 +1,7 @@
 # Vevey — Migração para Laravel + Filament: discussão de modelagem (ADRs)
 
 Data: 2026-11-02 / 2026-11-03 (sincronizado com o artefato v15 em 2026-11-03)
-Artefato visual (mapa do sistema atual + seção "Discussões"): https://claude.ai/artifact/D5RZ1j8AxWj1yDQ7Enmyao
+Mapa visual do sistema atual e das discussões de modelagem: [`docs/mapa-do-sistema.html`](mapa-do-sistema.html) (abra no navegador).
 
 Este arquivo registra tudo o que foi discutido sobre a nova modelagem antes de migrar o sistema
 de FastAPI + frontend estático para Laravel + Filament. Serve de base para os ADRs do projeto novo
@@ -441,7 +441,6 @@ media (spatie), activity_log (spatie)
 
 internachi/modular em `app-modules/`, namespace `Vevey\{Studly}`, diretório em kebab-case, nomes em inglês.
 Opções avaliadas: A (fina, 7 módulos de domínio), B (por fluxo, 5) e C (enxuta, 3). **Escolhida B, por enquanto.**
-Página de discussão: https://claude.ai/artifact/5a1SDspnZKgJNmSzG7Sf6i
 
 ### Módulos de domínio
 

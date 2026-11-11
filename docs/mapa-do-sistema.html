@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vevey Doces Mapa do Sistema</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: uma coluna de leitura (72ch) com faixas largas para o DER e os fluxos; navegação fixa por âncoras no topo. */
+:root {
+  --bg: #FBF8F3;
+  --surface: #FFFFFF;
+  --surface-2: #F1EBE2;
+  --line: #DED3C4;
+  --fg: #221A1B;
+  --muted: #6E6059;
+  --accent: #800F2F;
+  --accent-soft: #F5E3E8;
+  --gold: #9A6E24;
+  --gold-soft: #F6ECD8;
+  --ok: #2E7D4F;
+  --ok-soft: #E2F2E8;
+  --warn: #B4580E;
+  --warn-soft: #FBEADB;
+  --bad: #B3261E;
+  --bad-soft: #F9E1DF;
+  --info: #2B5F9E;
+  --info-soft: #E1EBF7;
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --body: "Source Sans 3", "Segoe UI", Roboto, system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171213; --surface: #211A1B; --surface-2: #2B2224; --line: #3E3133;
+    --fg: #F1E9E2; --muted: #B5A69D; --accent: #E88AA2; --accent-soft: #3A1F28;
+    --gold: #D9B16A; --gold-soft: #3A2F1C; --ok: #7CC99A; --ok-soft: #1E3327;
+    --warn: #E9A36A; --warn-soft: #3B2A1B; --bad: #F09B95; --bad-soft: #3D2222;
+    --info: #8FB6E8; --info-soft: #1E2C40; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171213; --surface: #211A1B; --surface-2: #2B2224; --line: #3E3133;
+  --fg: #F1E9E2; --muted: #B5A69D; --accent: #E88AA2; --accent-soft: #3A1F28;
+  --gold: #D9B16A; --gold-soft: #3A2F1C; --ok: #7CC99A; --ok-soft: #1E3327;
+  --warn: #E9A36A; --warn-soft: #3B2A1B; --bad: #F09B95; --bad-soft: #3D2222;
+  --info: #8FB6E8; --info-soft: #1E2C40; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: var(--accent); }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
+h3 { font-size: 1.2rem; font-weight: 700; }
+h4 { font-size: 1rem; font-weight: 700; font-family: var(--body); }
+p { margin: 0; max-width: 72ch; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--surface-2); padding: 0.1em 0.4em; border-radius: 4px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--gold); }
+
+nav.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav.top .wrap { display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; scrollbar-width: none; }
+nav.top a { white-space: nowrap; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.85rem; padding: 6px 10px; border-radius: 999px; }
+nav.top a:hover, nav.top a:focus-visible { background: var(--surface-2); color: var(--fg); outline: none; }
+
+header.hero { padding-block: 48px 32px; }
+header.hero .wrap { display: grid; gap: 20px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
+.chip.accent { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.chip.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.chip.info { background: var(--info-soft); color: var(--info); border-color: transparent; }
+.chip.gold { background: var(--gold-soft); color: var(--gold); border-color: transparent; }
+
+section { padding-block: 40px; border-top: 1px solid var(--line); }
+section .wrap { display: grid; gap: 20px; }
+.lead { color: var(--muted); font-size: 1.05rem; }
+
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tier { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 8px; min-width: 0; }
+.tier .eyebrow { color: var(--accent); }
+.tier ul { margin: 0; padding-left: 18px; font-size: 0.92rem; }
+.tier li { margin-block: 2px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; min-width: 0; align-content: start; }
+.card .mono { color: var(--muted); font-size: 0.78rem; }
+
+.scroll { overflow-x: auto; }
+.der { width: 100%; max-width: 100%; height: auto; display: block; }
+.der text { font-family: var(--mono); font-size: 11px; fill: var(--fg); }
+.der .ttl { font-family: var(--body); font-weight: 700; font-size: 13px; fill: var(--surface); }
+.der .fk { fill: var(--muted); }
+.der .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.der .hd { fill: var(--accent); }
+.der .hd.g { fill: var(--gold); }
+.der .hd.i { fill: var(--info); }
+.der .hd.o { fill: var(--ok); }
+.der .rel { stroke: var(--muted); stroke-width: 1.4; fill: none; }
+.der .lbl { font-family: var(--body); font-size: 10px; fill: var(--muted); }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+tr:last-child td { border-bottom: none; }
+td.mono, th.mono { font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; }
+.m { display: inline-block; font-family: var(--mono); font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 5px; min-width: 52px; text-align: center; }
+.m.get { background: var(--info-soft); color: var(--info); }
+.m.post { background: var(--ok-soft); color: var(--ok); }
+.m.put, .m.patch { background: var(--warn-soft); color: var(--warn); }
+.m.del { background: var(--bad-soft); color: var(--bad); }
+
+.flow { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.flow header { padding: 12px 16px; background: var(--surface-2); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.flow header h3 { font-size: 1.05rem; }
+.steps { display: grid; gap: 0; padding: 8px 0; }
+.step { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 8px 16px; align-items: start; }
+.step .n { width: 26px; height: 26px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-family: var(--mono); font-size: 0.78rem; font-weight: 600; display: grid; place-items: center; }
+.step .n.srv { background: var(--info-soft); color: var(--info); }
+.step .n.db { background: var(--gold-soft); color: var(--gold); }
+.step .t { font-size: 0.93rem; min-width: 0; }
+.step .t b { font-weight: 700; }
+.step .t small { display: block; color: var(--muted); font-size: 0.82rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; color: var(--muted); align-items: center; }
+.legend .dot { width: 12px; height: 12px; border-radius: 999px; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+
+.states { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.states .arrow { color: var(--muted); font-size: 0.8rem; }
+.state { padding: 5px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--line); background: var(--surface); }
+.state.start { border-color: var(--info); color: var(--info); }
+.state.end { border-color: var(--ok); color: var(--ok); }
+.state.cancel { border-color: var(--bad); color: var(--bad); }
+.state.ghost { border-style: dashed; color: var(--muted); }
+
+.pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.page { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 6px; min-width: 0; align-content: start; }
+.page .file { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); }
+.page h4 { font-size: 0.98rem; }
+.page p { font-size: 0.86rem; color: var(--muted); }
+.page .calls { display: flex; flex-wrap: wrap; gap: 4px; }
+.page .calls span { font-family: var(--mono); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--surface-2); }
+.page.admin { border-color: var(--accent); }
+.page.sys { border-style: dashed; }
+
+.roles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.role { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 8px; min-width: 0; align-content: start; }
+.role ul { margin: 0; padding-left: 16px; font-size: 0.86rem; }
+.role .who { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
+
+.findings { display: grid; gap: 10px; }
+.finding { display: grid; grid-template-columns: 8px 1fr; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.finding .bar { background: var(--warn); }
+.finding.bad .bar { background: var(--bad); }
+.finding.info .bar { background: var(--info); }
+.finding .body { padding: 12px 14px; display: grid; gap: 4px; font-size: 0.92rem; }
+.finding .body small { color: var(--muted); font-family: var(--mono); font-size: 0.76rem; }
+
+.disc { display: grid; gap: 14px; }
+.disc .card h3 { color: var(--accent); }
+.disc .card ul { margin: 0; padding-left: 18px; font-size: 0.92rem; display: grid; gap: 6px; }
+.disc .card li b { font-weight: 700; }
+.disc pre { margin: 0; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-family: var(--mono); font-size: 0.78rem; line-height: 1.5; overflow-x: auto; color: var(--fg); }
+.verdict { display: grid; grid-template-columns: 8px 1fr; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.verdict .bar { background: var(--accent); }
+.verdict .body { padding: 12px 14px; font-size: 0.95rem; display: grid; gap: 4px; }
+.decisions { counter-reset: d; display: grid; gap: 8px; }
+.decision { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; }
+.decision::before { counter-increment: d; content: counter(d); width: 24px; height: 24px; border-radius: 999px; background: var(--gold-soft); color: var(--gold); font-family: var(--mono); font-size: 0.78rem; font-weight: 600; display: grid; place-items: center; }
+.decision .open { color: var(--warn); font-size: 0.8rem; font-weight: 600; }
+.keep { font-size: 0.9rem; color: var(--muted); }
+
+.ledger-schema .tbl table td { font-size: 0.82rem; padding: 6px 10px; }
+.tbl { min-width: 0; }
+.tbl-h { font-family: var(--mono); font-weight: 600; font-size: 0.82rem; padding: 7px 12px; border-radius: 8px 8px 0 0; color: var(--surface); display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.tbl-h small { font-family: var(--body); font-weight: 400; font-size: 0.74rem; opacity: 0.9; }
+.tbl-h.mv { background: var(--accent); }
+.tbl-h.rs { background: var(--gold); }
+.tbl-h.lv { background: var(--info); }
+.tbl > table, .tbl .scroll > table { border-radius: 0 0 10px 10px; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.dim, .dim { color: var(--muted); }
+.qp, .qn { font-family: var(--mono); font-weight: 600; padding: 1px 6px; border-radius: 4px; }
+.qp { background: var(--ok-soft); color: var(--ok); }
+.qn { background: var(--bad-soft); color: var(--bad); }
+.rs-a, .rs-f, .rs-r { font-family: var(--mono); font-size: 0.74rem; font-weight: 600; padding: 2px 7px; border-radius: 999px; }
+.rs-a { background: var(--warn-soft); color: var(--warn); }
+.rs-f { background: var(--ok-soft); color: var(--ok); }
+.rs-r { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.timeline td, .rows td { font-size: 0.86rem; }
+.timeline tr.ok-row td:first-child { box-shadow: inset 4px 0 0 var(--ok); }
+.timeline tr.bad-row td:first-child { box-shadow: inset 4px 0 0 var(--bad); }
+.timeline tr.warn-row td:first-child { box-shadow: inset 4px 0 0 var(--warn); }
+
+footer { padding-block: 32px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--line); }
+
+@media (max-width: 860px) {
+  .tiers, .grid3, .roles { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .tiers, .grid2, .grid3, .roles { grid-template-columns: 1fr; }
+  td, th { padding: 8px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  nav.top a { transition: background 0.15s ease; }
+}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Seções">
+  <div class="wrap">
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#modelagem">Modelagem</a>
+    <a href="#estados">Estados</a>
+    <a href="#fluxos">Fluxos</a>
+    <a href="#api">API</a>
+    <a href="#paginas">Páginas</a>
+    <a href="#rbac">Perfis</a>
+    <a href="#achados">Achados</a>
+    <a href="#discussoes">Discussões</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Mapa técnico do repositório</span>
+    <h1>Vevey Doces &amp; Festas</h1>
+    <p class="lead">E-commerce e backoffice de uma loja de confeitaria e artigos de festa em Santo André (SP), construído como TCC da FATEC. Este mapa foi extraído do código em 2 de novembro de 2026 e cobre arquitetura, modelagem de dados, fluxos de negócio, páginas e contratos da API.</p>
+    <div class="hero-meta">
+      <span class="chip accent">FastAPI + SQLAlchemy 2.0</span>
+      <span class="chip gold">PostgreSQL no Supabase</span>
+      <span class="chip">Frontend estático em Vanilla JS</span>
+      <span class="chip info">10 tabelas</span>
+      <span class="chip info">26 rotas na API v1</span>
+      <span class="chip info">12 páginas HTML</span>
+      <span class="chip info">3 perfis internos + cliente</span>
+    </div>
+  </div>
+</header>
+
+<section id="arquitetura">
+  <div class="wrap">
+    <span class="eyebrow">1. Arquitetura</span>
+    <h2>Três camadas desacopladas</h2>
+    <p>O frontend é um conjunto de páginas HTML servidas de forma estática. Ele fala com a API REST por JSON e Bearer token. A API fala com o Postgres por SQLAlchemy via pooler do Supabase. Não há servidor de templates: toda renderização acontece no navegador.</p>
+    <div class="tiers">
+      <div class="tier">
+        <span class="eyebrow">Apresentação</span>
+        <h3>frontend/</h3>
+        <ul>
+          <li>12 páginas HTML, Tailwind via CDN, Material Symbols</li>
+          <li><code>js/app.js</code> (1.728 linhas) concentra carrinho, catálogo, checkout e conta</li>
+          <li><code>admin.html</code> (2.918 linhas) carrega seu próprio script de painel</li>
+          <li>Fallback offline: catálogo e pedidos ficam em <code>localStorage</code> quando a API está fora</li>
+          <li>Deploy alvo: Vercel (<code>vevey.vercel.app</code>)</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <span class="eyebrow">Negócio</span>
+        <h3>backend/app/</h3>
+        <ul>
+          <li>FastAPI com prefixo <code>/api/v1</code>, Swagger desligado em produção</li>
+          <li>5 routers: auth, produtos, pedidos, frete, funcionarios</li>
+          <li>JWT HS256 (PyJWT) com claim <code>role</code>, senha em bcrypt</li>
+          <li>Rate limit global 120/min (slowapi) e limites por rota no login e checkout</li>
+          <li>Headers de segurança OWASP e handler 403 customizado</li>
+          <li>Serve <code>/assets</code> do frontend para imagens WebP</li>
+          <li>Deploy alvo: Render (<code>vevey-api.onrender.com</code>)</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <span class="eyebrow">Persistência</span>
+        <h3>database/</h3>
+        <ul>
+          <li>PostgreSQL gerenciado no Supabase, região sa-east-1, pooler na porta 6543</li>
+          <li><code>schema.sql</code>: DDL inicial com 9 tabelas, índices e 3 triggers</li>
+          <li><code>alteracoes_schema.sql</code>: migra CHECKs para enums nativos, cria <code>usuarios_admin</code> e <code>tipo_entrega</code></li>
+          <li>Sem Alembic: migrações são SQL manual no editor do Supabase</li>
+          <li>Seed por <code>backend/seed.py</code> ou <code>seed.sql</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="modelagem">
+  <div class="wrap">
+    <span class="eyebrow">2. Modelagem de dados</span>
+    <h2>Diagrama entidade-relacionamento</h2>
+    <p>Dez tabelas em quatro blocos: catálogo, clientes, vendas e acesso interno. A tabela <code>usuarios_admin</code> é isolada de propósito: funcionários e clientes nunca compartilham credenciais. Chaves estrangeiras em vendas usam RESTRICT para preservar histórico; em cadastro usam CASCADE.</p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--accent)"></i>Catálogo</span>
+      <span><i class="dot" style="background:var(--gold)"></i>Clientes</span>
+      <span><i class="dot" style="background:var(--info)"></i>Vendas e financeiro</span>
+      <span><i class="dot" style="background:var(--ok)"></i>Acesso interno</span>
+      <span>PK sublinhado · FK em cinza · 1—N com pé de galinha</span>
+    </div>
+    <div class="scroll">
+      <svg class="der" viewBox="0 0 1100 720" role="img" aria-label="Diagrama entidade-relacionamento das dez tabelas">
+        <defs>
+          <marker id="crow" markerWidth="14" markerHeight="14" refX="13" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+            <path d="M1 1 L13 7 L1 13 M13 7 L1 7" stroke="var(--muted)" stroke-width="1.4" fill="none"/>
+          </marker>
+          <marker id="one" markerWidth="10" markerHeight="14" refX="9" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+            <path d="M5 1 L5 13" stroke="var(--muted)" stroke-width="1.4" fill="none"/>
+          </marker>
+        </defs>
+
+        <!-- categorias -->
+        <g transform="translate(20,20)">
+          <rect class="box" width="190" height="112" rx="8"/>
+          <rect class="hd" width="190" height="26" rx="8"/><rect class="hd" y="14" width="190" height="12"/>
+          <text class="ttl" x="10" y="18">categorias</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62">nome varchar(100) UK</text>
+          <text x="10" y="78">slug varchar(100) UK</text>
+          <text x="10" y="94">descricao text</text>
+          <text x="10" y="108" class="fk">created_at · updated_at</text>
+        </g>
+
+        <!-- produtos_categorias -->
+        <g transform="translate(260,40)">
+          <rect class="box" width="190" height="72" rx="8"/>
+          <rect class="hd" width="190" height="26" rx="8"/><rect class="hd" y="14" width="190" height="12"/>
+          <text class="ttl" x="10" y="18">produtos_categorias</text>
+          <text x="10" y="46" class="fk" text-decoration="underline">produto_id FK ⇢ cascade</text>
+          <text x="10" y="62" class="fk" text-decoration="underline">categoria_id FK ⇢ cascade</text>
+        </g>
+
+        <!-- produtos -->
+        <g transform="translate(500,20)">
+          <rect class="box" width="210" height="176" rx="8"/>
+          <rect class="hd" width="210" height="26" rx="8"/><rect class="hd" y="14" width="210" height="12"/>
+          <text class="ttl" x="10" y="18">produtos</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62">nome varchar(150)</text>
+          <text x="10" y="78">slug varchar(150) UK</text>
+          <text x="10" y="94">preco numeric(10,2) ≥ 0</text>
+          <text x="10" y="110">preco_promocional &lt; preco</text>
+          <text x="10" y="126">imagem_url varchar(500)</text>
+          <text x="10" y="142">estoque int ≥ 0</text>
+          <text x="10" y="158">ativo boolean</text>
+          <text x="10" y="172" class="fk">created_at · updated_at</text>
+        </g>
+
+        <!-- usuarios_admin -->
+        <g transform="translate(860,20)">
+          <rect class="box" width="220" height="128" rx="8"/>
+          <rect class="hd o" width="220" height="26" rx="8"/><rect class="hd o" y="14" width="220" height="12"/>
+          <text class="ttl" x="10" y="18">usuarios_admin</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62">nome varchar(150)</text>
+          <text x="10" y="78">email varchar(150) UK</text>
+          <text x="10" y="94">senha_hash varchar(255)</text>
+          <text x="10" y="110">cargo enum cargo_admin</text>
+          <text x="10" y="124" class="fk">ADMIN · OPERADOR · LOGISTICA</text>
+        </g>
+
+        <!-- clientes -->
+        <g transform="translate(20,250)">
+          <rect class="box" width="190" height="144" rx="8"/>
+          <rect class="hd g" width="190" height="26" rx="8"/><rect class="hd g" y="14" width="190" height="12"/>
+          <text class="ttl" x="10" y="18">clientes</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62">nome varchar(150)</text>
+          <text x="10" y="78">cpf char(11) UK</text>
+          <text x="10" y="94">email varchar(150) UK</text>
+          <text x="10" y="110">telefone varchar(20)</text>
+          <text x="10" y="126">senha_hash varchar(255)</text>
+          <text x="10" y="140">ativo boolean</text>
+        </g>
+
+        <!-- enderecos -->
+        <g transform="translate(20,440)">
+          <rect class="box" width="190" height="176" rx="8"/>
+          <rect class="hd g" width="190" height="26" rx="8"/><rect class="hd g" y="14" width="190" height="12"/>
+          <text class="ttl" x="10" y="18">enderecos</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62" class="fk">cliente_id FK ⇢ cascade</text>
+          <text x="10" y="78">identificador varchar(50)</text>
+          <text x="10" y="94">cep char(8)</text>
+          <text x="10" y="110">logradouro · numero</text>
+          <text x="10" y="126">complemento · bairro</text>
+          <text x="10" y="142">cidade · estado char(2)</text>
+          <text x="10" y="158">principal boolean</text>
+          <text x="10" y="172" class="fk">created_at · updated_at</text>
+        </g>
+
+        <!-- pedidos -->
+        <g transform="translate(330,270)">
+          <rect class="box" width="230" height="192" rx="8"/>
+          <rect class="hd i" width="230" height="26" rx="8"/><rect class="hd i" y="14" width="230" height="12"/>
+          <text class="ttl" x="10" y="18">pedidos</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62" class="fk">cliente_id FK ⇢ restrict</text>
+          <text x="10" y="78" class="fk">endereco_entrega_id FK ⇢ restrict</text>
+          <text x="10" y="94">valor_produtos numeric(10,2)</text>
+          <text x="10" y="110">valor_frete numeric(10,2)</text>
+          <text x="10" y="126">valor_total numeric(10,2)</text>
+          <text x="10" y="142">status enum status_pedido</text>
+          <text x="10" y="158">tipo_entrega enum tipo_entrega</text>
+          <text x="10" y="174">codigo_rastreio varchar(100)</text>
+          <text x="10" y="188" class="fk">created_at · updated_at</text>
+        </g>
+
+        <!-- itens_pedido -->
+        <g transform="translate(620,250)">
+          <rect class="box" width="210" height="112" rx="8"/>
+          <rect class="hd i" width="210" height="26" rx="8"/><rect class="hd i" y="14" width="210" height="12"/>
+          <text class="ttl" x="10" y="18">itens_pedido</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62" class="fk">pedido_id FK ⇢ cascade</text>
+          <text x="10" y="78" class="fk">produto_id FK ⇢ restrict</text>
+          <text x="10" y="94">quantidade int &gt; 0</text>
+          <text x="10" y="108">preco_unitario numeric (congelado)</text>
+        </g>
+
+        <!-- pagamentos -->
+        <g transform="translate(620,400)">
+          <rect class="box" width="210" height="144" rx="8"/>
+          <rect class="hd i" width="210" height="26" rx="8"/><rect class="hd i" y="14" width="210" height="12"/>
+          <text class="ttl" x="10" y="18">pagamentos</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62" class="fk">pedido_id FK UK ⇢ restrict</text>
+          <text x="10" y="78">transacao_gateway_id UK</text>
+          <text x="10" y="94">metodo enum metodo_pagamento</text>
+          <text x="10" y="110">status enum status_pagamento</text>
+          <text x="10" y="126">detalhes_gateway jsonb</text>
+          <text x="10" y="140" class="fk">created_at · updated_at</text>
+        </g>
+
+        <!-- historico -->
+        <g transform="translate(330,520)">
+          <rect class="box" width="230" height="96" rx="8"/>
+          <rect class="hd i" width="230" height="26" rx="8"/><rect class="hd i" y="14" width="230" height="12"/>
+          <text class="ttl" x="10" y="18">historico_status_pedidos</text>
+          <text x="10" y="46" text-decoration="underline">id bigserial</text>
+          <text x="10" y="62" class="fk">pedido_id FK ⇢ cascade</text>
+          <text x="10" y="78">status varchar(30) · observacao text</text>
+          <text x="10" y="92" class="fk">created_at (sem updated_at)</text>
+        </g>
+
+        <!-- enums -->
+        <g transform="translate(860,250)">
+          <rect class="box" width="220" height="296" rx="8" stroke-dasharray="4 3"/>
+          <text class="lbl" x="10" y="20" font-weight="700">Tipos enumerados (Postgres)</text>
+          <text x="10" y="42" font-weight="600">status_pedido</text>
+          <text x="10" y="58" class="fk">Pendente · Aguardando Pagamento</text>
+          <text x="10" y="74" class="fk">Pago · Pronto para Retirada</text>
+          <text x="10" y="90" class="fk">Enviado para a Transportadora</text>
+          <text x="10" y="106" class="fk">Enviado · Entregue · Cancelado</text>
+          <text x="10" y="134" font-weight="600">metodo_pagamento</text>
+          <text x="10" y="150" class="fk">Pix · Cartão de Crédito · Boleto</text>
+          <text x="10" y="178" font-weight="600">status_pagamento</text>
+          <text x="10" y="194" class="fk">Pendente · Aprovado · Recusado</text>
+          <text x="10" y="210" class="fk">Estornado · Em Análise</text>
+          <text x="10" y="238" font-weight="600">tipo_entrega</text>
+          <text x="10" y="254" class="fk">RETIRADA_LOJA</text>
+          <text x="10" y="270" class="fk">ENVIO_TRANSPORTADORA</text>
+          <text x="10" y="290" class="fk">cargo_admin: ver usuarios_admin</text>
+        </g>
+
+        <!-- relações -->
+        <!-- categorias 1-N produtos_categorias -->
+        <path class="rel" d="M210 76 L260 76" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- produtos 1-N produtos_categorias -->
+        <path class="rel" d="M500 76 L450 76" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- clientes 1-N enderecos -->
+        <path class="rel" d="M115 394 L115 440" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- clientes 1-N pedidos -->
+        <path class="rel" d="M210 322 L330 322" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- enderecos 1-N pedidos -->
+        <path class="rel" d="M210 528 L270 528 L270 400 L330 400" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- pedidos 1-N itens_pedido -->
+        <path class="rel" d="M560 306 L620 306" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- produtos 1-N itens_pedido -->
+        <path class="rel" d="M725 196 L725 250" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- pedidos 1-1 pagamentos -->
+        <path class="rel" d="M560 440 L620 440" marker-start="url(#one)" marker-end="url(#one)"/>
+        <text class="lbl" x="568" y="433">1 : 1</text>
+        <!-- pedidos 1-N historico -->
+        <path class="rel" d="M445 462 L445 520" marker-start="url(#one)" marker-end="url(#crow)"/>
+        <!-- usuarios_admin isolated -->
+        <text class="lbl" x="860" y="170">sem FK: tabela isolada de acesso interno</text>
+        <text class="lbl" x="860" y="186">(login compartilha a rota com clientes)</text>
+      </svg>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Regras de integridade no banco</h3>
+        <table>
+          <tr><th>Onde</th><th>Regra</th></tr>
+          <tr><td class="mono">produtos</td><td>preco ≥ 0 · estoque ≥ 0 · preco_promocional nulo ou menor que preco</td></tr>
+          <tr><td class="mono">clientes</td><td>cpf com 11 caracteres e único · email único</td></tr>
+          <tr><td class="mono">enderecos</td><td>cep com 8 caracteres · UF com 2 letras</td></tr>
+          <tr><td class="mono">pedidos</td><td>três valores monetários ≥ 0 · status e tipo_entrega como enum nativo</td></tr>
+          <tr><td class="mono">itens_pedido</td><td>quantidade &gt; 0 · preco_unitario ≥ 0 (snapshot do preço praticado)</td></tr>
+          <tr><td class="mono">pagamentos</td><td>um pagamento por pedido (pedido_id UNIQUE) · transacao_gateway_id único</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Triggers em schema.sql</h3>
+        <table>
+          <tr><th>Trigger</th><th>Efeito</th></tr>
+          <tr><td class="mono">trg_subtrair_estoque</td><td>AFTER INSERT em itens_pedido: valida e debita estoque do produto</td></tr>
+          <tr><td class="mono">trg_devolver_estoque_cancelamento</td><td>AFTER UPDATE em pedidos: devolve estoque quando status vira Cancelado</td></tr>
+          <tr><td class="mono">trg_registrar_historico_status</td><td>AFTER INSERT/UPDATE OF status: grava linha em historico_status_pedidos</td></tr>
+        </table>
+        <p style="font-size:0.86rem;color:var(--muted)">A API também debita estoque e grava histórico em código. Se os triggers estiverem ativos no Supabase, o débito e o log acontecem duas vezes. Veja os achados no fim.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Índices declarados</h3>
+      <p class="mono" style="font-size:0.82rem">produtos(slug) · categorias(slug) · clientes(email) · clientes(cpf) · enderecos(cliente_id) · pedidos(cliente_id) · itens_pedido(pedido_id) · pagamentos(pedido_id) · usuarios_admin(email)</p>
+    </div>
+  </div>
+</section>
+
+<section id="estados">
+  <div class="wrap">
+    <span class="eyebrow">3. Ciclo de vida</span>
+    <h2>Estados do pedido e do pagamento</h2>
+    <p>Todo pedido nasce em <b>Aguardando Pagamento</b>, seja pelo checkout web, pelo checkout autenticado ou pelo pedido manual do WhatsApp. A transição seguinte é feita pelo painel administrativo, que grava uma linha de histórico a cada mudança. O cancelamento devolve estoque por trigger.</p>
+    <div class="card">
+      <h4>Pedido (status_pedido)</h4>
+      <div class="states">
+        <span class="state ghost">Pendente</span><span class="arrow">→</span>
+        <span class="state start">Aguardando Pagamento</span><span class="arrow">→</span>
+        <span class="state">Pago</span><span class="arrow">→</span>
+        <span class="state">Pronto para Retirada</span><span class="arrow">ou</span>
+        <span class="state">Enviado para a Transportadora</span><span class="arrow">→</span>
+        <span class="state">Enviado</span><span class="arrow">→</span>
+        <span class="state end">Entregue</span>
+        <span class="arrow">· a qualquer momento →</span>
+        <span class="state cancel">Cancelado</span>
+      </div>
+      <p style="font-size:0.86rem;color:var(--muted)">"Pendente" é o default da coluna, mas nenhuma rota cria pedido nesse estado. O painel exibe ainda "Em Separação", que não existe no enum do banco.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h4>Pagamento (status_pagamento)</h4>
+        <div class="states">
+          <span class="state start">Pendente</span><span class="arrow">→</span>
+          <span class="state end">Aprovado</span><span class="arrow">|</span>
+          <span class="state cancel">Recusado</span><span class="arrow">|</span>
+          <span class="state">Em Análise</span><span class="arrow">|</span>
+          <span class="state">Estornado</span>
+        </div>
+        <p style="font-size:0.86rem;color:var(--muted)">Nenhum webhook real existe. O único caminho para "Aprovado" é a rota de simulação <code>aprovar-teste</code>, que hoje falha (ver achados).</p>
+      </div>
+      <div class="card">
+        <h4>Tipo de entrega</h4>
+        <div class="states">
+          <span class="state">RETIRADA_LOJA</span>
+          <span class="state">ENVIO_TRANSPORTADORA</span>
+        </div>
+        <p style="font-size:0.86rem;color:var(--muted)">Na retirada, a API grava o endereço fixo da loja (R. Sen. Flaquer, 691, Centro, Santo André). O pedido manual sempre usa envio por transportadora.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fluxos">
+  <div class="wrap">
+    <span class="eyebrow">4. Fluxos de negócio</span>
+    <h2>Seis fluxos ponta a ponta</h2>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Navegador</span>
+      <span><i class="dot" style="background:var(--info-soft);border:1px solid var(--info)"></i>API</span>
+      <span><i class="dot" style="background:var(--gold-soft);border:1px solid var(--gold)"></i>Banco</span>
+    </div>
+
+    <div class="grid2">
+      <div class="flow">
+        <header><h3>A. Compra pela loja web (checkout sem login)</h3><span class="chip ok">Fluxo principal</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t"><b>Catálogo</b> carrega <code>GET /produtos?ativo=true</code> e cacheia em <code>vevey_products</code>.<small>Busca e filtro por categoria rodam no navegador sobre a lista completa.</small></div></div>
+          <div class="step"><span class="n">2</span><div class="t"><b>Carrinho</b> em <code>vevey_cart</code>. Cupom VEVEY10 dá 10%. Frete grátis acima de R$ 199.<small>Sedex, PAC ou retirada. Pix tem 5% de desconto calculado só no frontend.</small></div></div>
+          <div class="step"><span class="n">3</span><div class="t"><b>Checkout</b> pede nome, email, telefone, CPF e endereço. Nenhum token é exigido.</div></div>
+          <div class="step"><span class="n srv">4</span><div class="t"><code>POST /pedidos/checkout</code> localiza cliente por email ou CPF, ou cria um com senha placeholder.<small>Cria sempre um novo endereço, mesmo para cliente recorrente.</small></div></div>
+          <div class="step"><span class="n srv">5</span><div class="t">Valida ativo e estoque de cada item, aplica preço promocional, debita estoque, soma frete.</div></div>
+          <div class="step"><span class="n db">6</span><div class="t">Insere pedido (Aguardando Pagamento), itens, pagamento Pendente com Pix copia-e-cola simulado e histórico.</div></div>
+          <div class="step"><span class="n">7</span><div class="t"><b>Confirmação</b> mostra número <code>#VV-2026-0000</code> e Pix. Se a API falhar, o pedido fica só em <code>vevey_last_order</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <header><h3>B. Compra autenticada</h3><span class="chip">Rota existe, frontend não usa</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t">Cliente faz login em <b>minha-conta</b>; token vai para <code>vevey_token</code> com role "cliente".</div></div>
+          <div class="step"><span class="n srv">2</span><div class="t"><code>POST /pedidos/</code> exige Bearer de cliente e um <code>endereco_entrega_id</code> já cadastrado do próprio cliente.<small>Não há rota para o cliente cadastrar endereços, então este fluxo só funciona com dados do seed ou de checkouts anteriores.</small></div></div>
+          <div class="step"><span class="n db">3</span><div class="t">Mesma gravação do fluxo A, com <code>transacao_gateway_id</code> prefixado PAY-.</div></div>
+          <div class="step"><span class="n srv">4</span><div class="t"><code>GET /pedidos/meus</code> devolve histórico com itens e rastreio.<small>A página Minha Conta chama <code>GET /pedidos/</code> (rota de admin) em vez desta e recebe 403.</small></div></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <header><h3>C. Pedido manual via WhatsApp (balcão)</h3><span class="chip gold">OPERADOR</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t">Operadora abre a aba <b>Pedido Manual</b> no painel e digita nome, WhatsApp, CPF, endereço e itens.</div></div>
+          <div class="step"><span class="n srv">2</span><div class="t"><code>POST /pedidos/manual</code> busca cliente pelo telefone; se não existir, cria com email sintético <code>whatsapp_…@veveydoces.com.br</code>.</div></div>
+          <div class="step"><span class="n srv">3</span><div class="t">Cria endereço provisório com CEP fixo 01001000 e cidade São Paulo, valida estoque e debita.<small>Usa o preço cheio, ignorando promoção.</small></div></div>
+          <div class="step"><span class="n db">4</span><div class="t">Pedido Aguardando Pagamento, pagamento Pix com link <code>pagamento.veveydoces.com.br/pay/…</code> e histórico com nome do atendente.</div></div>
+          <div class="step"><span class="n">5</span><div class="t">A resposta inclui o texto pronto para enviar ao cliente no WhatsApp com o link de pagamento.</div></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <header><h3>D. Expedição e mudança de status</h3><span class="chip gold">LOGISTICA · OPERADOR · ADMIN</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t">Aba <b>Pedidos</b> lista <code>GET /pedidos/?status_filtro=…</code> com cliente, endereço e itens.<small>Não-admins veem "Volumes / Itens" no lugar do valor em R$.</small></div></div>
+          <div class="step"><span class="n">2</span><div class="t">Funcionário escolhe novo status, opcionalmente código de rastreio, e pode imprimir a comanda térmica.</div></div>
+          <div class="step"><span class="n srv">3</span><div class="t"><code>PATCH /pedidos/{id}/status</code> normaliza o texto (qualquer string com "retirada" ou "transportadora" é mapeada) e grava histórico com o nome do funcionário.</div></div>
+          <div class="step"><span class="n db">4</span><div class="t">Se o status for Cancelado, o trigger devolve o estoque dos itens.</div></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <header><h3>E. Gestão de catálogo e estoque</h3><span class="chip accent">ADMIN (CRUD) · todos (estoque)</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t">Aba <b>Estoque</b> lista produtos incluindo inativos e permite ajuste direto via <code>PATCH /produtos/{id}/estoque</code>.</div></div>
+          <div class="step"><span class="n">2</span><div class="t">Aba <b>Novo Produto</b> (só ADMIN): imagem convertida para WebP no navegador por <code>image-converter.js</code>, enviada em <code>POST /produtos/upload-imagem</code>.</div></div>
+          <div class="step"><span class="n srv">3</span><div class="t">A API salva em <code>frontend/assets/images/produtos/</code> no disco do servidor e devolve a URL relativa.<small>No Render o disco é efêmero: imagens somem a cada deploy.</small></div></div>
+          <div class="step"><span class="n srv">4</span><div class="t"><code>POST /produtos/</code>, <code>PUT</code> e <code>DELETE</code> exigem cargo ADMIN. Excluir produto com vendas faz soft delete (ativo = false).</div></div>
+        </div>
+      </div>
+
+      <div class="flow">
+        <header><h3>F. Autenticação e sessão</h3><span class="chip info">Clientes e funcionários</span></header>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div class="t"><code>POST /auth/register</code> cria cliente com CPF validado por dígito verificador e senha bcrypt.</div></div>
+          <div class="step"><span class="n srv">2</span><div class="t"><code>POST /auth/login</code> (5/min por IP) tenta primeiro em clientes, depois em usuarios_admin. O JWT leva <code>sub</code> e <code>role</code>; expira em 24h.</div></div>
+          <div class="step"><span class="n">3</span><div class="t"><b>admin-login</b> guarda <code>vevey_admin_token</code>; <b>admin.html</b> revalida com <code>GET /auth/admin/me</code> e redireciona para acesso-negado se o role não for interno.<small>Se a API estiver fora, o painel aceita a sessão local e assume ADMIN como padrão.</small></div></div>
+          <div class="step"><span class="n srv">4</span><div class="t"><code>get_current_admin</code> aceita ADMIN, OPERADOR e LOGISTICA. <code>require_admin_role</code> restringe a ADMIN.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <div class="wrap">
+    <span class="eyebrow">5. Contrato da API</span>
+    <h2>26 rotas em cinco routers</h2>
+    <p>Prefixo <code>/api/v1</code>. Autorização: <b>público</b> sem token, <b>cliente</b> exige role "cliente", <b>interno</b> aceita os três cargos, <b>ADMIN</b> exige cargo ADMIN.</p>
+    <div class="scroll">
+      <table>
+        <tr><th>Método</th><th>Rota</th><th>Auth</th><th>O que faz</th><th>Limite</th></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/auth/register</td><td>público</td><td>Cadastro de cliente com validação de CPF e unicidade de email/CPF</td><td class="mono">10/min</td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/auth/login</td><td>público</td><td>Login unificado de cliente ou funcionário; devolve token, role e nome</td><td class="mono">5/min</td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/auth/me</td><td>cliente</td><td>Dados cadastrais do cliente autenticado</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/auth/admin/me</td><td>interno</td><td>Valida token de funcionário e devolve id, nome, email, role</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/produtos/</td><td>público</td><td>Catálogo com busca, slug de categoria, apenas_disponiveis, incluir_inativos, skip/limit</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/produtos/{id_ou_slug}</td><td>público</td><td>Detalhe por id numérico ou slug</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/produtos/</td><td>ADMIN</td><td>Cria produto com categoria_ids</td><td></td></tr>
+        <tr><td><span class="m put">PUT</span></td><td class="mono">/produtos/{id}</td><td>ADMIN</td><td>Atualização parcial de todos os campos e categorias</td><td></td></tr>
+        <tr><td><span class="m del">DELETE</span></td><td class="mono">/produtos/{id}</td><td>ADMIN</td><td>Exclui, ou inativa se houver itens de pedido vinculados</td><td></td></tr>
+        <tr><td><span class="m patch">PATCH</span></td><td class="mono">/produtos/{id}/estoque</td><td>interno</td><td>Define novo_estoque absoluto</td><td></td></tr>
+        <tr><td><span class="m patch">PATCH</span></td><td class="mono">/produtos/{id}/status</td><td>interno</td><td>Liga ou desliga o produto na vitrine</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/produtos/upload-imagem</td><td>interno</td><td>Recebe imagem, converte para WebP com Pillow, salva em disco</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/pedidos/</td><td>cliente</td><td>Checkout autenticado com endereço já cadastrado</td><td class="mono">10/min</td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/pedidos/checkout</td><td>público</td><td>Checkout web: cria ou localiza cliente, endereço, pedido, pagamento Pix</td><td class="mono">20/min</td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/pedidos/manual</td><td>interno</td><td>Pedido WhatsApp com link de pagamento e mensagem pronta</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/pedidos/meus</td><td>cliente</td><td>Histórico do cliente com itens</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/pedidos/</td><td>interno</td><td>Todos os pedidos com cliente, endereço e itens; filtro status_filtro</td><td></td></tr>
+        <tr><td><span class="m patch">PATCH</span></td><td class="mono">/pedidos/{id}/status</td><td>interno</td><td>Muda status, rastreio e grava histórico</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/pedidos/{id}/aprovar-teste</td><td><span class="chip bad" style="padding:2px 8px">sem auth</span></td><td>Simula aprovação de Pix. Referencia um status inexistente e falha com 500</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/frete/calcular</td><td>público</td><td>Sedex R$ 18,90, PAC R$ 11,50 (grátis ≥ R$ 199), retirada grátis. Valores fixos</td><td class="mono">20/min</td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/funcionarios/</td><td>ADMIN</td><td>Lista colaboradores</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/funcionarios/{id}</td><td>ADMIN</td><td>Detalhe de colaborador</td><td></td></tr>
+        <tr><td><span class="m post">POST</span></td><td class="mono">/funcionarios/</td><td>ADMIN</td><td>Cria colaborador com cargo e senha bcrypt</td><td></td></tr>
+        <tr><td><span class="m put">PUT</span></td><td class="mono">/funcionarios/{id}</td><td>ADMIN</td><td>Edita nome, email, cargo, senha</td><td></td></tr>
+        <tr><td><span class="m del">DELETE</span></td><td class="mono">/funcionarios/{id}</td><td>ADMIN</td><td>Exclui, exceto a própria conta</td><td></td></tr>
+        <tr><td><span class="m get">GET</span></td><td class="mono">/ · /health</td><td>público</td><td>Status do serviço (fora do prefixo v1)</td><td></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="paginas">
+  <div class="wrap">
+    <span class="eyebrow">6. Páginas</span>
+    <h2>Loja, portal do cliente e backoffice</h2>
+    <p>Cada página é um HTML independente que inclui <code>js/app.js</code> e inicializa a rotina da sua tela. O painel administrativo é a exceção: ele carrega um script próprio embutido com cerca de 1.800 linhas.</p>
+    <div class="pages">
+      <div class="page"><span class="file">index.html</span><h4>Home</h4><p>Hero, categorias em destaque e 8 produtos ativos.</p><div class="calls"><span>GET /produtos?limite=8</span></div></div>
+      <div class="page"><span class="file">catalogo.html</span><h4>Catálogo</h4><p>Lista completa com busca, filtro por categoria (via ?categoria=slug), ordenação e favoritos. Cache em localStorage.</p><div class="calls"><span>GET /produtos?ativo=true</span></div></div>
+      <div class="page"><span class="file">produto.html</span><h4>Produto</h4><p>Detalhe por ?id= com cálculo de frete por CEP e adicionar à sacola.</p><div class="calls"><span>GET /produtos/{id}</span><span>POST /frete/calcular</span></div></div>
+      <div class="page"><span class="file">carrinho.html</span><h4>Sacola</h4><p>Quantidades, cupom VEVEY10, simulação de frete e escolha de modalidade.</p><div class="calls"><span>localStorage</span></div></div>
+      <div class="page"><span class="file">checkout.html</span><h4>Checkout</h4><p>Dados do cliente, endereço ou retirada, Pix, cartão ou boleto. Pix ganha 5%.</p><div class="calls"><span>POST /pedidos/checkout</span></div></div>
+      <div class="page"><span class="file">confirmacao.html</span><h4>Confirmação</h4><p>Número do pedido, resumo e Pix copia-e-cola lido de vevey_last_order.</p><div class="calls"><span>localStorage</span></div></div>
+      <div class="page"><span class="file">minha-conta.html</span><h4>Minha Conta</h4><p>Login e cadastro do cliente, lista de pedidos com filtro de status.</p><div class="calls"><span>POST /auth/login</span><span>GET /pedidos/ (403)</span></div></div>
+      <div class="page sys"><span class="file">meus-pedidos.html</span><h4>Redirect</h4><p>Apenas redireciona para minha-conta.html.</p></div>
+      <div class="page admin"><span class="file">admin-login.html</span><h4>Login interno</h4><p>Autentica funcionário e guarda vevey_admin_token e vevey_admin_user.</p><div class="calls"><span>POST /auth/login</span></div></div>
+      <div class="page admin"><span class="file">admin.html</span><h4>Painel administrativo</h4><p>Seis abas: Dashboard, Pedidos, Estoque, Funcionários (ADMIN), Novo Produto (ADMIN), Pedido Manual. Impressão de comanda térmica.</p><div class="calls"><span>GET /auth/admin/me</span><span>/pedidos/*</span><span>/produtos/*</span><span>/funcionarios/*</span></div></div>
+      <div class="page sys"><span class="file">acesso-negado.html</span><h4>403</h4><p>Tela de bloqueio quando o role não é interno.</p></div>
+      <div class="page sys"><span class="file">404.html</span><h4>404</h4><p>Página não encontrada com atalhos para o catálogo.</p></div>
+    </div>
+    <div class="card">
+      <h4>Chaves de localStorage usadas pelo frontend</h4>
+      <p class="mono" style="font-size:0.8rem">vevey_cart · vevey_products · vevey_discount_coupon · vevey_selected_shipping · vevey_last_order · vevey_orders_history · vevey_token · vevey_user · vevey_admin_token · vevey_admin_user · vevey_admin_orders · vevey_admin_employees · vevey_cookie_consent</p>
+      <p style="font-size:0.86rem;color:var(--muted)">O painel mantém cópias locais de pedidos e funcionários para funcionar sem backend. Isso explica por que a lista pode divergir do banco após um deploy.</p>
+    </div>
+  </div>
+</section>
+
+<section id="rbac">
+  <div class="wrap">
+    <span class="eyebrow">7. Perfis de acesso</span>
+    <h2>Quem pode fazer o quê</h2>
+    <div class="roles">
+      <div class="role">
+        <span class="chip accent">ADMIN</span>
+        <span class="who">Miriam (sócia) · seed id 1</span>
+        <ul>
+          <li>Tudo que os outros cargos fazem</li>
+          <li>Vê faturamento em R$ no dashboard e nos pedidos</li>
+          <li>CRUD de produtos e upload de imagem</li>
+          <li>CRUD de funcionários</li>
+        </ul>
+      </div>
+      <div class="role">
+        <span class="chip gold">OPERADOR</span>
+        <span class="who">Juliana (balcão) · seed id 2</span>
+        <ul>
+          <li>Pedido manual WhatsApp</li>
+          <li>Ajuste de estoque e ativar/desativar produto</li>
+          <li>Mudar status de pedidos</li>
+          <li>Vê volumes, não valores</li>
+        </ul>
+      </div>
+      <div class="role">
+        <span class="chip gold">LOGISTICA</span>
+        <span class="who">Carlos (expedição) · seed id 3</span>
+        <ul>
+          <li>Painel abre direto na aba Pedidos</li>
+          <li>Mesmas permissões da API que OPERADOR</li>
+          <li>Diferença é só de interface: banner operacional e foco em expedição</li>
+        </ul>
+      </div>
+      <div class="role">
+        <span class="chip info">cliente</span>
+        <span class="who">Nathan · seed · role "cliente"</span>
+        <ul>
+          <li>Cadastro e login</li>
+          <li>Checkout com ou sem token</li>
+          <li>Histórico em /pedidos/meus</li>
+          <li>Sem rota para gerir endereços</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:0.9rem;color:var(--muted)">O cargo só distingue ADMIN dos demais na API. OPERADOR e LOGISTICA têm permissões idênticas no servidor; a diferença vive apenas no painel.</p>
+  </div>
+</section>
+
+<section id="achados">
+  <div class="wrap">
+    <span class="eyebrow">8. Achados</span>
+    <h2>Pontos de atenção encontrados na leitura</h2>
+    <div class="findings">
+      <div class="finding bad"><div class="bar"></div><div class="body"><b>Rota de aprovação de Pix quebrada</b><span>Usa <code>StatusPedido.EM_SEPARACAO</code>, que não existe no enum. Toda chamada retorna 500. O painel e o frontend exibem "Em Separação" como se fosse um status válido.</span><small>backend/app/api/v1/endpoints/pedidos.py:949 · frontend/admin.html:730</small></div></div>
+      <div class="finding bad"><div class="bar"></div><div class="body"><b>Minha Conta chama a rota errada</b><span>A página busca <code>GET /pedidos/</code>, que exige cargo interno. Cliente autenticado recebe 403 e cai no fallback local. A rota correta <code>GET /pedidos/meus</code> existe e não é usada.</span><small>frontend/js/app.js:1583</small></div></div>
+      <div class="finding bad"><div class="bar"></div><div class="body"><b>Aprovação de teste sem autenticação</b><span>Qualquer pessoa pode chamar <code>POST /pedidos/{id}/aprovar-teste</code>. Quando o bug acima for corrigido, isso marcará pagamentos como aprovados sem controle.</span><small>pedidos.py:939</small></div></div>
+      <div class="finding"><div class="bar"></div><div class="body"><b>Estoque pode ser debitado duas vezes</b><span>A API subtrai estoque em código e o trigger <code>trg_subtrair_estoque</code> subtrai de novo no INSERT de itens_pedido. O mesmo vale para o histórico de status. Depende de os triggers terem sido aplicados no Supabase.</span><small>database/schema.sql · pedidos.py</small></div></div>
+      <div class="finding"><div class="bar"></div><div class="body"><b>Clientes criados com senha placeholder</b><span>Checkout web e pedido manual gravam <code>senha_hash</code> com texto fixo. O login falha para eles, mas o email e CPF ficam ocupados, impedindo cadastro posterior com os mesmos dados.</span><small>pedidos.py:706 e :602</small></div></div>
+      <div class="finding"><div class="bar"></div><div class="body"><b>Divergências de preço entre fluxos</b><span>Checkout aplica preço promocional; pedido manual usa preço cheio. Desconto Pix (5%) e cupom VEVEY10 existem só no frontend e não chegam ao valor gravado no banco.</span><small>app.js:1200 · pedidos.py:633</small></div></div>
+      <div class="finding"><div class="bar"></div><div class="body"><b>Upload de imagem em disco efêmero</b><span>Imagens vão para a pasta do frontend dentro do servidor da API. No Render, o disco é recriado a cada deploy e o frontend na Vercel não enxerga esse caminho.</span><small>produtos.py:354</small></div></div>
+      <div class="finding info"><div class="bar"></div><div class="body"><b>Schema inicial desatualizado</b><span><code>schema.sql</code> ainda tem o CHECK antigo de status e não conhece usuarios_admin nem tipo_entrega. Só fica correto após rodar <code>alteracoes_schema.sql</code>. Não há Alembic.</span><small>database/</small></div></div>
+      <div class="finding info"><div class="bar"></div><div class="body"><b>Painel assume ADMIN quando a API está fora</b><span>Se a validação do token falhar por rede, admin.html mantém a sessão e usa "ADMIN" como cargo padrão, liberando abas restritas na interface. A API continua protegida.</span><small>frontend/admin.html:1094</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="discussoes">
+  <div class="wrap">
+    <span class="eyebrow">9. Discussões</span>
+    <h2>Modelagem para a migração Laravel + Filament</h2>
+    <p class="lead">Registro das discussões de 2, 3, 4 e 8 de novembro de 2026 sobre o que mudar no modelo de dados antes de reescrever o sistema em Laravel com Filament. Os dois temas abertos por Richard foram armazenamento de dinheiro e um ledger de estoque. O restante são pontos levantados na leitura do código. Estas discussões servem de base para os ADRs do projeto novo: cada bloco “decidido” deve virar um ADR com contexto, opções, decisão e consequências.</p>
+
+    <div class="disc">
+
+      <div class="card">
+        <h3>9.1 Dinheiro</h3>
+        <p><b>O problema atual não é o tipo da coluna.</b> NUMERIC(10,2) é correto. O valor vira float na borda: a API serializa com <code>float()</code> e o JavaScript multiplica preço por quantidade em ponto flutuante. Cupom e desconto Pix são calculados só no navegador e nunca chegam ao banco. A tabela de pagamentos não tem valor próprio.</p>
+        <h4>Armazenamento</h4>
+        <ul>
+          <li><b>Inteiro em centavos</b>, coluna bigint, com value object Money no Laravel via <code>brick/money</code> atrás de um cast Eloquent.</li>
+          <li>NUMERIC também funciona, mas o cast decimal do Laravel devolve string e um cast acidental para float traz o problema de volta. Inteiro elimina a classe de erro.</li>
+          <li>Filament formata direto com <code>money('BRL', divideBy: 100)</code>.</li>
+          <li>A loja só opera em real: sem coluna de moeda.</li>
+        </ul>
+        <h4>O que guardar, mais importante que o tipo</h4>
+        <ul>
+          <li><b>Totais são fatos históricos</b>, não derivações do preço atual do produto.</li>
+          <li><b>No item, que é a linha do pedido</b> (hoje <code>itens_pedido</code>): snapshot de nome e SKU, preço unitário praticado, desconto alocado na linha, total da linha. Snapshot significa copiar para a linha, no momento da venda, os dados que descrevem o que foi vendido. Se o produto for renomeado ou tiver o preço alterado em junho, o pedido de março continua contando a história de março. O <code>produto_id</code> fica como referência para navegar ao cadastro atual, nunca para reconstruir a venda. Soft delete garante que a referência não quebra; snapshot garante que o histórico não muda. Precisa dos dois.</li>
+          <li><b>No pedido:</b> subtotal, desconto, frete, total, com CHECK no banco garantindo <code>total = subtotal - desconto + frete</code>.</li>
+          <li><b>Tabela de ajustes do pedido:</b> tipo (cupom, desconto Pix, frete grátis, ajuste manual), valor, base de cálculo e quem aplicou. Hoje existem três descontos e nenhum é persistido.</li>
+          <li><b>Desconto de pedido rateado por linha.</b> Necessário para devolução parcial de pedido com cupom e para NF-e, que exige valor por item. <code>Money::allocate()</code> faz o rateio sem sobra de centavo.</li>
+          <li><b>Arredondamento</b> decidido uma vez, no nível do pedido, e o resultado gravado. Nunca recalcular.</li>
+        </ul>
+        <h4>Pagamentos</h4>
+        <ul>
+          <li>Hoje 1:1 com o pedido e sem valor. Deve ser <b>1:N</b>: Pix expira e outro é gerado, cartão recusado é tentado de novo, estorno pode ser parcial.</li>
+          <li>Cada pagamento: valor, provedor, id no provedor (único por provedor, não global), status, expiração.</li>
+          <li>Tabela de <b>eventos de pagamento</b> com payload bruto do webhook e chave de idempotência por evento.</li>
+          <li>Regra de ouro: webhook dispara, GET no provedor é a verdade. O webhook só avisa que algo mudou; o status gravado vem de uma consulta ao provedor.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.2 Estoque: ledger simples ou double-entry</h3>
+        <div class="verdict"><div class="bar"></div><div class="body"><b>Veredito: ledger de lançamento simples agora, double-entry só quando houver mais de um local físico.</b><span>O que se quer de um ledger é imutabilidade, auditoria e saldo derivável. Isso vem com uma linha por movimento, quantidade com sinal, motivo, referência e ator. Double-entry adiciona uma invariante a mais: todo movimento soma zero entre contas. Ela só paga quando existem várias contas reais entre as quais o estoque se move. Com uma loja só, a segunda perna é sempre uma conta virtual (fornecedor, cliente, perda), ou seja, o enum de motivo com outro nome.</span></div></div>
+        <div class="verdict"><div class="bar"></div><div class="body"><b>Por que um ledger e não só um UPDATE atômico (pergunta de 03/11).</b><span>Um <code>UPDATE stock_levels SET on_hand = on_hand - 3 WHERE product_id = ? AND on_hand &gt;= 3</code> resolve concorrência, e continua existindo: é o que <code>stock_levels</code> faz dentro da transação com lock. O que ele não dá é explicabilidade. Sobra só o número atual, e quando alguém perguntar "por que tem 7 se comprei 20 e vendi 10?" não existe resposta. Estoque físico diverge sempre: quebra, erro de contagem, brinde, devolução não lançada. Sem histórico só dá para corrigir o número, nunca achar onde divergiu. O ledger é um insert a mais na mesma transação e compra auditoria (quem, quando, por quê, referência), reconciliação na contagem física (contado versus soma dos movimentos, com a linha exata da divergência), reversão limpa (cancelamento vira movimento compensatório), idempotência (o unique na referência impede que um webhook repetido baixe duas vezes) e relatórios por <code>GROUP BY</code>. Custo real: uma linha por movimento e a disciplina de que todo ajuste passa por um único serviço. <code>on_hand</code> nunca é campo editável no Filament; só existem as ações "registrar venda" e "contagem / ajuste".</span></div></div>
+        <h4>Quando migrar para double-entry</h4>
+        <ul>
+          <li>Segundo local físico (depósito, evento, consignação).</li>
+          <li>Transferência entre locais como operação diária.</li>
+          <li>Valoração de estoque com custo por movimento (CMV).</li>
+          <li>Nesses casos o movimento ganha <code>from_location</code> e <code>to_location</code>; o resto da estrutura continua igual.</li>
+        </ul>
+        <h4>O que double-entry não resolve: reserva</h4>
+        <p>Hoje o estoque é debitado na criação do pedido e um Pix nunca pago segura estoque para sempre. Reserva é uma pretensão sobre o estoque, não estoque em algum lugar. Até o Odoo, referência em estoque double-entry, mantém o reservado como contador à parte e só afeta o saldo quando o movimento é concluído.</p>
+        <h4>As três tabelas</h4>
+        <div class="grid3 ledger-schema">
+          <div class="tbl">
+            <div class="tbl-h mv">stock_movements <small>ledger físico, append-only</small></div>
+            <table>
+              <tr><td class="mono">id</td><td>bigint PK</td></tr>
+              <tr><td class="mono">product_id</td><td>FK products</td></tr>
+              <tr><td class="mono">qty</td><td>int com sinal: + entra, − sai. Única verdade da direção. CHECK <code>qty &lt;&gt; 0</code></td></tr>
+              <tr><td class="mono">direction</td><td>string <b>gerada stored</b> pelo banco: <code>CASE WHEN qty &gt; 0 THEN 'in' ELSE 'out' END</code>. A aplicação nunca escreve; serve para leitura, filtro e índice</td></tr>
+              <tr><td class="mono">balance_after</td><td>int, saldo do produto depois deste movimento. Gravado sob o lock; torna o ledger legível como extrato e deixa o job de reconciliação apontar a linha exata onde a cadeia quebrou</td></tr>
+              <tr><td class="mono">reason</td><td>string, cast para enum PHP: purchase, sale, return, adjustment. O enum PHP sabe o sinal esperado de cada reason e valida antes de gravar. Não existe reason por canal: venda web e de balcão são <code>sale</code>, e o canal vem do pedido referenciado</td></tr>
+              <tr><td class="mono">reference_type / _id</td><td>morph: order_item, purchase, recount</td></tr>
+              <tr><td class="mono">actor_id</td><td>FK users, nulo para sistema</td></tr>
+              <tr><td class="mono">note</td><td>texto livre</td></tr>
+              <tr><td class="mono">created_at</td><td>timestamptz</td></tr>
+              <tr><td class="mono" colspan="2">unique (reference_type, reference_id, reason)</td></tr>
+            </table>
+          </div>
+          <div class="tbl">
+            <div class="tbl-h rs">stock_reservations <small>pretensões, com ciclo de vida</small></div>
+            <table>
+              <tr><td class="mono">id</td><td>bigint PK</td></tr>
+              <tr><td class="mono">order_item_id</td><td>FK order_items, unique</td></tr>
+              <tr><td class="mono">product_id</td><td>FK products</td></tr>
+              <tr><td class="mono">qty</td><td>int &gt; 0</td></tr>
+              <tr><td class="mono">status</td><td>string, cast para enum PHP: active, fulfilled, released</td></tr>
+              <tr><td class="mono">expires_at</td><td>timestamptz, igual ao Pix</td></tr>
+              <tr><td class="mono">resolved_at</td><td>quando saiu de active</td></tr>
+              <tr><td class="mono">created_at</td><td>timestamptz</td></tr>
+            </table>
+          </div>
+          <div class="tbl">
+            <div class="tbl-h lv">stock_levels <small>cache, uma linha por produto</small></div>
+            <table>
+              <tr><td class="mono">product_id</td><td>PK, FK products</td></tr>
+              <tr><td class="mono">on_hand</td><td>= Σ movements.qty</td></tr>
+              <tr><td class="mono">reserved</td><td>= Σ reservations.qty where active</td></tr>
+              <tr><td class="mono">available</td><td>calculado: on_hand − reserved, nunca gravado</td></tr>
+              <tr><td class="mono">reorder_point</td><td>int, estoque mínimo. Quando available fica menor ou igual, a aplicação notifica quem compra e o Filament mostra badge. Fica aqui e não em products porque o mínimo é de um lugar: se surgir um segundo local, cada um tem o seu sem migração. Não confundir com SKU, que é só o código do produto</td></tr>
+              <tr><td class="mono">updated_at</td><td>timestamptz</td></tr>
+              <tr><td colspan="2" style="color:var(--muted)">Lida com <code>lockForUpdate</code> no checkout. Recalculada por job diário a partir do ledger; drift vira alerta.</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="verdict" style="margin-bottom:4px"><div class="bar"></div><div class="body"><b>Por que qty com sinal e direction gerada, e não direction gravada pela aplicação.</b><span>Direction é cem por cento derivável do sinal. Dois campos escritos pela aplicação para um fato só podem discordar, e o banco aceitaria a linha. Como coluna gerada stored, o banco calcula na inserção, a aplicação não consegue escrever nela, e ela ainda pode ser indexada e filtrada. Limitações conhecidas e aceitas: a expressão não se altera com ALTER (derruba e recria), mudar o tipo de qty exige derrubar direction antes, e colunas geradas stored não entram em replicação lógica antes do Postgres 18. Nenhuma dessas afeta as mudanças realistas nesta tabela. A validação de reason contra sinal (sale sempre negativo, purchase sempre positivo) fica no enum PHP. Duas colunas qty_in e qty_out, no estilo kardex, foram descartadas: metade das células vazias, CHECK de exatamente uma preenchida e toda soma vira duas. O kardex é exibido no Filament a partir de qty.</span></div></div>
+        <h4>Simulação: um produto, dois dias</h4>
+        <p>Produto <code>BAL-MET-18-ROSE</code>, id 7. Entram 50 unidades do fornecedor. Depois: uma venda online que pagou, uma venda de balcão, uma venda online que o Pix expirou, uma venda online paga e cancelada antes da expedição, e uma recontagem.</p>
+        <div class="scroll">
+          <table class="timeline">
+            <tr><th>Quando</th><th>Evento</th><th>Movimento</th><th>Reserva</th><th class="num">on_hand</th><th class="num">reserved</th><th class="num">available</th></tr>
+            <tr><td class="mono">01/11 09:00</td><td>Nota do fornecedor conferida por Miriam</td><td><span class="qp">+50</span> purchase</td><td class="dim">—</td><td class="num">50</td><td class="num">0</td><td class="num">50</td></tr>
+            <tr class="ok-row"><td class="mono">01/11 10:15</td><td>Pedido <b>#VV-2026-0101</b> online, 3 un, Pix gerado</td><td class="dim">—</td><td><span class="rs-a">R1 active</span> expira 10:45</td><td class="num">50</td><td class="num">3</td><td class="num">47</td></tr>
+            <tr class="ok-row"><td class="mono">01/11 10:22</td><td>Pix do #0101 confirmado pelo provedor</td><td><span class="qn">−3</span> sale · order_item 1</td><td><span class="rs-f">R1 fulfilled</span></td><td class="num">47</td><td class="num">0</td><td class="num">47</td></tr>
+            <tr class="bad-row"><td class="mono">01/11 11:00</td><td>Pedido <b>#VV-2026-0102</b> online, 10 un, Pix gerado</td><td class="dim">—</td><td><span class="rs-a">R2 active</span> expira 11:30</td><td class="num">47</td><td class="num">10</td><td class="num">37</td></tr>
+            <tr><td class="mono">01/11 11:05</td><td>Balcão: Juliana vende 2 un para cliente na loja. Pedido com channel <code>pos</code> (ver 9.6), pago na hora</td><td><span class="qn">−2</span> sale · order_item 2</td><td class="dim">sem reserva</td><td class="num">45</td><td class="num">10</td><td class="num">35</td></tr>
+            <tr class="bad-row"><td class="mono">01/11 11:30</td><td>Pix do #0102 expirou; job libera a reserva e marca o pedido como expirado</td><td class="dim">nenhum: nada saiu</td><td><span class="rs-r">R2 released</span></td><td class="num">45</td><td class="num">0</td><td class="num">45</td></tr>
+            <tr class="warn-row"><td class="mono">01/11 14:00</td><td>Pedido <b>#VV-2026-0103</b> online, 5 un, Pix gerado</td><td class="dim">—</td><td><span class="rs-a">R3 active</span> expira 14:30</td><td class="num">45</td><td class="num">5</td><td class="num">40</td></tr>
+            <tr class="warn-row"><td class="mono">01/11 14:03</td><td>Pix do #0103 confirmado</td><td><span class="qn">−5</span> sale · order_item 3</td><td><span class="rs-f">R3 fulfilled</span></td><td class="num">40</td><td class="num">0</td><td class="num">40</td></tr>
+            <tr class="warn-row"><td class="mono">01/11 16:00</td><td>Cliente do #0103 pede cancelamento antes da expedição. Carlos estorna e devolve os 5 à prateleira</td><td><span class="qp">+5</span> return · order_item 3</td><td class="dim">— (já resolvida)</td><td class="num">45</td><td class="num">0</td><td class="num">45</td></tr>
+            <tr><td class="mono">02/11 08:00</td><td>Recontagem: Juliana conta 44, um balão furado</td><td><span class="qn">−1</span> adjustment · recount 12</td><td class="dim">—</td><td class="num">44</td><td class="num">0</td><td class="num">44</td></tr>
+          </table>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--ok-soft);border:1px solid var(--ok)"></i>vendeu</span>
+          <span><i class="dot" style="background:var(--bad-soft);border:1px solid var(--bad)"></i>chegou a reservar, Pix expirou</span>
+          <span><i class="dot" style="background:var(--warn-soft);border:1px solid var(--warn)"></i>vendeu e cancelou depois de pago</span>
+        </div>
+        <p>Três coisas para notar. O pedido expirado nunca gerou movimento: a reserva segurou 10 unidades por meia hora e soltou, e o ledger físico nem ficou sabendo. O cancelamento depois de pago gerou um movimento de retorno criado por uma pessoa, porque só ela sabe se os balões voltaram inteiros. E a conferência fecha: 50 − 3 − 2 − 5 + 5 − 1 = 44, igual ao cache.</p>
+
+        <h4>Como ficam as tabelas no fim do dia 2</h4>
+        <div class="grid2">
+          <div class="tbl">
+            <div class="tbl-h mv">stock_movements</div>
+            <div class="scroll"><table class="rows">
+              <tr><th>id</th><th>product</th><th class="num">qty</th><th>direction</th><th class="num">balance_after</th><th>reason</th><th>reference</th><th>actor</th><th>created_at</th></tr>
+              <tr><td class="mono">1</td><td class="mono">7</td><td class="num qp">+50</td><td class="mono dim">in</td><td class="num">50</td><td>purchase</td><td class="mono">purchase#31</td><td>Miriam</td><td class="mono">01/11 09:00</td></tr>
+              <tr><td class="mono">2</td><td class="mono">7</td><td class="num qn">−3</td><td class="mono dim">out</td><td class="num">47</td><td>sale</td><td class="mono">order_item#1</td><td class="dim">sistema</td><td class="mono">01/11 10:22</td></tr>
+              <tr><td class="mono">3</td><td class="mono">7</td><td class="num qn">−2</td><td class="mono dim">out</td><td class="num">45</td><td>sale</td><td class="mono">order_item#2</td><td>Juliana</td><td class="mono">01/11 11:05</td></tr>
+              <tr><td class="mono">4</td><td class="mono">7</td><td class="num qn">−5</td><td class="mono dim">out</td><td class="num">40</td><td>sale</td><td class="mono">order_item#3</td><td class="dim">sistema</td><td class="mono">01/11 14:03</td></tr>
+              <tr><td class="mono">5</td><td class="mono">7</td><td class="num qp">+5</td><td class="mono dim">in</td><td class="num">45</td><td>return</td><td class="mono">order_item#3</td><td>Carlos</td><td class="mono">01/11 16:00</td></tr>
+              <tr><td class="mono">6</td><td class="mono">7</td><td class="num qn">−1</td><td class="mono dim">out</td><td class="num">44</td><td>adjustment</td><td class="mono">recount#12</td><td>Juliana</td><td class="mono">02/11 08:00</td></tr>
+              <tr><td colspan="2" class="dim">Σ qty</td><td class="num"><b>44</b></td><td class="dim">gerada</td><td class="num dim">= última linha</td><td colspan="4" class="dim">order_item#3 aparece duas vezes com reasons diferentes; o unique permite, e bloquearia um segundo "sale" para o mesmo item. Cada balance_after é o anterior mais o qty: cadeia íntegra</td></tr>
+            </table></div>
+          </div>
+          <div class="tbl">
+            <div class="tbl-h rs">stock_reservations</div>
+            <div class="scroll"><table class="rows">
+              <tr><th>id</th><th>order_item</th><th class="num">qty</th><th>status</th><th>expires_at</th><th>resolved_at</th></tr>
+              <tr><td class="mono">R1</td><td class="mono">1 · #0101</td><td class="num">3</td><td><span class="rs-f">fulfilled</span></td><td class="mono">01/11 10:45</td><td class="mono">01/11 10:22</td></tr>
+              <tr><td class="mono">R2</td><td class="mono">4 · #0102</td><td class="num">10</td><td><span class="rs-r">released</span></td><td class="mono">01/11 11:30</td><td class="mono">01/11 11:30</td></tr>
+              <tr><td class="mono">R3</td><td class="mono">3 · #0103</td><td class="num">5</td><td><span class="rs-f">fulfilled</span></td><td class="mono">01/11 14:30</td><td class="mono">01/11 14:03</td></tr>
+              <tr><td colspan="2" class="dim">Σ qty where active</td><td class="num"><b>0</b></td><td colspan="3" class="dim">a venda de balcão não aparece: não houve reserva</td></tr>
+            </table></div>
+            <div class="tbl-h lv" style="margin-top:12px">stock_levels</div>
+            <table class="rows">
+              <tr><th>product_id</th><th class="num">on_hand</th><th class="num">reserved</th><th class="num">available</th><th>updated_at</th></tr>
+              <tr><td class="mono">7</td><td class="num"><b>44</b></td><td class="num"><b>0</b></td><td class="num dim">44 (calculado)</td><td class="mono">02/11 08:00</td></tr>
+            </table>
+          </div>
+        </div>
+        <h4>Ciclo de vida</h4>
+        <ul>
+          <li><b>Checkout:</b> numa transação, <code>lockForUpdate</code> na linha de stock_levels, confere o disponível, cria a reserva com expiração igual à do Pix.</li>
+          <li><b>Pagamento confirmado:</b> reserva vira fulfilled e nasce um movimento negativo com motivo venda. É aqui que o físico sai.</li>
+          <li><b>Cancelado ou expirado:</b> reserva vira released. Nenhum movimento, porque nada saiu.</li>
+          <li><b>Venda de balcão:</b> é um pedido com channel <code>pos</code>, pago na hora. Movimento direto, sem reserva.</li>
+          <li><b>Devolução:</b> movimento positivo criado explicitamente pelo operador. Produto que volta estragado não volta ao estoque.</li>
+          <li><b>Recontagem:</b> movimento de ajuste com ator e observação. Hoje o ajuste é um PATCH que sobrescreve o número e apaga a história.</li>
+        </ul>
+        <h4>Guardas</h4>
+        <ul>
+          <li>Job diário recalcula on_hand a partir do ledger e compara com o cache. Drift vira alerta, não correção silenciosa.</li>
+          <li>O unique na referência mata a classe de bug atual, em que API e trigger debitam o mesmo item duas vezes.</li>
+          <li>Quantidade é inteiro. Item vendido por peso vai em gramas, pelo mesmo motivo dos centavos.</li>
+          <li><b>Estoque negativo é política.</b> <span class="chip ok" style="padding:2px 8px">decidido em 03/11/2026</span> Online e WhatsApp nunca passam do disponível, regra no serviço de reserva. Balcão com o produto na mão pode passar: sem CHECK <code>on_hand &gt;= 0</code> no banco, e <code>on_hand &lt; 0</code> vira alerta no painel ("lance a entrada ou faça contagem"), não erro. Detalhe em 9.6.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.3 Outros pontos do modelo</h3>
+        <ul>
+          <li><b>Status do pedido mistura três coisas:</b> pagamento, expedição e tipo de entrega. Separar em <code>payment_status</code>, <code>fulfillment_status</code> e <code>delivery_method</code>. "Em Separação", que o painel exibe e o banco não conhece, vira um fulfillment_status.</li>
+          <li><b>Carimbos de transição</b> no pedido: paid_at, cancelled_at, shipped_at, delivered_at. Relatório por período sem varrer histórico.</li>
+          <li><b>Canal no pedido.</b> <span class="chip ok" style="padding:2px 8px">decidido em 03/11/2026</span> <code>orders.channel</code>, string com cast para enum PHP (web, pos, whatsapp), definido na criação e imutável. Decorre da decisão de que venda de balcão é um pedido (9.6). Hoje o canal só é inferível pelo prefixo do número. Relatórios por canal e mês saem de <code>orders</code> agrupado com <code>paid_at</code>.</li>
+          <li><b>Vendedor no pedido.</b> <span class="chip ok" style="padding:2px 8px">decidido em 04/11/2026: coluna nullable desde já</span> <code>orders.seller_id</code>, FK users, nulo na venda web e preenchido no balcão quando houver quem informe. Ranking por vendedor e comissão ficam para quando o stakeholder pedir; a coluna já existe para não exigir migration depois. Hoje o vendedor aparece como nome em texto livre no histórico.</li>
+          <li><b>Número do pedido</b> como coluna gerada uma vez, não derivada do id. Hoje o fluxo manual gera prefixo diferente do checkout para o mesmo id. Não expor id sequencial em URL pública.</li>
+          <li><b>Checkout sem login não cria conta com senha.</b> Pedido recebe snapshot do comprador (nome, email, telefone, CPF) e <code>customer_id</code> preenchido sempre que o cliente for identificado por uma identidade (9.9); senha fica nula até o cliente ativar a conta. Hoje são criados clientes com senha placeholder que ocupam email e CPF e nunca logam.</li>
+          <li><b>Endereço de entrega é snapshot no pedido</b>, não FK para endereço do cliente. Retirada não tem endereço. Hoje o backend grava o endereço da loja como endereço do cliente e o pedido manual inventa um CEP de São Paulo.</li>
+          <li><b>Staff e clientes em tabelas e guards separados.</b> Filament autentica em users com <code>canAccessPanel</code>; a loja autentica em customers.</li>
+          <li><b>Monólito modular e RBAC.</b> <span class="chip ok" style="padding:2px 8px">decidido em 04/11/2026</span> A arquitetura do projeto novo é um monólito modular; Richard vai detalhar. Autorização por RBAC em módulo próprio (<code>permissions</code>, ver ADR 8): os papéis da equipe (três no repo, dois no documento do TCC) viram dados desse módulo, não enum.</li>
+          <li><b>Soft delete</b> em produtos, clientes e funcionários, no lugar da lógica "inativa se tiver venda".</li>
+          <li><b>Cupons viram tabela:</b> código, tipo, valor, mínimo, vigência, limite de uso. Hoje VEVEY10 é literal no JavaScript.</li>
+          <li><b>Produto precisa de SKU e código de barras</b> para o balcão. <span class="chip ok" style="padding:2px 8px">decidido em 03/11/2026: catálogo plano, sem product_variants</span> Cada cor é um produto com SKU e saldo próprios ("por mais que seja um balão, não deixa de ser outro produto"). Ledger, reservas e linhas de pedido apontam sempre para <code>products</code>. Filtro por cor e tipo vem de atributos genéricos (9.7), nunca de coluna <code>color</code> solta. No Filament, ação "duplicar produto" para cadastrar cores em série.
+            <div style="margin-top:8px;padding:10px 12px;background:var(--gold-soft);border-radius:8px;font-size:0.86rem"><b>O que é SKU.</b> Sigla de <i>Stock Keeping Unit</i>, unidade de manutenção de estoque. É o código interno, definido pela loja e legível por humanos, de cada item contado separadamente no estoque. Exemplo: <code>BAL-MET-18-ROSE</code> para o balão metalizado de 18 polegadas rose gold; a versão prata é outro SKU, porque o estoque de um não serve para o outro. O SKU identifica o produto, não o lugar onde ele está: o mesmo balão tem o mesmo SKU na loja, no depósito e numa feira. Com mais de um local, o que se multiplica é o saldo (uma linha em <code>stock_levels</code> por par produto e local), nunca o código. Difere do código de barras (EAN/GTIN), que é impresso pelo fabricante e igual em qualquer loja; um kit montado pela Vevey tem SKU mas não tem EAN. Serve para a operadora bipar ou digitar no balcão, para o ledger de estoque identificar o que saiu, e para o snapshot do item do pedido continuar identificável mesmo que o produto seja renomeado. Hoje o repositório só tem <code>id</code> e <code>slug</code>, e slug é feito para URL, não para operação.</div>
+          </li>
+          <li><b>Enums como string no banco com enum PHP no modelo</b>, não enum nativo do Postgres. O arquivo de alterações mostra o custo: para adicionar um valor foi preciso derrubar trigger e alterar tipo. Filament usa HasLabel e HasColor para badges.</li>
+          <li><b>Nenhum trigger no banco.</b> <span class="chip ok" style="padding:2px 8px">decidido em 02/11/2026</span> Débito de estoque, histórico e totais em código, dentro de transação com <code>lockForUpdate</code>. Constraints declarativas (CHECK, UNIQUE, FK) continuam; só a lógica procedural sai do banco. O Eloquent não sabe que o trigger existe; foi isso que causou o débito duplo.</li>
+          <li><b>Ator em tudo que o funcionário faz:</b> created_by em movimentos, ajustes, pedidos manuais e mudanças de status. Hoje o histórico guarda o nome em texto livre.</li>
+          <li><b>timestampTz</b> nas migrations. O default do Laravel em Postgres é timestamp sem fuso.</li>
+          <li><b>Nomenclatura padrão Laravel, em inglês.</b> <span class="chip ok" style="padding:2px 8px">decidido em 02/11/2026</span> Tabelas no plural em snake_case (<code>products</code>, <code>order_items</code>, <code>stock_movements</code>), modelos no singular em PascalCase (<code>Product</code>, <code>OrderItem</code>), chaves estrangeiras como <code>product_id</code>, pivots em ordem alfabética no singular (<code>category_product</code>), colunas <code>created_at</code>, <code>updated_at</code>, <code>deleted_at</code>. Seguir a convenção evita configurar <code>$table</code>, <code>$foreignKey</code> e nomes de pivot em cada modelo, e deixa o Filament gerar resources e relation managers sem ajuste. O português fica na interface, via labels e traduções, nunca no schema. O schema atual (<code>produtos</code>, <code>itens_pedido</code>, <code>usuarios_admin</code>) não é migrado com os nomes; é recriado.</li>
+          <li><b>Imagens via spatie/laravel-medialibrary.</b> <span class="chip ok" style="padding:2px 8px">decidido em 02/11/2026</span> Sai a coluna <code>imagem_url</code> e o upload em disco do servidor da API. O pacote cria a tabela <code>media</code> polimórfica, guarda os arquivos num disk configurável (S3 ou Supabase Storage em produção) e gera conversões WebP em tamanhos fixos por fila. O Filament tem o campo <code>SpatieMediaLibraryFileUpload</code> pronto para o formulário de produto.</li>
+        </ul>
+        <p class="keep"><b>O que preservar do modelo atual:</b> snapshot de preço no item, tabela de funcionários separada, RESTRICT nas FKs de venda e histórico de status como tabela própria.</p>
+      </div>
+
+      <div class="card">
+        <h3>9.4 Snapshot na linha do pedido ou versão de produto</h3>
+        <span class="chip ok" style="padding:2px 8px;justify-self:start">decidido em 02/11/2026: snapshot na linha, sem histórico de versões de produto</span>
+        <h4>Contexto</h4>
+        <p>O pedido precisa continuar contando a história da venda mesmo que o produto seja renomeado, reprecificado ou excluído depois. Richard perguntou se gravar o histórico do produto e apontar a linha do pedido para uma versão resolveria, com a ressalva de que aumentaria o número de joins.</p>
+        <h4>Opções consideradas</h4>
+        <ul>
+          <li><b>A. Versão de produto.</b> Tabela <code>product_versions</code> imutável; cada edição cria uma versão nova; <code>order_items.product_version_id</code> aponta para ela. Congela nome, SKU, descrição e imagem.</li>
+          <li><b>B. Snapshot na linha.</b> <code>order_items</code> copia, no momento da venda, os dados que descrevem o que foi vendido: SKU, nome, preço unitário, desconto da linha, total da linha. Opcionalmente <code>product_snapshot</code> jsonb com descrição e imagem como o cliente viu.</li>
+          <li><b>C. Ambos.</b> Descartado por redundância.</li>
+        </ul>
+        <h4>Análise</h4>
+        <ul>
+          <li>A versão cobre atributos do produto, mas não cobre fatos da venda. O mesmo produto, na mesma versão, sai a preços diferentes: site, cupom, desconto dado no balcão, promoção. Preço praticado, desconto e total têm que estar na linha de qualquer forma. A versão substituiria só nome e SKU, ao custo de um subsistema inteiro.</li>
+          <li>O join não é o custo real. Um join por chave primária é barato. O custo está em toda edição virar versão (ou numa regra de quais campos versionam, que ninguém lembra seis meses depois), no Filament trabalhar contra o fluxo (o save natural é UPDATE; versionar exige interceptar e mover o ponteiro de versão atual, sem pacote pronto) e na imutabilidade por disciplina sobre uma tabela que o painel edita.</li>
+          <li>Shopify, WooCommerce, Magento, Saleor, Sylius e Odoo gravam nome, SKU e preço na linha. Nenhum aponta para versão de produto. Versionamento aparece como auditoria, que é outra pergunta: quem mudou o quê e quando.</li>
+        </ul>
+        <h4>Decisão</h4>
+        <ul>
+          <li>Colunas tipadas em <code>order_items</code>: <code>sku</code>, <code>name</code>, <code>unit_price_cents</code>, <code>discount_cents</code>, <code>total_cents</code>, mais <code>product_id</code> como referência navegável, nunca como fonte da venda.</li>
+          <li>Se for preciso guardar descrição e imagem como o cliente viu, coluna <code>product_snapshot</code> jsonb na mesma linha. Sem tabela nova, sem join.</li>
+          <li>Auditoria de produto via <code>spatie/laravel-activitylog</code>, que guarda o diff de cada edição sem tocar no modelo de vendas.</li>
+          <li>Nenhuma tabela de versões de produto.</li>
+        </ul>
+        <h4>Consequências</h4>
+        <ul>
+          <li>Renderizar um pedido não depende da tabela de produtos. Relatório por SKU é um GROUP BY em <code>order_items</code>.</li>
+          <li><code>order_items</code> é append-only por natureza; a imutabilidade do histórico vem de não editar linhas de pedido, regra que já existe.</li>
+          <li>Soft delete em produtos garante que <code>product_id</code> nunca quebra; snapshot garante que o histórico nunca muda. Os dois mecanismos são complementares.</li>
+          <li>Reconstruir o catálogo inteiro numa data passada não é possível com este modelo. Se essa necessidade aparecer, versionamento volta à pauta como decisão separada.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.6 Venda física é um pedido, não um ajuste de estoque</h3>
+        <span class="chip ok" style="padding:2px 8px;justify-self:start">decidido em 03/11/2026</span>
+        <h4>Contexto</h4>
+        <p>O documento de requisitos original (UC04 e Cenário 3) trata a venda presencial como o administrador abrindo o produto e digitando o estoque novo, "de 20 para 15". Isso apaga o motivo da saída e é a maior fonte de divergência entre estoque físico e online, risco que o próprio documento classificou como probabilidade alta e impacto alto. O repositório atual faz o mesmo pelo <code>PATCH /produtos/{id}/estoque</code>.</p>
+        <h4>Opções consideradas</h4>
+        <ul>
+          <li><b>A. Ajuste manual</b>, como no documento. Simples na tela, cego no dado: a venda some do relatório e o estoque sai sem explicação.</li>
+          <li><b>B. Venda de balcão como pedido</b> com <code>channel = pos</code>, itens, totais e pagamento. O ledger recebe <code>sale</code> apontando para o pedido.</li>
+        </ul>
+        <h4>Decisão</h4>
+        <p>Opção B, nas palavras de Richard: "é registrar uma venda mesmo, não faz sentido baixa de estoque na mão". <code>adjustment</code> fica só para contagem, quebra e erro. O saldo nunca é editável no Filament; existem duas ações: <b>registrar venda</b>, que cria o pedido, e <b>contagem / ajuste</b>, em que o usuário informa o contado e o sistema grava a diferença com motivo.</p>
+        <h4>Saldo negativo no balcão: permitido</h4>
+        <p>O cenário não é vender o que não existe, é vender o que está na prateleira mas o sistema acha que não existe: entrada do fornecedor ainda não lançada, erro de contagem do mês passado. Bloquear faz a vendedora vender por fora e lançar depois, ou não lançar, e o ledger passa a mentir pior. Decisão de Richard: permitir, "se não vamos atrapalhar as vendas". O pedido <code>pos</code> passa, <code>on_hand</code> fica negativo e o painel mostra alerta "estoque negativo, lance a entrada ou faça contagem". Site e WhatsApp continuam bloqueando, porque o cliente remoto não vê a prateleira.</p>
+        <h4>Consequências</h4>
+        <ul>
+          <li>Sem CHECK <code>on_hand &gt;= 0</code> em <code>stock_levels</code>. A regra "site não vende sem saldo" vive no serviço de reserva (<code>available &gt; 0</code>), não no banco.</li>
+          <li><code>on_hand &lt; 0</code> é sinal de divergência a tratar, não bug. Lista própria no painel.</li>
+          <li>Pedido <code>pos</code> nasce <code>paid</code> e <code>delivered</code>, sem endereço, sem frete, sem reserva. Movimento direto no ledger.</li>
+          <li>Relatórios de venda por canal saem de <code>orders</code>, sem somar ajustes.</li>
+          <li>O balcão precisa de uma tela de pedido rápida no painel: busca por SKU ou nome, quantidade, forma de pagamento, concluir.</li>
+          <li>Ainda aberto: <code>seller_id</code>, que depende do stakeholder.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.7 Filtro por atributos e busca por texto</h3>
+        <span class="chip ok" style="padding:2px 8px;justify-self:start">decidido em 03/11/2026: atributos genéricos, opção completa</span>
+        <h4>Contexto</h4>
+        <p>Os protótipos filtram a listagem por "Paleta de Cores" e "Tipo de produto", e a página do produto tem um "seletor de variações". Com catálogo plano (cada cor é um produto), falta um jeito de filtrar. Uma coluna <code>color</code> em <code>products</code> foi descartada como gambiarra: amanhã aparece tamanho, depois material, e cada um vira outra coluna, nula para metade do catálogo. Tags tipadas (<code>spatie/laravel-tags</code>) resolvem o filtro mas são texto livre. <code>ILIKE</code> é busca, não filtro, e não usa índice.</p>
+        <h4>Decisão: três tabelas</h4>
+        <div class="grid3 ledger-schema">
+          <div class="tbl">
+            <div class="tbl-h mv">attributes</div>
+            <table class="rows">
+              <tr><th>id</th><th>name</th><th>slug</th></tr>
+              <tr><td class="mono">1</td><td>Cor</td><td class="mono">cor</td></tr>
+              <tr><td class="mono">2</td><td>Tipo</td><td class="mono">tipo</td></tr>
+            </table>
+          </div>
+          <div class="tbl">
+            <div class="tbl-h rs">attribute_values <small>unique (attribute_id, slug)</small></div>
+            <table class="rows">
+              <tr><th>id</th><th>attr</th><th>value</th><th>slug</th></tr>
+              <tr><td class="mono">1</td><td class="mono">1</td><td>Azul</td><td class="mono">azul</td></tr>
+              <tr><td class="mono">2</td><td class="mono">1</td><td>Rosa</td><td class="mono">rosa</td></tr>
+              <tr><td class="mono">3</td><td class="mono">1</td><td>Dourado</td><td class="mono">dourado</td></tr>
+              <tr><td class="mono">4</td><td class="mono">2</td><td>Metalizado</td><td class="mono">metalizado</td></tr>
+              <tr><td class="mono">5</td><td class="mono">2</td><td>Látex</td><td class="mono">latex</td></tr>
+            </table>
+          </div>
+          <div class="tbl">
+            <div class="tbl-h lv">attribute_value_product <small>pivô, unique (value, product), índice em product_id</small></div>
+            <table class="rows">
+              <tr><th>value</th><th>product</th><th>leitura</th></tr>
+              <tr><td class="mono">1</td><td class="mono">10</td><td class="dim">balão met. azul → Azul</td></tr>
+              <tr><td class="mono">4</td><td class="mono">10</td><td class="dim">balão met. azul → Metalizado</td></tr>
+              <tr><td class="mono">2</td><td class="mono">11</td><td class="dim">balão met. rosa → Rosa</td></tr>
+              <tr><td class="mono">4</td><td class="mono">11</td><td class="dim">balão met. rosa → Metalizado</td></tr>
+              <tr><td class="mono">1</td><td class="mono">12</td><td class="dim">balão látex azul → Azul</td></tr>
+              <tr><td class="mono">5</td><td class="mono">12</td><td class="dim">balão látex azul → Látex</td></tr>
+              <tr><td class="mono">1</td><td class="mono">13</td><td class="dim">prato azul → Azul</td></tr>
+            </table>
+          </div>
+        </div>
+        <p>Produtos de exemplo: 10 <code>BAL-MET-9-AZ</code>, 11 <code>BAL-MET-9-RS</code>, 12 <code>BAL-LTX-11-AZ</code>, 13 <code>PRT-DESC-AZ</code>. O prato não tem "Tipo" porque o atributo não se aplica a ele; é o que a coluna solta não expressa.</p>
+        <h4>Consultas</h4>
+        <p>Regra: valores do mesmo atributo são OU, atributos diferentes são E. Filtro "Cor = Azul e Tipo = Metalizado" devolve só o produto 10:</p>
+        <pre>select p.*
+from products p
+where exists (select 1 from attribute_value_product avp
+              where avp.product_id = p.id and avp.attribute_value_id in (1))
+  and exists (select 1 from attribute_value_product avp
+              where avp.product_id = p.id and avp.attribute_value_id in (4));</pre>
+        <p>Lateral de filtros com contagem ("Azul (3)", "Rosa (1)"):</p>
+        <pre>select a.name, av.value, count(*)
+from attribute_value_product avp
+join attribute_values av on av.id = avp.attribute_value_id
+join attributes a on a.id = av.attribute_id
+join products p on p.id = avp.product_id and p.is_active
+group by a.name, av.value order by 1, 2;</pre>
+        <h4>Busca por texto é outra ferramenta</h4>
+        <p>Na migration, <code>$table-&gt;fullText(['name','description'])-&gt;language('portuguese')</code> cria um índice GIN sobre <code>to_tsvector</code>. No Eloquent, <code>Product::whereFullText(['name','description'], $termo)</code>. Não é over: uma linha de migration, e para algumas centenas de produtos custa nada. Nunca <code>ILIKE</code> para busca.</p>
+        <h4>Consequências</h4>
+        <ul>
+          <li>Novo atributo é uma linha no painel, sem migration. Filtro de tamanho ou material entra de graça.</li>
+          <li>Eloquent: <code>Product belongsToMany AttributeValue</code>, <code>AttributeValue belongsTo Attribute</code>. Filtro vira um <code>whereHas</code> por atributo marcado.</li>
+          <li>Filament: um <code>Select</code> múltiplo por atributo no formulário de produto; resource simples para atributos e valores, que a dona gerencia sozinha.</li>
+          <li>O "seletor de variações" da página do produto vira só navegação entre produtos irmãos, se um dia for pedido.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.8 Cruzamento com o documento de requisitos do TCC</h3>
+        <p>Em 03/11 Richard trouxe o documento acadêmico do projeto (visão, requisitos, casos de uso, protótipos, classes, DER e diagramas de sequência). Ele responde parte das perguntas abertas, erra em outras, e adiciona itens que não estavam no mapa.</p>
+        <h4>O que ele responde</h4>
+        <table>
+          <tr><th>Pergunta</th><th>Resposta no documento</th><th>Leitura</th></tr>
+          <tr><td>Baixa de estoque quando?</td><td>No pagamento confirmado (UC02 passo 5, <code>confirmarPagamento</code>)</td><td>Aceito. A reserva cobre a janela entre pedido e Pix.</td></tr>
+          <tr><td>Segundo local de estoque?</td><td>Não. Estoque único integrado físico + online (Feature 5, tabela de riscos)</td><td>Aceito. Confirma ledger simples sem <code>location_id</code>.</td></tr>
+          <tr><td>Variantes?</td><td>Protótipos filtram por "Paleta de Cores" e têm "seletor de variações"; o DER ignora</td><td>Resolvido com catálogo plano + atributos (9.7).</td></tr>
+          <tr><td>Venda física?</td><td>Admin digita o estoque novo (UC04, Cenário 3)</td><td>Rejeitado. Virou pedido <code>pos</code> (9.6).</td></tr>
+          <tr><td>Canal e vendedor?</td><td>Não existe, mas a dona pede "produtos mais vendidos, ticket médio" e ver "todos os pedidos (WhatsApp + site)"</td><td>Justifica <code>channel</code>. <code>seller_id</code> segue sem respaldo.</td></tr>
+        </table>
+        <h4>Onde o documento está errado ou fraco</h4>
+        <ul>
+          <li><b>Pagamento 1:0..1 com o pedido</b>, unique em <code>pedido_id</code>. Quebra no primeiro Pix que expira e o cliente tenta de novo no cartão. Mantido 1:N.</li>
+          <li><b><code>cliente_id</code> e <code>endereco_entrega_id</code> obrigatórios</b> no pedido. Contradiz o próprio <code>tipo_entrega</code> com retirada, e o UC03 "cadastrar o cliente na hora" é o que gerou as senhas fake no repo atual. Snapshot no pedido resolve.</li>
+          <li><b>CPF obrigatório e único</b> no cliente inviabiliza cliente de WhatsApp e visitante. Fica nullable com unique parcial (<code>WHERE cpf IS NOT NULL</code>).</li>
+          <li><b>Dinheiro em numeric, enums nativos, status único de pedido.</b> Já decidido diferente. O documento confirma que "Pendente" quer dizer "aguardando pagamento", o que reforça separar <code>payment_status</code> de <code>fulfillment_status</code>.</li>
+        </ul>
+        <h4>O que ele adiciona ao modelo</h4>
+        <ul>
+          <li><b>Cupom de desconto</b> (Tela 4) e <b>preço à vista no Pix</b> (Telas 2 e 3): confirmam <code>coupons</code> e <code>order_adjustments</code>. Desconto Pix é um ajuste, não um segundo preço no produto.</li>
+          <li><b><code>preco_promocional</code></b> no produto: vira <code>promo_price_cents</code> nullable. O snapshot na linha guarda o que foi cobrado.</li>
+          <li><b>Código de rastreio e frete nomeado</b> ("Sedex Expresso", "Frete Vevey Grátis"): <code>orders.tracking_code</code>, <code>orders.shipping_method</code>.</li>
+          <li><b>Busca de cliente por telefone</b> (RF013): índice em <code>customers.phone</code>. Motiva a decisão aberta de cliente sem senha.</li>
+          <li><b>Histórico de status com responsável</b> (RNF011): <code>order_status_histories.user_id</code>. Já previsto.</li>
+          <li><b>Carrinho persistente</b> (RF003) sem tabela no DER. Se for entre dispositivos, precisa de <code>carts</code>.</li>
+          <li><b>Lista de desejos e avaliações</b> aparecem nos protótipos e em nenhum requisito. Tratadas como decoração até alguém pedir.</li>
+          <li><b>Papéis:</b> o documento tem só Atendente e Administrador; o repo tem três. Precisa alinhar.</li>
+        </ul>
+        <h4>Pedido por WhatsApp</h4>
+        <p>O documento (UC03) põe a atendente montando o pedido no painel e gerando link de pagamento. O stakeholder disse a Richard que quer automatizar isso. As leituras possíveis são carrinho por link que cai no checkout normal, bot na API oficial do WhatsApp, ou só notificações automáticas. <b>Adiado em 03/11</b>: fica para o futuro e não entra na modelagem agora. O que fica como regra: pedido nasce sempre pelo mesmo serviço, seja a origem o site, um link ou o balcão; o canal é atributo, não fluxo separado.</p>
+      </div>
+
+      <div class="card">
+        <h3>9.9 Identidades do cliente em modelo próprio</h3>
+        <span class="chip ok" style="padding:2px 8px;justify-self:start">decidido em 04/11/2026</span>
+        <h4>Contexto</h4>
+        <p>A atendente precisa achar o cliente pelo telefone (RF013). Um cliente pode ter mais de um número, pode trocar de número, e no futuro pode chegar por outras plataformas. Com <code>phone</code> e <code>email</code> como colunas únicas em <code>customers</code>, trocar de número apaga o histórico de busca e um segundo número não cabe. O erro do repo atual era criar conta com senha fake, não ter o registro do cliente.</p>
+        <h4>Decisão: tabela <code>customer_identities</code></h4>
+        <div class="tbl">
+          <div class="tbl-h rs">customer_identities <small>uma linha por contato do cliente, nunca apagada</small></div>
+          <table>
+            <tr><td class="mono">customer_id</td><td>FK customers</td></tr>
+            <tr><td class="mono">type</td><td>string, cast para enum PHP: phone, email, whatsapp, instagram</td></tr>
+            <tr><td class="mono">value</td><td>normalizado: telefone em E.164, email em minúsculas</td></tr>
+            <tr><td class="mono">source</td><td>string, cast para enum PHP: de onde veio (web, pos, whatsapp, instagram, import)</td></tr>
+            <tr><td class="mono">is_primary</td><td>bool, um por tipo por cliente (unique parcial)</td></tr>
+            <tr><td class="mono">verified_at</td><td>timestamptz, nulo até confirmar</td></tr>
+            <tr><td class="mono">retired_at</td><td>timestamptz. Número antigo não é apagado, é aposentado</td></tr>
+            <tr><td class="mono" colspan="2">unique parcial (type, value) where retired_at is null</td></tr>
+          </table>
+        </div>
+        <h4>Consequências</h4>
+        <ul>
+          <li><b>Troca de número:</b> aposenta a identidade antiga e insere a nova. Pedidos apontam para <code>customer_id</code>, então o histórico não se perde; o snapshot do pedido guarda o telefone usado na época.</li>
+          <li><b>Busca por telefone</b> vai de identidade para cliente, incluindo aposentadas com indicação, para a atendente reconhecer "esse era o número antigo".</li>
+          <li>Um número ativo pertence a um cliente só; um número aposentado pode ser reatribuído a outra pessoa sem conflito.</li>
+          <li><code>customers</code> fica com dados da pessoa: nome, CPF nullable com unique parcial, <code>password</code> nullable. Cliente de WhatsApp existe sem senha e ativa a conta depois por um contato já cadastrado.</li>
+          <li><b>Escopo esclarecido em 08/11/2026:</b> esta tabela é sobre <b>contatos e canais</b> (mais de um número de WhatsApp, troca de número, outra plataforma no futuro), não sobre credencial. Login da loja continua padrão Laravel em <code>customers.email</code> e <code>customers.password</code>, ambos nullable. Sem <code>UserProvider</code> custom. Se um dia houver "login por WhatsApp", a identidade vira credencial como decisão separada.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>9.5 Decisões em aberto</h3>
+        <p>São do Richard. Em 08/11/2026 nenhuma decisão de modelo continua em aberto; falta só o módulo de RBAC e a estrutura do monólito modular que ele vai apresentar.</p>
+        <div class="decisions">
+          <div class="decision"><div>Triggers no banco. <span class="chip ok" style="padding:2px 8px">decidido: nenhum, tudo em aplicação</span></div></div>
+          <div class="decision"><div>Armazenamento de imagens. <span class="chip ok" style="padding:2px 8px">decidido: spatie/laravel-medialibrary</span></div></div>
+          <div class="decision"><div>Histórico do produto no pedido. <span class="chip ok" style="padding:2px 8px">decidido: snapshot na linha, sem versões de produto</span></div></div>
+          <div class="decision"><div>Nomes de tabelas e colunas. <span class="chip ok" style="padding:2px 8px">decidido: convenção Laravel, em inglês</span></div></div>
+          <div class="decision"><div>Direção do movimento no ledger. <span class="chip ok" style="padding:2px 8px">decidido: qty com sinal é a verdade; direction é coluna gerada stored; balance_after gravado</span></div></div>
+          <div class="decision"><div>Enums no banco. <span class="chip ok" style="padding:2px 8px">decidido: nunca; coluna string com cast para enum PHP no Eloquent</span></div></div>
+          <div class="decision"><div>Canal de venda. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: orders.channel web, pos, whatsapp</span></div></div>
+          <div class="decision"><div>Venda física. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: é um pedido com channel pos, nunca baixa de estoque na mão</span> Ver 9.6.</div></div>
+          <div class="decision"><div>Balcão pode negativar estoque. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: sim, com alerta; site e WhatsApp não</span></div></div>
+          <div class="decision"><div>Estoque sai no pagamento confirmado ou na expedição e retirada. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: no pagamento confirmado</span> Confirma o UC02 do documento de requisitos; a reserva cobre a janela entre pedido e Pix.</div></div>
+          <div class="decision"><div>Variantes de produto ou catálogo plano com SKU. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: catálogo plano, cada cor é um produto</span></div></div>
+          <div class="decision"><div>Filtro por cor e tipo. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: atributos genéricos em três tabelas; busca por texto com índice GIN</span> Ver 9.7.</div></div>
+          <div class="decision"><div>Segundo local de estoque. <span class="chip ok" style="padding:2px 8px">decidido em 03/11: não, estoque único integrado físico + online</span> É a premissa do documento de requisitos (Feature 5). Se mudar: entra <code>stock_locations</code>, <code>stock_levels</code> passa a ter chave produto + local e movimentos ganham <code>location_id</code>.</div></div>
+          <div class="decision"><div>Dinheiro em centavos (9.1). <span class="chip ok" style="padding:2px 8px">decidido em 04/11</span></div></div>
+          <div class="decision"><div>Ledger simples com reservas e cache (9.2). <span class="chip ok" style="padding:2px 8px">decidido em 04/11</span></div></div>
+          <div class="decision"><div>Vendedor no pedido (<code>seller_id</code>). <span class="chip ok" style="padding:2px 8px">decidido em 04/11: coluna nullable desde já</span> Ranking e comissão ficam para o stakeholder.</div></div>
+          <div class="decision"><div>Cliente sem senha e múltiplos contatos. <span class="chip ok" style="padding:2px 8px">decidido em 04/11: customer_identities</span> Ver 9.9.</div></div>
+          <div class="decision"><div>Arquitetura e autorização. <span class="chip ok" style="padding:2px 8px">decidido em 04/11: monólito modular, RBAC em módulo próprio</span> Ver ADR 8.</div></div>
+          <div class="decision"><div>Login da loja. <span class="chip ok" style="padding:2px 8px">decidido em 08/11: padrão Laravel em customers.email/password; identidades são só contatos</span></div></div>
+          <div class="decision"><div>Pedido por WhatsApp automatizado ou criado pela atendente. <span class="chip" style="padding:2px 8px">adiado em 03/11, fica para o futuro</span> O modelo não depende disso: pedido nasce sempre pelo mesmo serviço e o canal é atributo.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Gerado a partir da leitura de backend/app, database/, frontend/ e dos documentos README, ARQUITETURA_3_CAMADAS e ROADMAP_PROXIMA_SESSAO. Commit base: d3cf73e. Números de linha referem-se ao estado do repositório em 2 de novembro de 2026.</p>
+  </div>
+</footer>
+
+
+</body>
+</html>

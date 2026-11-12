@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e90cbc87be817aa45b7699b94138a5f7",
+    "content-hash": "dee2e508e6d5c48f9eaaf2b05643e783",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10244,6 +10244,38 @@
                 }
             ],
             "time": "2026-10-19T10:48:00+00:00"
+        },
+        {
+            "name": "vevey/catalog",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/catalog",
+                "reference": "658805a093dd0f75cc69fc226ab30cffe9f390af"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Catalog\\Providers\\CatalogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Catalog\\": "src/",
+                    "Vevey\\Catalog\\Tests\\": "tests/",
+                    "Vevey\\Catalog\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Catalog\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "vevey/panel-admin",

@@ -61,3 +61,11 @@ test('no ids means no products', function (): void {
 
     expect(resolve(FindProductsForSale::class)->handle([]))->toBe([]);
 });
+
+test('ids that are not UUIDs are left out instead of failing the query', function (): void {
+    $product = Product::factory()->create();
+
+    $products = resolve(FindProductsForSale::class)->handle(['not-a-uuid', $product->id]);
+
+    expect(array_keys($products))->toBe([$product->id]);
+});

@@ -28,6 +28,30 @@ test('counter staff list the products but cannot create one', function (): void 
     get(ProductResource::getUrl('create'))->assertForbidden();
 });
 
+test('counter staff cannot duplicate, bulk delete or bulk restore products', function (): void {
+    actingAs(staffWithRole(Roles::Attendant));
+    $product = Product::factory()->create();
+
+    Livewire::test(ListProducts::class)
+        ->assertActionHidden(TestAction::make('duplicate')->table($product))
+        ->assertActionHidden(TestAction::make('delete')->table($product))
+        ->assertActionHidden(TestAction::make('delete')->table()->bulk())
+        ->assertActionHidden(TestAction::make('restore')->table()->bulk());
+});
+
+test('the panel offers no way to delete a product for good', function (): void {
+    actingAs(staffWithRole(Roles::SuperAdmin));
+    $product = Product::factory()->create();
+    $product->delete();
+
+    Livewire::test(ListProducts::class)
+        ->assertActionDoesNotExist(TestAction::make('forceDelete')->table($product))
+        ->assertActionDoesNotExist(TestAction::make('forceDelete')->table()->bulk());
+
+    Livewire::test(EditProduct::class, ['record' => $product->getKey()])
+        ->assertActionDoesNotExist('forceDelete');
+});
+
 test('the owner creates a product with prices typed in reais', function (): void {
     actingAs(staffWithRole(Roles::Admin));
     $category = Category::factory()->create();
@@ -69,12 +93,36 @@ test('the promotional price must be lower than the price', function (): void {
         ->assertHasFormErrors(['promo_price_cents' => 'lt']);
 });
 
-test('the edit form shows the stored cents as reais', function (): void {
+test('prices take at most two decimals and stay within the limit', function (string $price, string $rule): void {
+    actingAs(staffWithRole(Roles::Admin));
+
+    Livewire::test(CreateProduct::class)
+        ->fillForm([
+            'name' => 'Vela de aniversário',
+            'slug' => 'vela-de-aniversario',
+            'sku' => 'VELA-NUM-1',
+            'price_cents' => $price,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['price_cents' => $rule]);
+})->with([
+    'three decimals' => ['9.995', 'decimal'],
+    'above the limit' => ['99999999999999999', 'max'],
+    'zero' => ['0', 'min'],
+]);
+
+test('editing a product shows the stored cents as reais and saves them back as cents', function (): void {
     actingAs(staffWithRole(Roles::Admin));
     $product = Product::factory()->create(['price_cents' => 1250]);
 
     Livewire::test(EditProduct::class, ['record' => $product->getKey()])
-        ->assertSchemaStateSet(['price_cents' => '12.50', 'promo_price_cents' => null]);
+        ->assertSchemaStateSet(['price_cents' => '12.50', 'promo_price_cents' => null])
+        ->fillForm(['promo_price_cents' => '11.99'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($product->fresh()?->price_cents)->toBe(1250)
+        ->and($product->fresh()?->promo_price_cents)->toBe(1199);
 });
 
 test('duplicating a product copies prices, categories and attributes under a new SKU', function (): void {

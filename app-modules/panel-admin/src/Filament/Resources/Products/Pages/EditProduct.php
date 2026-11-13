@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vevey\PanelAdmin\Filament\Resources\Products\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Override;
@@ -23,7 +22,6 @@ final class EditProduct extends EditRecord
             DuplicateProductAction::make(),
             DeleteAction::make(),
             RestoreAction::make(),
-            ForceDeleteAction::make(),
         ];
     }
 }

@@ -9,8 +9,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Support\Enums\FontWeight;
@@ -24,6 +22,9 @@ use Filament\Tables\Table;
 use Vevey\Catalog\Models\Product;
 use Vevey\PanelAdmin\Filament\Resources\Products\Actions\DuplicateProductAction;
 
+/**
+ * Products are never deleted for good (order lines reference them; ADR section 2, decision 6): delete sends to the trash, restore brings back.
+ */
 final class ProductsTable
 {
     public static function configure(Table $table): Table
@@ -89,14 +90,12 @@ final class ProductsTable
                     DuplicateProductAction::make(),
                     DeleteAction::make(),
                     RestoreAction::make(),
-                    ForceDeleteAction::make(),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -50,6 +50,22 @@ final class CategoryResource extends Resource
         return __('panel-admin::catalog.navigation_group');
     }
 
+    /**
+     * Why the category cannot be deleted, or null when it can (ADR: no silent unlinking of products).
+     */
+    public static function deletionBlockedReason(Category $category): ?string
+    {
+        if (! $category->isInUse()) {
+            return null;
+        }
+
+        return __('panel-admin::catalog.in_use.category', [
+            'name' => $category->name,
+            'products' => $category->products()->count(),
+            'children' => $category->children()->count(),
+        ]);
+    }
+
     #[Override]
     public static function form(Schema $schema): Schema
     {

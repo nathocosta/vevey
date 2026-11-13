@@ -30,6 +30,12 @@ return [
         'values' => 'Values',
         'add_value' => 'Add value',
     ],
+    'in_use' => [
+        'category' => '«:name» still has :products product(s) and :children subcategory(ies). Move them to another category before deleting.',
+        'attribute' => 'Values of «:name» are in use: :values. Remove these values from the products before deleting the attribute.',
+        'attribute_values' => 'Values in use cannot be removed: :values. Remove these values from the products first.',
+        'value_usage' => ':value (:count product(s))',
+    ],
     'fields' => [
         'name' => 'Name',
         'slug' => 'Slug',

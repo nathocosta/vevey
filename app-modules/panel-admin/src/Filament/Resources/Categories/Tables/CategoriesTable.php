@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Vevey\PanelAdmin\Filament\Resources\Categories\Tables;
 
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Vevey\Catalog\Models\Category;
+use Vevey\PanelAdmin\Filament\Actions\GuardedDeleteAction;
+use Vevey\PanelAdmin\Filament\Resources\Categories\CategoryResource;
 
 final class CategoriesTable
 {
@@ -41,8 +42,7 @@ final class CategoriesTable
             ->reorderable('position')
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()
-                    ->hidden(fn (Category $record): bool => $record->children()->exists()),
+                GuardedDeleteAction::make(Category::class, fn (Category $record): ?string => CategoryResource::deletionBlockedReason($record)),
             ]);
     }
 }

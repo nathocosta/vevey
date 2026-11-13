@@ -45,4 +45,19 @@ final class Attribute extends Model
     {
         return $this->hasMany(AttributeValue::class);
     }
+
+    /**
+     * The values of this attribute that products use, each with `products_count`.
+     * An attribute with any of them cannot be deleted.
+     *
+     * @return Collection<int, AttributeValue>
+     */
+    public function valuesInUse(): Collection
+    {
+        return $this->values()
+            ->whereHas('products')
+            ->withCount('products')
+            ->orderBy('value')
+            ->get();
+    }
 }

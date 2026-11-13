@@ -9,8 +9,10 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Override;
 use Vevey\Catalog\Models\Attribute;
+use Vevey\Catalog\Models\AttributeValue;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\Pages\CreateAttribute;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\Pages\EditAttribute;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\Pages\ListAttributes;
@@ -48,6 +50,36 @@ final class AttributeResource extends Resource
     public static function getNavigationGroup(): string
     {
         return __('panel-admin::catalog.navigation_group');
+    }
+
+    /**
+     * Why the attribute cannot be deleted, or null when it can: deleting it would take its values off the products.
+     */
+    public static function deletionBlockedReason(Attribute $attribute): ?string
+    {
+        $valuesInUse = $attribute->valuesInUse();
+
+        if ($valuesInUse->isEmpty()) {
+            return null;
+        }
+
+        return __('panel-admin::catalog.in_use.attribute', [
+            'name' => $attribute->name,
+            'values' => self::describeUsage($valuesInUse),
+        ]);
+    }
+
+    /**
+     * @param  Collection<int, AttributeValue>  $values  loaded with `products_count`
+     */
+    public static function describeUsage(Collection $values): string
+    {
+        return $values
+            ->map(fn (AttributeValue $value): string => __('panel-admin::catalog.in_use.value_usage', [
+                'value' => $value->value,
+                'count' => $value->getAttribute('products_count'),
+            ]))
+            ->implode(', ');
     }
 
     #[Override]

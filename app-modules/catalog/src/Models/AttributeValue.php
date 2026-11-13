@@ -54,4 +54,12 @@ final class AttributeValue extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
+    /**
+     * A value used by products cannot be deleted: products would lose it silently.
+     */
+    public function isInUse(): bool
+    {
+        return $this->products()->exists();
+    }
 }

@@ -69,6 +69,15 @@ final class Category extends Model
     }
 
     /**
+     * A category can be deleted only when no product and no subcategory points to it,
+     * so deleting never unlinks products silently.
+     */
+    public function isInUse(): bool
+    {
+        return $this->products()->exists() || $this->children()->exists();
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

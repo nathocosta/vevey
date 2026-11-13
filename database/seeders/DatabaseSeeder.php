@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Vevey\Catalog\Database\Seeders\CatalogSeeder;
 use Vevey\Permissions\Enums\Roles;
 
 class DatabaseSeeder extends Seeder
@@ -14,8 +15,8 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database: roles and permissions, then the dev team's super admin
-     * (admin@vevey.com / password) to log in at /admin locally.
+     * Seed the application's database for local use: roles and permissions, one staff user per role
+     * (password `password`; admin@vevey.com is the super admin) and a sample catalog.
      */
     public function run(): void
     {
@@ -28,5 +29,19 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $superAdmin->assignRole(Roles::SuperAdmin);
+
+        foreach ([
+            'dona@vevey.com' => Roles::Admin,
+            'atendente@vevey.com' => Roles::Attendant,
+            'logistica@vevey.com' => Roles::Logistics,
+        ] as $email => $role) {
+            User::factory()->create([
+                'name' => $role->getLabel(),
+                'email' => $email,
+                'password' => 'password',
+            ])->assignRole($role);
+        }
+
+        $this->call(CatalogSeeder::class);
     }
 }

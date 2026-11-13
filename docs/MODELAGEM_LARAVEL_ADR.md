@@ -46,7 +46,7 @@ Regras transversais, todas decididas em 2026-11-02:
    models singular PascalCase, pivôs singulares em ordem alfabética (`category_product`). Português só em labels de UI.
 4. **Imagens com `spatie/laravel-medialibrary`.** Disco S3/Supabase Storage, conversions em WebP,
    `SpatieMediaLibraryFileUpload` / `SpatieMediaLibraryImageColumn` no Filament.
-5. **Auditoria de produto com `spatie/laravel-activitylog`.** Não há tabela de versão de produto (ver ADR 5).
+5. **Sem auditoria de produto por enquanto** (revisto em 2026-11-12: `spatie/laravel-activitylog` não entra). Não há tabela de versão de produto (ver ADR 5).
 6. **Soft deletes** em produto, cliente, usuário. Produto nunca é apagado fisicamente (pedidos antigos referenciam).
 7. **Guards separados**: `users` (equipe, acessa o painel via `FilamentUser::canAccessPanel`) e `customers` (loja).
 8. **Arquitetura: monólito modular** (decidido 2026-11-04). Richard vai detalhar depois.
@@ -194,7 +194,7 @@ não cobre variações de preço por cupom/canal.
 **Decisão (2026-11-02): snapshot na linha, sem tabela de versão.**
 `order_items`: `product_id` (FK, para análise), `sku`, `name`, `unit_price_cents`, `quantity`, `discount_cents`,
 `total_cents`, `product_snapshot` jsonb opcional (descrição, imagem, atributos na hora da venda).
-Histórico de edição do produto fica no `activitylog`, não no modelo de domínio.
+Histórico de edição do produto não é guardado por enquanto; o pedido depende só do snapshot.
 
 **Glossário — SKU.** *Stock Keeping Unit*: código único que identifica um produto (ou variante) no catálogo,
 ex. `BRIG-TRAD-UN`. Não é estoque mínimo (isso é `reorder_point`) e não é por local de estoque: um mesmo SKU
@@ -424,14 +424,13 @@ stock_movements, stock_reservations, stock_levels
 orders, order_items, order_adjustments, order_status_histories (carts? wishlists? reviews? só se pedidos)
 payments, payment_events
 coupons
-media (spatie), activity_log (spatie)
+media (spatie)
 ```
 
 ## 13. Pacotes previstos
 
 - `brick/money` (cast de dinheiro)
 - `spatie/laravel-medialibrary` (imagens)
-- `spatie/laravel-activitylog` (auditoria de produto)
 - Filament (painel staff), scheduler do Laravel (expiração de reservas)
 - Postgres com `timestampTz` e colunas geradas via `->storedAs(...)`
 
@@ -446,7 +445,7 @@ Opções avaliadas: A (fina, 7 módulos de domínio), B (por fluxo, 5) e C (enxu
 
 | Módulo | Tabelas | Responsabilidade | Depende de |
 |---|---|---|---|
-| `catalog` | categories, products, category_product, attributes, attribute_values, attribute_value_product, media | Produto/SKU, preço e preço promocional, atributos para filtro, busca fullText, auditoria | — |
+| `catalog` | categories, products, category_product, attributes, attribute_values, attribute_value_product, media | Produto/SKU, preço e preço promocional, atributos para filtro, busca fullText | — |
 | `inventory` | stock_movements, stock_reservations, stock_levels | Reservar, liberar, baixar, ajustar, entrada, inventário, expirar reservas | — (só FK para `products`; trabalha com `product_id`) |
 | `customers` | customers, customer_identities, customer_addresses | Model `Customer` autenticável (guard `customers`), contatos, endereços | — |
 | `orders` | orders, order_items, order_adjustments, order_status_histories, coupons | Serviço único de criação de pedido (web, pos, whatsapp), status, snapshots, cupom, desconto Pix, frete e rastreio (frete sem cálculo por enquanto, ver abaixo) | catalog, inventory, customers, payments |

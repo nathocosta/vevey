@@ -9,5 +9,8 @@ parameters:
         - app
         - app-modules
 
+    scanFiles:
+        - tests/Pest.php
+
     excludePaths:
         - app-modules/*/vendor

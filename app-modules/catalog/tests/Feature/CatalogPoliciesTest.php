@@ -24,6 +24,11 @@ function catalogAbilities(Roles $role, object $record): array
         'delete' => $gate->allows('delete', $record),
         'restore' => $gate->allows('restore', $record),
         'forceDelete' => $gate->allows('forceDelete', $record),
+        'deleteAny' => $gate->allows('deleteAny', $record::class),
+        'restoreAny' => $gate->allows('restoreAny', $record::class),
+        'forceDeleteAny' => $gate->allows('forceDeleteAny', $record::class),
+        'replicate' => $gate->allows('replicate', $record),
+        'reorder' => $gate->allows('reorder', $record::class),
     ];
 }
 
@@ -36,6 +41,11 @@ test('the owner manages products but never deletes them for good', function (): 
         'delete' => true,
         'restore' => true,
         'forceDelete' => false,
+        'deleteAny' => true,
+        'restoreAny' => true,
+        'forceDeleteAny' => false,
+        'replicate' => true,
+        'reorder' => true,
     ]);
 });
 
@@ -46,6 +56,9 @@ test('the owner manages categories, attributes and their values', function (Clos
         'create' => true,
         'update' => true,
         'delete' => true,
+        'deleteAny' => true,
+        'replicate' => true,
+        'reorder' => true,
     ]);
 })->with([
     'category' => fn (): Category => Category::factory()->create(),
@@ -62,6 +75,11 @@ test('counter and logistics staff only read the catalog', function (Roles $role,
         'delete' => false,
         'restore' => false,
         'forceDelete' => false,
+        'deleteAny' => false,
+        'restoreAny' => false,
+        'forceDeleteAny' => false,
+        'replicate' => false,
+        'reorder' => false,
     ]);
 })->with([Roles::Attendant, Roles::Logistics])->with([
     'product' => fn (): Product => Product::factory()->create(),

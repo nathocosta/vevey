@@ -46,4 +46,29 @@ final class RolePolicy
     {
         return $user->hasRole(Roles::SuperAdmin);
     }
+
+    public function deleteAny(User $user): bool
+    {
+        return $user->hasRole(Roles::SuperAdmin);
+    }
+
+    public function restoreAny(User $user): bool
+    {
+        return $user->hasRole(Roles::SuperAdmin);
+    }
+
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->hasRole(Roles::SuperAdmin);
+    }
+
+    public function replicate(User $user): bool
+    {
+        return $user->hasRole(Roles::SuperAdmin);
+    }
+
+    public function reorder(User $user): bool
+    {
+        return $user->hasRole(Roles::SuperAdmin);
+    }
 }

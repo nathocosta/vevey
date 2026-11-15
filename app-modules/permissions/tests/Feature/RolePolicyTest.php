@@ -21,7 +21,12 @@ test('only the super admin may manage roles', function (Roles $role, bool $allow
         ->and($gate->allows('update', $record))->toBe($allowed)
         ->and($gate->allows('delete', $record))->toBe($allowed)
         ->and($gate->allows('restore', $record))->toBe($allowed)
-        ->and($gate->allows('forceDelete', $record))->toBe($allowed);
+        ->and($gate->allows('forceDelete', $record))->toBe($allowed)
+        ->and($gate->allows('deleteAny', Role::class))->toBe($allowed)
+        ->and($gate->allows('restoreAny', Role::class))->toBe($allowed)
+        ->and($gate->allows('forceDeleteAny', Role::class))->toBe($allowed)
+        ->and($gate->allows('replicate', $record))->toBe($allowed)
+        ->and($gate->allows('reorder', Role::class))->toBe($allowed);
 })->with([
     'super admin' => [Roles::SuperAdmin, true],
     'admin' => [Roles::Admin, false],

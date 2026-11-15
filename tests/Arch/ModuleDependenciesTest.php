@@ -7,6 +7,7 @@ declare(strict_types=1);
  * A module may import only the layers listed for its own layer in $mayImport; a new module gets an entry in $layers.
  */
 $layers = [
+    'Vevey\Catalog' => 'base',
     'Vevey\PanelAdmin' => 'interface',
     'Vevey\Permissions' => 'shared',
 ];

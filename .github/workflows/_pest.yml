@@ -31,6 +31,20 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-tests
       cancel-in-progress: true
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vevey_testing
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -59,8 +73,16 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
+      # Production runs on Postgres: CHECK constraints and full text search only exist there, so CI tests against it.
       - name: Run Tests
         env:
           XDEBUG_MODE: off
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: vevey_testing
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_URL: ""
         run: |
           vendor/bin/pest --ci --parallel

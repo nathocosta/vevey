@@ -44,15 +44,17 @@ Regras transversais, todas decididas em 2026-11-02:
 2. **Sem enum nativo no Postgres.** Coluna `string` + cast para PHP enum no Eloquent.
 3. **Nomenclatura padrão Laravel, em inglês.** Tabelas plural snake_case (`orders`, `order_items`),
    models singular PascalCase, pivôs singulares em ordem alfabética (`category_product`). Português só em labels de UI.
-4. **Imagens com `spatie/laravel-medialibrary`.** Disco S3/Supabase Storage, conversions em WebP,
+4. **Imagens com `spatie/laravel-medialibrary`.** Disco S3, conversions em WebP,
    `SpatieMediaLibraryFileUpload` / `SpatieMediaLibraryImageColumn` no Filament.
-5. **Auditoria de produto com `spatie/laravel-activitylog`.** Não há tabela de versão de produto (ver ADR 5).
+5. **Sem auditoria de produto por enquanto** (revisto em 2026-11-12: `spatie/laravel-activitylog` não entra). Não há tabela de versão de produto (ver ADR 5).
 6. **Soft deletes** em produto, cliente, usuário. Produto nunca é apagado fisicamente (pedidos antigos referenciam).
 7. **Guards separados**: `users` (equipe, acessa o painel via `FilamentUser::canAccessPanel`) e `customers` (loja).
 8. **Arquitetura: monólito modular** (decidido 2026-11-04). Richard vai detalhar depois.
 9. **Autorização por RBAC** (decidido 2026-11-04). Richard tem um módulo de projeto pronto para compartilhar;
    os papéis da equipe (hoje admin/operador/logística no repo, atendente/administrador no TCC) viram dados desse
    módulo, não enum. Detalhes quando o módulo for apresentado.
+10. **Hospedagem não será Supabase** (decidido 2026-11-15). O Postgres do sistema novo fica em provedor ainda a definir;
+    extensões (`unaccent`, `pg_trgm`) e dicionários deixam de ser limitação imposta pela plataforma.
 
 ---
 
@@ -60,11 +62,13 @@ Regras transversais, todas decididas em 2026-11-02:
 
 **Contexto.** Hoje preços são float/Numeric sem regra, e o frontend recalcula totais.
 
-**Decisão recomendada (não marcada como decidida explicitamente, mas sem objeção):**
+**Decisão (cast implementado no PR do catálogo, 2026-11-15):**
 - Todo valor monetário é **inteiro em centavos** (`bigint`), sufixo `_cents`: `price_cents`, `subtotal_cents`,
   `discount_cents`, `shipping_cents`, `total_cents`.
 - Sem coluna `currency`: só BRL. Se um dia precisar, adiciona com default.
-- Cast `brick/money` no Eloquent; Filament usa `->money('BRL', divideBy: 100)`.
+- Cast `App\Casts\MoneyCast` (`brick/money`): a coluna `*_cents` é lida como `Money` BRL e só aceita `Money` na
+  escrita; DTOs carregam `Money`. No Filament, `MoneyInput` (digita em reais, grava `Money`) e `MoneyColumn`
+  (`->money('BRL', divideBy: 100)` sobre os centavos).
 - **Totais do pedido são fato histórico**, gravados na criação, nunca recalculados a partir dos produtos atuais.
   CHECK: `total_cents = subtotal_cents - discount_cents + shipping_cents`.
 - Tabela `order_adjustments` (cupom, desconto Pix, frete grátis, ajuste manual) para explicar o `discount_cents`.
@@ -194,7 +198,7 @@ não cobre variações de preço por cupom/canal.
 **Decisão (2026-11-02): snapshot na linha, sem tabela de versão.**
 `order_items`: `product_id` (FK, para análise), `sku`, `name`, `unit_price_cents`, `quantity`, `discount_cents`,
 `total_cents`, `product_snapshot` jsonb opcional (descrição, imagem, atributos na hora da venda).
-Histórico de edição do produto fica no `activitylog`, não no modelo de domínio.
+Histórico de edição do produto não é guardado por enquanto; o pedido depende só do snapshot.
 
 **Glossário — SKU.** *Stock Keeping Unit*: código único que identifica um produto (ou variante) no catálogo,
 ex. `BRIG-TRAD-UN`. Não é estoque mínimo (isso é `reorder_point`) e não é por local de estoque: um mesmo SKU
@@ -286,8 +290,12 @@ join products p on p.id = avp.product_id and p.is_active
 group by a.name, av.value order by 1, 2;
 ```
 
-**Busca por texto é outra ferramenta.** `$table->fullText(['name','description'])->language('portuguese')` na
-migration (índice GIN sobre `to_tsvector`), `Product::whereFullText([...], $termo)` no Eloquent. Nunca `ILIKE`.
+**Busca por texto é outra ferramenta.** Coluna gerada `products.search_vector` (`tsvector` em português de nome e
+descrição, com `coalesce`, porque `to_tsvector(null)` anula o vetor inteiro e esconderia produto sem descrição) e índice
+GIN sobre ela. No Eloquent, o scope `Product::search($termo)` usa `whereFullText('search_vector', ..., ['vector' => true,
+'mode' => 'websearch'])` e também acha SKU e código de barras por igualdade. Painel (tabela e busca global) passa por
+esse scope. Nunca `ILIKE`. Coluna gerada e CHECK de preço só existem no Postgres; por isso a CI roda os testes contra
+Postgres (o SQLite local pula os testes que dependem deles). **Limitações conhecidas e em aberto: ver ADR 9.**
 
 **Consequências.** Novo atributo é uma linha no painel, sem migration. Eloquent: `Product belongsToMany
 AttributeValue`, `AttributeValue belongsTo Attribute`; filtro vira `whereHas` por atributo marcado. Filament: um
@@ -411,6 +419,8 @@ Regra que fica: pedido nasce sempre pelo mesmo serviço, seja a origem o site, u
 | Frete | **decidido 09/11**: sem cálculo de frete por enquanto; sem `integration-‹frete›` nem contrato `ShippingQuoter` |
 | Sufixo de DTO | **decidido 09/11**: `Data` (ADR 8) |
 | Login da loja | **decidido 2026-11-08**: padrão Laravel em `customers.email`/`password`; identidades são só contatos |
+| Hospedagem do Postgres | **decidido 15/11**: não será Supabase; provedor a definir |
+| Qualidade da busca por texto | **em aberto 15/11**: limitações do full text em português (ADR 9, issue #5) |
 
 ---
 
@@ -424,14 +434,13 @@ stock_movements, stock_reservations, stock_levels
 orders, order_items, order_adjustments, order_status_histories (carts? wishlists? reviews? só se pedidos)
 payments, payment_events
 coupons
-media (spatie), activity_log (spatie)
+media (spatie)
 ```
 
 ## 13. Pacotes previstos
 
 - `brick/money` (cast de dinheiro)
 - `spatie/laravel-medialibrary` (imagens)
-- `spatie/laravel-activitylog` (auditoria de produto)
 - Filament (painel staff), scheduler do Laravel (expiração de reservas)
 - Postgres com `timestampTz` e colunas geradas via `->storedAs(...)`
 
@@ -446,7 +455,7 @@ Opções avaliadas: A (fina, 7 módulos de domínio), B (por fluxo, 5) e C (enxu
 
 | Módulo | Tabelas | Responsabilidade | Depende de |
 |---|---|---|---|
-| `catalog` | categories, products, category_product, attributes, attribute_values, attribute_value_product, media | Produto/SKU, preço e preço promocional, atributos para filtro, busca fullText, auditoria | — |
+| `catalog` | categories, products, category_product, attributes, attribute_values, attribute_value_product, media | Produto/SKU, preço e preço promocional, atributos para filtro, busca fullText | — |
 | `inventory` | stock_movements, stock_reservations, stock_levels | Reservar, liberar, baixar, ajustar, entrada, inventário, expirar reservas | — (só FK para `products`; trabalha com `product_id`) |
 | `customers` | customers, customer_identities, customer_addresses | Model `Customer` autenticável (guard `customers`), contatos, endereços | — |
 | `orders` | orders, order_items, order_adjustments, order_status_histories, coupons | Serviço único de criação de pedido (web, pos, whatsapp), status, snapshots, cupom, desconto Pix, frete e rastreio (frete sem cálculo por enquanto, ver abaixo) | catalog, inventory, customers, payments |
@@ -548,3 +557,49 @@ entra em `orders`.
 
 - Ações que não são CRUD (registrar venda no PDV, ajustar estoque, cancelar/estornar pedido, ver relatórios): estender o
   `PermissionsEnum` ou criar permissões avulsas. Decidir ao implementar.
+
+---
+
+## 15. ADR 9 — Busca por texto: limitações do full text (em aberto, 2026-11-15)
+
+**Estado.** Em aberto, para discutir no futuro. Discussão na issue #5. Até lá vale a ADR 6 como está implementada.
+
+**Contexto.** A ADR 6 adotou full text do Postgres: coluna gerada `products.search_vector` (`tsvector` em português de
+nome com peso A e descrição com peso B) com índice GIN e o scope `Product::search()`, usado pela tabela e pela busca
+global do painel. Testando com 5 mil produtos de exemplo, o radicalizador de português (snowball) mostrou falhas em
+buscas comuns numa loja de festas:
+
+| Busca | Esperado | Resultado | Causa |
+|---|---|---|---|
+| `balões dourados` | "Balão dourado" | nada | `balão` → `balã`, `balões` → `balõ` |
+| `festa infantil` | "festas infantis" | nada | `infantil` → `infantil`, `infantis` → `infant` |
+| `balao` | "Balão" | nada | `to_tsvector` não remove acento |
+| `metal` | "metalizado" | nada | não casa pedaço de palavra |
+| `brigaderio` | "Brigadeiro" | nada | não tolera erro de digitação |
+
+Funciona: plural regular (`bolos` → "Bolo"), gênero (`dourada` → "dourado"), termo só na descrição, palavras em
+qualquer ordem, operadores do `websearch` (`bolo -decorado`).
+
+Desempenho não é o problema. Medição local com 200 mil produtos (Postgres 18): termo raro no full text usou o índice
+GIN (11 ms contra 72 ms do `ILIKE`); termo comum, que casa 20% da tabela, faz leitura sequencial nos dois (28 ms contra
+63 ms), e o planejador está certo em preferir isso. Com o volume real da loja os dois ficam abaixo de 1 ms.
+
+**Opções.**
+1. **Full text + `unaccent` + `pg_trgm`.** Trigramas resolvem plural irregular, acento, pedaço de palavra e erro de
+   digitação, com índice GIN e ordenação por semelhança; full text continua dando a relevância. Exige rever o "nunca
+   `ILIKE`" da ADR 6, porque com `pg_trgm` o `ILIKE` passa a usar índice. `unaccent` dentro de coluna gerada precisa
+   de função wrapper `immutable`.
+2. **Dicionário pt_BR (hunspell/ispell) no Postgres.** Radicaliza melhor; exige arquivos no servidor e não resolve
+   erro de digitação nem pedaço de palavra.
+3. **Motor de busca externo** (Meilisearch ou Typesense via Laravel Scout). Melhor tolerância e relevância; mais um
+   serviço para operar e manter sincronizado.
+4. **Manter como está** até a busca da loja (`panel-site`) existir.
+
+**Perguntas para a decisão.** A busca da loja e a do painel precisam ser iguais? O painel já resolve bem com SKU,
+código de barras e palavra inteira; a loja é onde cliente digita "balao" e "baloes". A decisão depende também do
+provedor do Postgres (decisão 10 da seção 2), que precisa oferecer as extensões escolhidas.
+
+**Consequências enquanto em aberto.** Nada muda no código. Quem buscar no painel precisa usar a palavra inteira e com
+acento. A troca, quando vier, fica contida no scope `Product::search()` e na migration de `products`; o painel não
+muda porque já passa pelo scope.
+

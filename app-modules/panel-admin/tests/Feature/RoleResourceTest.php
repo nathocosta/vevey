@@ -15,14 +15,6 @@ use Vevey\Permissions\Models\Role;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
-function staffWithRole(Roles $role): User
-{
-    $user = User::factory()->create();
-    $user->assignRole($role);
-
-    return $user;
-}
-
 test('a user without a role cannot enter the admin panel', function (): void {
     actingAs(User::factory()->create());
 

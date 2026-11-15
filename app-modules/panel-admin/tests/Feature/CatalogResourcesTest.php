@@ -12,6 +12,7 @@ use Vevey\Catalog\Models\Product;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\AttributeResource;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\Pages\CreateAttribute;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\Pages\EditAttribute;
+use Vevey\PanelAdmin\Filament\Resources\Categories\CategoryResource;
 use Vevey\PanelAdmin\Filament\Resources\Categories\Pages\EditCategory;
 use Vevey\PanelAdmin\Filament\Resources\Categories\Pages\ListCategories;
 use Vevey\PanelAdmin\Filament\Resources\Products\ProductResource;
@@ -65,6 +66,18 @@ test('a category in use is not deleted and the owner is told why', function (str
 
     expect(Category::query()->find($category->id))->not->toBeNull();
 })->with(['product', 'subcategory']);
+
+test('the reason a category cannot be deleted names the products and subcategories using it', function (): void {
+    $party = Category::factory()->create(['name' => 'Festa']);
+    Category::factory()->childOf($party)->create(['name' => 'Balões']);
+    $party->products()->attach(Product::factory()->count(7)->sequence(fn ($sequence): array => ['name' => 'Produto ' . $sequence->index])->create());
+
+    app()->setLocale('pt_BR');
+
+    expect(CategoryResource::deletionBlockedReason($party))
+        ->toBe('«Festa» ainda está em uso: 7 produto(s): Produto 0, Produto 1, Produto 2, Produto 3, Produto 4 e mais 2; 1 subcategoria(s): Balões. Mova-os para outra categoria antes de excluir.')
+        ->and(CategoryResource::deletionBlockedReason(Category::factory()->create()))->toBeNull();
+});
 
 test('an unused category is deleted', function (): void {
     actingAs(staffWithRole(Roles::Admin));
@@ -131,6 +144,17 @@ test('removing an unused value from the attribute form deletes it', function ():
 
     expect(AttributeValue::query()->find($pink->id))->toBeNull()
         ->and(AttributeValue::query()->find($blue->id))->not->toBeNull();
+});
+
+test('the owner reorders categories by dragging', function (): void {
+    actingAs(staffWithRole(Roles::Admin));
+    $first = Category::factory()->create(['position' => 0]);
+    $second = Category::factory()->create(['position' => 1]);
+
+    Livewire::test(ListCategories::class)
+        ->call('reorderTable', [$second->id, $first->id]);
+
+    expect($second->fresh()?->position)->toBeLessThan($first->fresh()?->position);
 });
 
 test('counter staff cannot reorder categories', function (): void {

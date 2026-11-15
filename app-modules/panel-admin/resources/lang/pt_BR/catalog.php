@@ -31,7 +31,10 @@ return [
         'add_value' => 'Adicionar valor',
     ],
     'in_use' => [
-        'category' => '«:name» ainda tem :products produto(s) e :children subcategoria(s). Mova-os para outra categoria antes de excluir.',
+        'category' => '«:name» ainda está em uso: :usage. Mova-os para outra categoria antes de excluir.',
+        'category_products' => ':count produto(s): :names',
+        'category_children' => ':count subcategoria(s): :names',
+        'and_more' => ':names e mais :count',
         'attribute' => 'Os valores de «:name» estão em uso: :values. Tire esses valores dos produtos antes de excluir o atributo.',
         'attribute_values' => 'Não dá para remover valores em uso: :values. Tire esses valores dos produtos antes de remover.',
         'value_usage' => ':value (:count produto(s))',

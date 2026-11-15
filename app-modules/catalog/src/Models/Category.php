@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vevey\Catalog\Models;
 
+use DomainException;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -20,6 +21,9 @@ use Vevey\Catalog\Database\Factories\CategoryFactory;
 use Vevey\Catalog\Policies\CategoryPolicy;
 
 /**
+ * Categories have one level of nesting: a parent is a top-level category, and a category with subcategories has no parent.
+ * The panel only offers valid parents; saving enforces it for any other caller (seeders, other code).
+ *
  * @property string $id
  * @property string|null $parent_id
  * @property string $name
@@ -75,6 +79,29 @@ final class Category extends Model
     public function isInUse(): bool
     {
         return $this->products()->exists() || $this->children()->exists();
+    }
+
+    /**
+     * @throws DomainException when the parent would create a second level of nesting
+     */
+    public function ensureOneLevelOfNesting(): void
+    {
+        if ($this->parent_id === null) {
+            return;
+        }
+
+        throw_if($this->parent_id === $this->id, DomainException::class, 'A category cannot be its own parent.');
+
+        throw_if(self::query()->whereKey($this->parent_id)->whereNotNull('parent_id')->exists(), DomainException::class, 'A subcategory cannot be a parent: categories have one level of nesting.');
+
+        throw_if($this->exists && $this->children()->exists(), DomainException::class, 'A category with subcategories cannot get a parent: categories have one level of nesting.');
+    }
+
+    protected static function booted(): void
+    {
+        self::saving(static function (Category $category): void {
+            $category->ensureOneLevelOfNesting();
+        });
     }
 
     /**

@@ -11,6 +11,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Override;
 use Vevey\Catalog\Models\Category;
+use Vevey\Catalog\Models\Product;
 use Vevey\PanelAdmin\Filament\Resources\Categories\Pages\CreateCategory;
 use Vevey\PanelAdmin\Filament\Resources\Categories\Pages\EditCategory;
 use Vevey\PanelAdmin\Filament\Resources\Categories\Pages\ListCategories;
@@ -32,6 +33,11 @@ final class CategoryResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    /**
+     * How many products or subcategories the "in use" message names before summing up the rest.
+     */
+    private const int NAMES_SHOWN = 5;
+
     #[Override]
     public static function getModelLabel(): string
     {
@@ -51,18 +57,37 @@ final class CategoryResource extends Resource
     }
 
     /**
-     * Why the category cannot be deleted, or null when it can (ADR: no silent unlinking of products).
+     * Why the category cannot be deleted, naming what still uses it, or null when it can (no silent unlinking of products).
      */
     public static function deletionBlockedReason(Category $category): ?string
     {
-        if (! $category->isInUse()) {
+        $category->loadCount(['products', 'children']);
+        $productsCount = (int) $category->getAttribute('products_count');
+        $childrenCount = (int) $category->getAttribute('children_count');
+
+        if ($productsCount === 0 && $childrenCount === 0) {
             return null;
+        }
+
+        $usage = [];
+
+        if ($productsCount > 0) {
+            $usage[] = __('panel-admin::catalog.in_use.category_products', [
+                'count' => $productsCount,
+                'names' => self::namesWithRemainder($category->products()->orderBy('name')->limit(self::NAMES_SHOWN)->get()->map(fn (Product $product): string => $product->name)->all(), $productsCount),
+            ]);
+        }
+
+        if ($childrenCount > 0) {
+            $usage[] = __('panel-admin::catalog.in_use.category_children', [
+                'count' => $childrenCount,
+                'names' => self::namesWithRemainder($category->children()->orderBy('name')->limit(self::NAMES_SHOWN)->get()->map(fn (Category $child): string => $child->name)->all(), $childrenCount),
+            ]);
         }
 
         return __('panel-admin::catalog.in_use.category', [
             'name' => $category->name,
-            'products' => $category->products()->count(),
-            'children' => $category->children()->count(),
+            'usage' => implode('; ', $usage),
         ]);
     }
 
@@ -76,6 +101,19 @@ final class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return CategoriesTable::configure($table);
+    }
+
+    /**
+     * @param  array<int, string>  $names  the first names, at most NAMES_SHOWN
+     */
+    private static function namesWithRemainder(array $names, int $total): string
+    {
+        $listed = implode(', ', $names);
+        $remainder = $total - count($names);
+
+        return $remainder > 0
+            ? __('panel-admin::catalog.in_use.and_more', ['names' => $listed, 'count' => $remainder])
+            : $listed;
     }
 
     #[Override]

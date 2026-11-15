@@ -6,13 +6,12 @@ namespace Vevey\PanelAdmin\Filament\Resources\Attributes\Schemas;
 
 use Closure;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Vevey\Catalog\Models\Attribute;
 use Vevey\Catalog\Models\AttributeValue;
+use Vevey\PanelAdmin\Filament\Forms\SlugFields;
 use Vevey\PanelAdmin\Filament\Resources\Attributes\AttributeResource;
 
 /**
@@ -26,17 +25,8 @@ final class AttributeForm
             ->components([
                 Section::make()
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('panel-admin::catalog.fields.name'))
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
-                        TextInput::make('slug')
-                            ->label(__('panel-admin::catalog.fields.slug'))
-                            ->required()
-                            ->maxLength(255)
-                            ->alphaDash()
+                        SlugFields::source(),
+                        SlugFields::slug()
                             ->unique(ignoreRecord: true),
                     ])
                     ->columns(2)
@@ -48,17 +38,8 @@ final class AttributeForm
                             ->hiddenLabel()
                             ->relationship('values')
                             ->schema([
-                                TextInput::make('value')
-                                    ->label(__('panel-admin::catalog.fields.value'))
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
-                                TextInput::make('slug')
-                                    ->label(__('panel-admin::catalog.fields.slug'))
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->alphaDash()
+                                SlugFields::source('value'),
+                                SlugFields::slug()
                                     ->distinct(),
                             ])
                             ->columns(2)

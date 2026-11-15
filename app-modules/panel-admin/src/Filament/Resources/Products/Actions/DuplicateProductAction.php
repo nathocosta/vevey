@@ -6,9 +6,8 @@ namespace Vevey\PanelAdmin\Filament\Resources\Products\Actions;
 
 use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Str;
 use Vevey\Catalog\Models\Product;
+use Vevey\PanelAdmin\Filament\Forms\SlugFields;
 
 /**
  * "Duplicar produto" (ADR 6): registers the next color of a product in series. The copy gets a new name, slug and SKU,
@@ -30,17 +29,8 @@ final class DuplicateProductAction
                 'sku' => $data['sku'] . '-COPIA',
             ])
             ->schema([
-                TextInput::make('name')
-                    ->label(__('panel-admin::catalog.fields.name'))
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
-                TextInput::make('slug')
-                    ->label(__('panel-admin::catalog.fields.slug'))
-                    ->required()
-                    ->maxLength(255)
-                    ->alphaDash()
+                SlugFields::source(),
+                SlugFields::slug()
                     ->unique(Product::class, 'slug'),
                 TextInput::make('sku')
                     ->label(__('panel-admin::catalog.fields.sku'))

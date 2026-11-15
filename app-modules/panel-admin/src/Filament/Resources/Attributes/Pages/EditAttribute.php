@@ -18,7 +18,7 @@ final class EditAttribute extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            GuardedDeleteAction::make(Attribute::class, fn (Attribute $record): ?string => AttributeResource::deletionBlockedReason($record)),
+            GuardedDeleteAction::make(Attribute::class, AttributeResource::deletionBlockedReason(...)),
         ];
     }
 }

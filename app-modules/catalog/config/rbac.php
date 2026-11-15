@@ -16,6 +16,12 @@ use Vevey\Permissions\Enums\Roles;
  */
 $manage = [PermissionsEnum::ViewAny, PermissionsEnum::View, PermissionsEnum::Create, PermissionsEnum::Update, PermissionsEnum::Delete];
 $read = [PermissionsEnum::ViewAny, PermissionsEnum::View];
+$readOnly = [
+    Product::class => $read,
+    Category::class => $read,
+    Attribute::class => $read,
+    AttributeValue::class => $read,
+];
 
 return [
     'permissions' => [
@@ -25,17 +31,7 @@ return [
             Attribute::class => $manage,
             AttributeValue::class => $manage,
         ],
-        Roles::Attendant->value => [
-            Product::class => $read,
-            Category::class => $read,
-            Attribute::class => $read,
-            AttributeValue::class => $read,
-        ],
-        Roles::Logistics->value => [
-            Product::class => $read,
-            Category::class => $read,
-            Attribute::class => $read,
-            AttributeValue::class => $read,
-        ],
+        Roles::Attendant->value => $readOnly,
+        Roles::Logistics->value => $readOnly,
     ],
 ];

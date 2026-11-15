@@ -18,7 +18,7 @@ final class EditCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            GuardedDeleteAction::make(Category::class, fn (Category $record): ?string => CategoryResource::deletionBlockedReason($record)),
+            GuardedDeleteAction::make(Category::class, CategoryResource::deletionBlockedReason(...)),
         ];
     }
 }

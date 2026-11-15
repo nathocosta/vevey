@@ -10,12 +10,11 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 use Vevey\Catalog\Models\AttributeValue;
 use Vevey\Catalog\Models\Product;
+use Vevey\PanelAdmin\Filament\Forms\SlugFields;
 
 final class ProductForm
 {
@@ -25,17 +24,8 @@ final class ProductForm
             ->components([
                 Section::make(__('panel-admin::catalog.products.sections.details'))
                     ->schema([
-                        TextInput::make('name')
-                            ->label(__('panel-admin::catalog.fields.name'))
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state ?? ''))),
-                        TextInput::make('slug')
-                            ->label(__('panel-admin::catalog.fields.slug'))
-                            ->required()
-                            ->maxLength(255)
-                            ->alphaDash()
+                        SlugFields::source(),
+                        SlugFields::slug()
                             ->unique(ignoreRecord: true),
                         TextInput::make('sku')
                             ->label(__('panel-admin::catalog.fields.sku'))

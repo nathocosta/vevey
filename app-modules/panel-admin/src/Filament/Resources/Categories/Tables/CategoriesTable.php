@@ -42,7 +42,7 @@ final class CategoriesTable
             ->reorderable('position')
             ->recordActions([
                 EditAction::make(),
-                GuardedDeleteAction::make(Category::class, fn (Category $record): ?string => CategoryResource::deletionBlockedReason($record)),
+                GuardedDeleteAction::make(Category::class, CategoryResource::deletionBlockedReason(...)),
             ]);
     }
 }

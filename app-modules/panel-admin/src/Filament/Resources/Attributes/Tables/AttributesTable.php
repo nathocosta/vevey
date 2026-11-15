@@ -31,7 +31,7 @@ final class AttributesTable
             ->defaultSort('name')
             ->recordActions([
                 EditAction::make(),
-                GuardedDeleteAction::make(Attribute::class, fn (Attribute $record): ?string => AttributeResource::deletionBlockedReason($record)),
+                GuardedDeleteAction::make(Attribute::class, AttributeResource::deletionBlockedReason(...)),
             ]);
     }
 }

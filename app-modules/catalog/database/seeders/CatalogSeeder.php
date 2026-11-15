@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Vevey\Catalog\Database\Seeders;
 
+use App\Casts\MoneyCast;
+use Brick\Money\Money;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Vevey\Catalog\Models\Attribute;
@@ -55,8 +57,8 @@ final class CatalogSeeder extends Seeder
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']),
                 'description' => sprintf('%s. Produto de exemplo para testes locais.', $data['name']),
-                'price_cents' => $data['price'],
-                'promo_price_cents' => $data['promo'] ?? null,
+                'price_cents' => Money::ofMinor($data['price'], MoneyCast::CURRENCY),
+                'promo_price_cents' => isset($data['promo']) ? Money::ofMinor($data['promo'], MoneyCast::CURRENCY) : null,
                 'is_active' => $data['active'] ?? true,
             ]);
 

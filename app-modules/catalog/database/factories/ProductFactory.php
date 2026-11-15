@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Vevey\Catalog\Database\Factories;
 
+use App\Casts\MoneyCast;
+use Brick\Money\Money;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Vevey\Catalog\Models\Product;
@@ -26,7 +28,7 @@ final class ProductFactory extends Factory
             'name' => Str::ucfirst($name),
             'slug' => Str::slug($name),
             'description' => fake()->optional()->paragraph(),
-            'price_cents' => fake()->numberBetween(100, 50_000),
+            'price_cents' => Money::ofMinor(fake()->numberBetween(100, 50_000), MoneyCast::CURRENCY),
             'promo_price_cents' => null,
             'is_active' => true,
         ];
@@ -37,8 +39,8 @@ final class ProductFactory extends Factory
         return $this->state(['is_active' => false]);
     }
 
-    public function onPromotion(int $promoPriceCents): self
+    public function onPromotion(Money $promoPrice): self
     {
-        return $this->state(['promo_price_cents' => $promoPriceCents]);
+        return $this->state(['promo_price_cents' => $promoPrice]);
     }
 }

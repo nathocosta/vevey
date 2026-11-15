@@ -95,4 +95,16 @@ final class ProductResource extends Resource
     {
         return ['name', 'sku', 'barcode'];
     }
+
+    /**
+     * Global search uses the catalog's search (full text on name and description, exact SKU and barcode)
+     * instead of Filament's LIKE on each attribute.
+     *
+     * @param  Builder<Product>  $query
+     */
+    #[Override]
+    protected static function applyGlobalSearchAttributeConstraints(Builder $query, string $search): void
+    {
+        $query->search($search);
+    }
 }

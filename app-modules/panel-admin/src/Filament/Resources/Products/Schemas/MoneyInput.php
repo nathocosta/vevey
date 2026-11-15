@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Vevey\PanelAdmin\Filament\Resources\Products\Schemas;
 
+use App\Casts\MoneyCast;
+use Brick\Math\RoundingMode;
+use Brick\Money\Money;
 use Filament\Forms\Components\TextInput;
 
 /**
- * Edits an integer-cents column (ADR 1) in reais: shows 12.50 for 1250 and saves 1250 back.
+ * Edits a Money column (integer cents, ADR 1) in reais: shows 12.50 for 1250 cents and saves a Money back.
  * At most two decimals, so what is validated (e.g. promo lower than price) is exactly what is stored.
  */
 final class MoneyInput
@@ -23,7 +26,13 @@ final class MoneyInput
             ->rule('decimal:0,2')
             ->step(0.01)
             ->prefix('R$')
-            ->formatStateUsing(fn (mixed $state): ?string => is_numeric($state) ? number_format(((int) $state) / 100, 2, '.', '') : null)
-            ->dehydrateStateUsing(fn (mixed $state): ?int => is_numeric($state) ? (int) round(((float) $state) * 100) : null);
+            ->formatStateUsing(fn (mixed $state): ?string => match (true) {
+                $state instanceof Money => (string) $state->getAmount(),
+                is_numeric($state) => (string) Money::ofMinor((int) $state, MoneyCast::CURRENCY)->getAmount(),
+                default => null,
+            })
+            ->dehydrateStateUsing(fn (mixed $state): ?Money => is_numeric($state)
+                ? Money::of((string) $state, MoneyCast::CURRENCY, roundingMode: RoundingMode::HalfUp)
+                : null);
     }
 }

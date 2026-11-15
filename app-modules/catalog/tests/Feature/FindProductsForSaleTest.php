@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Vevey\Catalog\Actions\FindProductsForSale;
 use Vevey\Catalog\DTOs\ProductAttributeData;
 use Vevey\Catalog\DTOs\ProductData;
@@ -15,7 +18,7 @@ test('it returns the products for sale keyed by id', function (): void {
     $balloon = Product::factory()->create([
         'sku' => 'BAL-MET-9-AZ',
         'name' => 'Balão metalizado 9" azul',
-        'price_cents' => 1250,
+        'price_cents' => brl(1250),
     ]);
     $balloon->attributeValues()->attach($blue);
 
@@ -28,21 +31,42 @@ test('it returns the products for sale keyed by id', function (): void {
             barcode: $balloon->barcode,
             name: 'Balão metalizado 9" azul',
             description: $balloon->description,
-            priceCents: 1250,
-            promoPriceCents: null,
-            salePriceCents: 1250,
+            price: brl(1250),
+            promoPrice: null,
+            salePrice: brl(1250),
             thumbnailUrl: null,
             attributes: [new ProductAttributeData(attribute: 'Cor', value: 'Azul')],
         ));
 });
 
 test('the sale price is the promotional price when there is one', function (): void {
-    $product = Product::factory()->onPromotion(900)->create(['price_cents' => 1250]);
+    $product = Product::factory()->onPromotion(brl(900))->create(['price_cents' => brl(1250)]);
 
     $products = resolve(FindProductsForSale::class)->handle([$product->id]);
 
-    expect($products[$product->id]->salePriceCents)->toBe(900)
-        ->and($products[$product->id]->priceCents)->toBe(1250);
+    expect($products[$product->id]->salePrice)->toEqual(brl(900))
+        ->and($products[$product->id]->price)->toEqual(brl(1250));
+});
+
+test('the thumbnail is the webp conversion of the first image', function (): void {
+    Storage::fake(config('media-library.disk_name'));
+    $product = Product::factory()->create();
+    $product->addMedia(UploadedFile::fake()->image('balao.jpg', 800, 800))->toMediaCollection(Product::IMAGES_COLLECTION);
+
+    $thumbnailUrl = resolve(FindProductsForSale::class)->handle([$product->id])[$product->id]->thumbnailUrl;
+
+    expect($thumbnailUrl)->toEndWith('-' . Product::THUMB_CONVERSION . '.webp');
+});
+
+test('until the queue generates the thumbnail the original image is used', function (): void {
+    Storage::fake(config('media-library.disk_name'));
+    Queue::fake();
+    $product = Product::factory()->create();
+    $product->addMedia(UploadedFile::fake()->image('balao.jpg', 800, 800))->toMediaCollection(Product::IMAGES_COLLECTION);
+
+    $thumbnailUrl = resolve(FindProductsForSale::class)->handle([$product->id])[$product->id]->thumbnailUrl;
+
+    expect($thumbnailUrl)->toEndWith('balao.jpg');
 });
 
 test('inactive and deleted products are not for sale', function (): void {

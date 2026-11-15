@@ -72,8 +72,8 @@ test('the owner creates a product with prices typed in reais', function (): void
 
     $product = Product::query()->where('sku', 'BAL-MET-9-AZ')->sole();
 
-    expect($product->price_cents)->toBe(1250)
-        ->and($product->promo_price_cents)->toBe(990)
+    expect($product->price_cents)->toEqual(brl(1250))
+        ->and($product->promo_price_cents)->toEqual(brl(990))
         ->and($product->categories->modelKeys())->toBe([$category->id])
         ->and($product->attributeValues->modelKeys())->toBe([$blue->id]);
 });
@@ -113,7 +113,7 @@ test('prices take at most two decimals and stay within the limit', function (str
 
 test('editing a product shows the stored cents as reais and saves them back as cents', function (): void {
     actingAs(staffWithRole(Roles::Admin));
-    $product = Product::factory()->create(['price_cents' => 1250]);
+    $product = Product::factory()->create(['price_cents' => brl(1250)]);
 
     Livewire::test(EditProduct::class, ['record' => $product->getKey()])
         ->assertSchemaStateSet(['price_cents' => '12.50', 'promo_price_cents' => null])
@@ -121,15 +121,15 @@ test('editing a product shows the stored cents as reais and saves them back as c
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($product->fresh()?->price_cents)->toBe(1250)
-        ->and($product->fresh()?->promo_price_cents)->toBe(1199);
+    expect($product->fresh()?->price_cents)->toEqual(brl(1250))
+        ->and($product->fresh()?->promo_price_cents)->toEqual(brl(1199));
 });
 
 test('duplicating a product copies prices, categories and attributes under a new SKU', function (): void {
     actingAs(staffWithRole(Roles::Admin));
     $category = Category::factory()->create();
     $blue = AttributeValue::factory()->create();
-    $original = Product::factory()->create(['price_cents' => 1250, 'barcode' => '7891234567895']);
+    $original = Product::factory()->create(['price_cents' => brl(1250), 'barcode' => '7891234567895']);
     $original->categories()->attach($category);
     $original->attributeValues()->attach($blue);
 
@@ -144,7 +144,7 @@ test('duplicating a product copies prices, categories and attributes under a new
     $copy = Product::query()->where('sku', 'BAL-MET-9-RS')->sole();
 
     expect($copy->id)->not->toBe($original->id)
-        ->and($copy->price_cents)->toBe(1250)
+        ->and($copy->price_cents)->toEqual(brl(1250))
         ->and($copy->barcode)->toBeNull()
         ->and($copy->categories->modelKeys())->toBe([$category->id])
         ->and($copy->attributeValues->modelKeys())->toBe([$blue->id]);
@@ -171,4 +171,51 @@ test('deleting a product keeps it in the database', function (): void {
         ->callAction('delete');
 
     expect(Product::withTrashed()->find($product->id)?->trashed())->toBeTrue();
+});
+
+test('the list searches by name, or by SKU and barcode exactly', function (): void {
+    actingAs(staffWithRole(Roles::Attendant));
+    $balloon = Product::factory()->create(['name' => 'Balão metalizado azul', 'sku' => 'BAL-MET-9-AZ', 'barcode' => '7891234567895']);
+    $cake = Product::factory()->create(['name' => 'Bolo de chocolate', 'sku' => 'BOLO-CHOC-1KG', 'barcode' => null]);
+
+    Livewire::test(ListProducts::class)
+        ->searchTable('Bolo')
+        ->assertCanSeeTableRecords([$cake])
+        ->assertCanNotSeeTableRecords([$balloon])
+        ->searchTable('bal-met-9-az')
+        ->assertCanSeeTableRecords([$balloon])
+        ->assertCanNotSeeTableRecords([$cake])
+        ->searchTable('7891234567895')
+        ->assertCanSeeTableRecords([$balloon])
+        ->assertCanNotSeeTableRecords([$cake]);
+});
+
+test('global search finds products through the catalog search', function (): void {
+    actingAs(staffWithRole(Roles::Attendant));
+    Product::factory()->create(['name' => 'Bolo de chocolate', 'sku' => 'BOLO-CHOC-1KG']);
+    Product::factory()->create(['name' => 'Balão metalizado azul', 'sku' => 'BAL-MET-9-AZ']);
+
+    expect(ProductResource::getGlobalSearchResults('BOLO-CHOC-1KG')->pluck('title')->all())->toBe(['Bolo de chocolate']);
+});
+
+test('the list filters by category, active and trashed', function (): void {
+    actingAs(staffWithRole(Roles::Admin));
+    $cakes = Category::factory()->create();
+    $cake = Product::factory()->create();
+    $cake->categories()->attach($cakes);
+    $inactive = Product::factory()->inactive()->create();
+    $trashed = Product::factory()->create();
+    $trashed->delete();
+
+    Livewire::test(ListProducts::class)
+        ->filterTable('categories', [$cakes->id])
+        ->assertCanSeeTableRecords([$cake])
+        ->assertCanNotSeeTableRecords([$inactive, $trashed])
+        ->resetTableFilters()
+        ->filterTable('is_active', false)
+        ->assertCanSeeTableRecords([$inactive])
+        ->assertCanNotSeeTableRecords([$cake])
+        ->resetTableFilters()
+        ->filterTable('trashed', true)
+        ->assertCanSeeTableRecords([$cake, $inactive, $trashed]);
 });

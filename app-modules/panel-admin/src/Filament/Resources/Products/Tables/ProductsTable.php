@@ -19,10 +19,12 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Vevey\Catalog\Models\Product;
 use Vevey\PanelAdmin\Filament\Resources\Products\Actions\DuplicateProductAction;
 
 /**
+ * The search box goes through Product::search() (full text on name and description, exact SKU and barcode).
  * Products are never deleted for good (order lines reference them; ADR section 2, decision 6): delete sends to the trash, restore brings back.
  */
 final class ProductsTable
@@ -39,21 +41,17 @@ final class ProductsTable
                     ->square(),
                 TextColumn::make('sku')
                     ->label(__('panel-admin::catalog.fields.sku'))
-                    ->searchable()
                     ->sortable()
                     ->copyable(),
                 TextColumn::make('name')
                     ->label(__('panel-admin::catalog.fields.name'))
                     ->weight(FontWeight::Medium)
-                    ->searchable()
                     ->sortable(),
-                TextColumn::make('price_cents')
+                MoneyColumn::make('price_cents')
                     ->label(__('panel-admin::catalog.fields.price'))
-                    ->money('BRL', divideBy: 100)
                     ->sortable(),
-                TextColumn::make('promo_price_cents')
+                MoneyColumn::make('promo_price_cents')
                     ->label(__('panel-admin::catalog.fields.promo_price'))
-                    ->money('BRL', divideBy: 100)
                     ->placeholder('—')
                     ->sortable(),
                 TextColumn::make('categories.name')
@@ -65,7 +63,6 @@ final class ProductsTable
                     ->boolean(),
                 TextColumn::make('barcode')
                     ->label(__('panel-admin::catalog.fields.barcode'))
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label(__('panel-admin::catalog.fields.updated_at'))
@@ -74,6 +71,8 @@ final class ProductsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('name')
+            ->searchable()
+            ->searchUsing(self::search(...))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label(__('panel-admin::catalog.fields.is_active')),
@@ -98,5 +97,14 @@ final class ProductsTable
                     RestoreBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    private static function search(Builder $query, string $search): Builder
+    {
+        return $query->search($search);
     }
 }

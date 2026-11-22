@@ -30,10 +30,20 @@ final class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('Vevey Doces')
+            ->brandLogo(asset('images/vevey-logo.svg'))
+            ->darkModeBrandLogo(asset('images/vevey-logo-dark.svg'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('favicon.svg'))
             ->login(Login::class)
             ->strictAuthorization()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Rose,
+                'gray' => Color::Slate,
+                'warning' => Color::Amber,
+                'info' => Color::Violet,
+                'success' => Color::Emerald,
+                'danger' => Color::Red,
             ])
             ->discoverResources(in: __DIR__ . '/../Filament/Resources', for: 'Vevey\PanelAdmin\Filament\Resources')
             ->discoverPages(in: __DIR__ . '/../Filament/Pages', for: 'Vevey\PanelAdmin\Filament\Pages')

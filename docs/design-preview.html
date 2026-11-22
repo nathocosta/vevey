@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vevey Doces — Catálogo Visual do DESIGN.md</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#FFF1F2',
+              100: '#FFE4E6',
+              200: '#FECDD3',
+              300: '#FDA4AF',
+              400: '#FB7185',
+              500: '#F43F5E',
+              600: '#E11D48',
+              700: '#BE123C',
+              800: '#9F1239',
+              900: '#4C0519',
+            },
+            canvasWarm: '#FFFBF8',
+          },
+          boxShadow: {
+            float: '0 0 0 1px rgba(17,24,39,0.03), 0 4px 12px rgba(17,24,39,0.08)',
+            overlay: '0 20px 40px rgba(17,24,39,0.18)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #1F2937; background: #FFFBF8; }
+    h1, h2, h3, h4, .font-display { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    .tnum { font-variant-numeric: tabular-nums; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .fav-active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; color: #E11D48; }
+  </style>
+</head>
+<body class="antialiased selection:bg-brand-100 selection:text-brand-900">
+
+  <!-- Top Navigation (Storefront Preview) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#E5E7EB]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[76px] flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5 shrink-0">
+        <span class="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-[20px]">cake</span>
+        </span>
+        <div>
+          <span class="font-display font-extrabold text-lg tracking-tight text-[#111827] block leading-none">Vevey Doces</span>
+          <span class="text-[11px] font-medium text-[#6B7280] tracking-wide uppercase">DESIGN.md Preview</span>
+        </div>
+      </div>
+
+      <!-- Search Bar Pill (Airbnb-inspired) -->
+      <div class="hidden md:flex items-center flex-1 max-w-lg bg-white border border-[#E5E7EB] focus-within:border-brand-600 rounded-full h-[48px] pl-5 pr-1.5 shadow-float transition-colors">
+        <input
+          type="text"
+          placeholder="Buscar chocolates, embalagens, kits festa..."
+          class="w-full bg-transparent text-sm text-[#1F2937] placeholder:text-[#9CA3AF] outline-none"
+        />
+        <button aria-label="Buscar" class="w-9 h-9 rounded-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-95 text-white flex items-center justify-center shrink-0 transition-all">
+          <span class="material-symbols-outlined text-[19px]">search</span>
+        </button>
+      </div>
+
+      <nav class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <a href="#cores" class="hidden lg:inline-block text-sm font-display font-semibold text-[#6B7280] hover:text-[#111827] px-2">Cores</a>
+        <a href="#tipografia" class="hidden lg:inline-block text-sm font-display font-semibold text-[#6B7280] hover:text-[#111827] px-2">Tipo</a>
+        <a href="#vitrine" class="hidden lg:inline-block text-sm font-display font-semibold text-[#6B7280] hover:text-[#111827] px-2">Vitrine</a>
+        <a href="#admin" class="hidden lg:inline-block text-sm font-display font-semibold text-[#6B7280] hover:text-[#111827] px-2">Admin</a>
+        <button class="relative inline-flex items-center gap-2 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#111827] font-display font-semibold text-sm rounded-full px-4 h-10 transition-colors">
+          <span class="material-symbols-outlined text-[19px]">shopping_bag</span>
+          <span class="hidden sm:inline">Carrinho</span>
+          <span class="tnum inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-brand-600 text-white text-[11px] font-bold">3</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Category Strip -->
+    <div class="border-t border-[#F3F4F6] bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-brand-50 text-brand-600 border border-brand-200">Todos os Doces</button>
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-[#F9FAFB] text-[#1F2937] border border-[#E5E7EB] hover:border-brand-300 transition-colors">Chocolates</button>
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-[#F9FAFB] text-[#1F2937] border border-[#E5E7EB] hover:border-brand-300 transition-colors">Confeitaria</button>
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-[#F9FAFB] text-[#1F2937] border border-[#E5E7EB] hover:border-brand-300 transition-colors">Artigos para Festa</button>
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]">Kits Premium</button>
+        <button class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-display font-semibold bg-[#FFFBEB] text-[#92400E] border border-[#FEF3C7]">Ofertas da Semana</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+    <!-- Hero Band -->
+    <section class="rounded-2xl bg-white border border-[#E5E7EB] p-8 sm:p-12 grid lg:grid-cols-12 gap-8 items-center">
+      <div class="lg:col-span-7 space-y-5">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-display font-semibold">
+          <span class="material-symbols-outlined text-[15px]">auto_awesome</span>
+          Festive Confectionery &amp; Party Commerce
+        </div>
+        <h1 class="font-display font-extrabold text-[30px] sm:text-[40px] leading-[1.12] tracking-[-0.025em] text-[#111827]">
+          Design System <span class="text-brand-600">Vevey Doces</span>
+        </h1>
+        <p class="text-base text-[#1F2937] leading-relaxed max-w-2xl">
+          Catálogo visual interativo baseado no <code class="px-1.5 py-0.5 rounded bg-[#F3F4F6] text-xs font-mono">DESIGN.md</code>.
+          Combina vitrine <em>photo-first</em> (Airbnb), calor de varejo alimentício (Starbucks) e precisão numérica com <code class="px-1.5 py-0.5 rounded bg-[#F3F4F6] text-xs font-mono">tabular-nums</code> para loja e painel Filament (Stripe).
+        </p>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a href="#vitrine" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-full px-6 min-h-[44px] transition-all">
+            Explorar Vitrine
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </a>
+          <a href="#admin" class="inline-flex items-center gap-2 border border-[#D1D5DB] hover:border-brand-600 text-[#1F2937] hover:text-brand-600 font-display font-semibold text-sm rounded-full px-5 min-h-[44px] transition-all">
+            Ver Painel Filament
+          </a>
+        </div>
+      </div>
+
+      <!-- Free Shipping Progress Card -->
+      <div class="lg:col-span-5 bg-canvasWarm border border-[#E5E7EB] rounded-xl p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-display font-semibold uppercase tracking-wider text-[#6B7280]">Resumo de Referência</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0] text-xs font-display font-semibold">v1.0.0</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-sm">
+            <span class="font-medium text-[#1F2937] flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px] text-brand-600">local_shipping</span>
+              Frete grátis a partir de R$ 150,00
+            </span>
+            <span class="tnum font-display font-bold text-[#111827]">78%</span>
+          </div>
+          <div class="w-full bg-[#F3F4F6] h-1.5 rounded-full overflow-hidden">
+            <div class="bg-brand-600 h-full rounded-full" style="width: 78%"></div>
+          </div>
+          <p class="text-xs text-[#6B7280]">Faltam <strong class="tnum text-[#111827]">R$ 33,10</strong> para liberar entrega grátis.</p>
+        </div>
+        <div class="grid grid-cols-3 gap-3 pt-2 border-t border-[#E5E7EB]">
+          <div>
+            <span class="text-[11px] text-[#6B7280] block">Primary</span>
+            <span class="font-mono text-xs font-semibold text-brand-600">#E11D48</span>
+          </div>
+          <div>
+            <span class="text-[11px] text-[#6B7280] block">Secondary</span>
+            <span class="font-mono text-xs font-semibold text-[#D97706]">#F59E0B</span>
+          </div>
+          <div>
+            <span class="text-[11px] text-[#6B7280] block">Tertiary</span>
+            <span class="font-mono text-xs font-semibold text-[#7C3AED]">#8B5CF6</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. Color Palette -->
+    <section id="cores" class="space-y-6">
+      <div class="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <span class="text-xs font-display font-semibold uppercase tracking-wider text-brand-600">01 · Tokens Cromáticos</span>
+          <h2 class="font-display font-bold text-[22px] text-[#111827] mt-1">Paleta de Cores &amp; Papéis</h2>
+        </div>
+        <span class="text-xs text-[#6B7280]">Clique em qualquer cor para copiar o HEX</span>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" id="swatch-grid"></div>
+
+      <!-- Semantic Badges -->
+      <div class="bg-white border border-[#E5E7EB] rounded-xl p-6 space-y-3">
+        <h3 class="font-display font-semibold text-sm text-[#111827]">Semântica (separada do Carmim de marca)</h3>
+        <div class="flex flex-wrap gap-2.5">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-display font-semibold bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span> Pago · Em estoque (#15803D)
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-display font-semibold bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span> Em separação · Estoque baixo (#B45309)
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-display font-semibold bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span> Cancelado · Erro / Destrutivo (#B91C1C)
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-display font-semibold bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#1D4ED8]"></span> Em transporte (#1D4ED8)
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-display font-semibold bg-[#F5F3FF] text-[#7C3AED] border border-[#EDE9FE]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]"></span> Novidade · Cupom VIP (#8B5CF6)
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Typography -->
+    <section id="tipografia" class="space-y-6">
+      <div>
+        <span class="text-xs font-display font-semibold uppercase tracking-wider text-brand-600">02 · Hierarquia</span>
+        <h2 class="font-display font-bold text-[22px] text-[#111827] mt-1">Tipografia &amp; Valores Monetários</h2>
+      </div>
+
+      <div class="bg-white border border-[#E5E7EB] rounded-xl divide-y divide-[#F3F4F6]">
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Display XL · 40px / 800</span>
+          <p class="font-display font-extrabold text-[32px] sm:text-[40px] leading-[1.12] tracking-[-0.025em] text-[#111827] flex-1">Tudo para sua festa brilhar</p>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Display LG · 30px / 700</span>
+          <p class="font-display font-bold text-[26px] sm:text-[30px] leading-[1.2] tracking-[-0.02em] text-[#111827] flex-1">Chocolates &amp; Coberturas Nobres</p>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Heading MD · 22px / 700</span>
+          <p class="font-display font-bold text-[22px] leading-[1.28] tracking-[-0.015em] text-[#111827] flex-1">Mais vendidos da semana</p>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Price LG · 24px / 700 tnum</span>
+          <div class="flex-1 flex items-baseline gap-3">
+            <span class="tnum font-display font-bold text-2xl text-[#111827]">R$ 89,90</span>
+            <span class="tnum text-sm text-[#9CA3AF] line-through">R$ 109,90</span>
+            <span class="px-2 py-0.5 rounded-full bg-brand-600 text-white text-[11px] font-display font-semibold">-18%</span>
+          </div>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Body MD · 16px / 400</span>
+          <p class="text-base text-[#1F2937] leading-relaxed flex-1">
+            Chocolate ao leite em gotas ideal para ganaches, ovos de Páscoa, bombons moldados e recheios de confeitaria profissional.
+          </p>
+        </div>
+        <div class="p-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <span class="text-xs font-mono text-[#6B7280] w-44 shrink-0">Micro / SKU · 12px / 500</span>
+          <p class="text-xs font-medium text-[#6B7280] tracking-[0.02em] flex-1">SKU: VEV-CHOC-1050 · EMBALAGEM 1,05 KG · VALIDADE 12 MESES</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Buttons & Inputs -->
+    <section class="space-y-6">
+      <div>
+        <span class="text-xs font-display font-semibold uppercase tracking-wider text-brand-600">03 · Controles</span>
+        <h2 class="font-display font-bold text-[22px] text-[#111827] mt-1">Botões &amp; Inputs</h2>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-white border border-[#E5E7EB] rounded-xl p-6 space-y-5">
+          <h3 class="font-display font-semibold text-sm text-[#111827]">Botões (min-height 44px · active scale 0.98)</h3>
+          <div class="flex flex-wrap gap-3">
+            <button class="bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg px-5 min-h-[44px] transition-all">
+              Adicionar ao carrinho
+            </button>
+            <button class="bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-full px-6 min-h-[44px] transition-all">
+              Finalizar pedido
+            </button>
+            <button class="bg-[#F3F4F6] hover:bg-[#E5E7EB] active:scale-[0.98] text-[#1F2937] font-display font-semibold text-sm rounded-lg px-5 min-h-[44px] transition-all">
+              Ver detalhes
+            </button>
+            <button class="border border-[#D1D5DB] hover:border-brand-600 text-[#1F2937] hover:text-brand-600 font-display font-semibold text-sm rounded-lg px-5 min-h-[44px] transition-all">
+              Calcular frete
+            </button>
+            <button class="bg-[#1F2937] hover:bg-[#111827] active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg px-5 min-h-[44px] transition-all">
+              Ação invertida
+            </button>
+            <button disabled class="bg-brand-300 text-white font-display font-semibold text-sm rounded-lg px-5 min-h-[44px] cursor-not-allowed opacity-85">
+              Indisponível
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#E5E7EB] rounded-xl p-6 space-y-4">
+          <h3 class="font-display font-semibold text-sm text-[#111827]">Campos de Formulário</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-display font-semibold text-[#1F2937] mb-1.5">Cupom de desconto</label>
+              <input type="text" placeholder="Ex.: FESTA10" class="w-full bg-[#F9FAFB] border border-[#E5E7EB] focus:border-brand-600 focus:bg-white rounded-lg px-3.5 py-2.5 text-sm outline-none transition-colors" />
+            </div>
+            <div>
+              <label class="block text-xs font-display font-semibold text-[#B91C1C] mb-1.5">CEP de entrega (erro)</label>
+              <input type="text" value="00000-00" class="w-full bg-[#FEF2F2]/40 border border-[#B91C1C] rounded-lg px-3.5 py-2.5 text-sm text-[#111827] outline-none" />
+              <p class="text-xs text-[#B91C1C] mt-1">Informe um CEP válido com 8 dígitos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Product Cards (Storefront Grid) -->
+    <section id="vitrine" class="space-y-6">
+      <div class="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <span class="text-xs font-display font-semibold uppercase tracking-wider text-brand-600">04 · Vitrine Photo-First</span>
+          <h2 class="font-display font-bold text-[22px] text-[#111827] mt-1">Cards de Produto (Grid 2 → 3 → 4 colunas)</h2>
+        </div>
+        <span class="text-xs text-[#6B7280]">Hover aplica Float Suave · Coração interativo</span>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Card 1 -->
+        <article class="group bg-white rounded-xl border border-[#E5E7EB] overflow-hidden transition-all hover:shadow-float hover:-translate-y-0.5 flex flex-col">
+          <div class="relative aspect-square bg-gradient-to-br from-[#FFF1F2] to-[#FFE4E6] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[64px] text-brand-600/35">cake</span>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white text-[#111827] text-[11px] font-display font-semibold shadow-float">Mais vendido</span>
+            <button onclick="this.classList.toggle('fav-active')" aria-label="Favoritar" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-[#1F2937] hover:scale-105 transition-transform shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">favorite</span>
+            </button>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <span class="text-xs text-[#6B7280] font-medium">Chocolates Nobres</span>
+            <h3 class="font-display font-semibold text-base text-[#111827] leading-snug mt-1 line-clamp-2">Chocolate Nobre Meio Amargo em Gotas 1,05kg</h3>
+            <div class="mt-auto pt-3 flex items-baseline gap-2">
+              <span class="tnum font-display font-bold text-[17px] text-[#111827]">R$ 68,90</span>
+              <span class="tnum text-xs text-[#9CA3AF] line-through">R$ 79,90</span>
+            </div>
+            <button class="mt-3 w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg h-10 transition-all">
+              Adicionar
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="group bg-white rounded-xl border border-[#E5E7EB] overflow-hidden transition-all hover:shadow-float hover:-translate-y-0.5 flex flex-col">
+          <div class="relative aspect-square bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[64px] text-[#D97706]/35">celebration</span>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-brand-600 text-white text-[11px] font-display font-semibold">-20%</span>
+            <button onclick="this.classList.toggle('fav-active')" aria-label="Favoritar" class="fav-active absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-[#1F2937] hover:scale-105 transition-transform shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">favorite</span>
+            </button>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <span class="text-xs text-[#6B7280] font-medium">Artigos para Festa</span>
+            <h3 class="font-display font-semibold text-base text-[#111827] leading-snug mt-1 line-clamp-2">Kit Balões Metálicos Dourados + Fita Arco 50un</h3>
+            <div class="mt-auto pt-3 flex items-baseline gap-2">
+              <span class="tnum font-display font-bold text-[17px] text-[#111827]">R$ 34,50</span>
+              <span class="tnum text-xs text-[#9CA3AF] line-through">R$ 42,90</span>
+            </div>
+            <button class="mt-3 w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg h-10 transition-all">
+              Adicionar
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="group bg-white rounded-xl border border-[#E5E7EB] overflow-hidden transition-all hover:shadow-float hover:-translate-y-0.5 flex flex-col">
+          <div class="relative aspect-square bg-gradient-to-br from-[#F5F3FF] to-[#EDE9FE] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[64px] text-[#7C3AED]/35">redeem</span>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#8B5CF6] text-white text-[11px] font-display font-semibold">Novidade</span>
+            <button onclick="this.classList.toggle('fav-active')" aria-label="Favoritar" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-[#1F2937] hover:scale-105 transition-transform shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">favorite</span>
+            </button>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <span class="text-xs text-[#6B7280] font-medium">Embalagens Premium</span>
+            <h3 class="font-display font-semibold text-base text-[#111827] leading-snug mt-1 line-clamp-2">Caixa para 12 Brigadeiros Gourmet com Visor (25un)</h3>
+            <div class="mt-auto pt-3 flex items-baseline gap-2">
+              <span class="tnum font-display font-bold text-[17px] text-[#111827]">R$ 47,00</span>
+            </div>
+            <button class="mt-3 w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg h-10 transition-all">
+              Adicionar
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="group bg-white rounded-xl border border-[#E5E7EB] overflow-hidden transition-all hover:shadow-float hover:-translate-y-0.5 flex flex-col">
+          <div class="relative aspect-square bg-[#F3F4F6] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[64px] text-[#9CA3AF]">inventory_2</span>
+            <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] text-[11px] font-display font-semibold">Últimas 3 un.</span>
+            <button onclick="this.classList.toggle('fav-active')" aria-label="Favoritar" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-[#1F2937] hover:scale-105 transition-transform shadow-sm">
+              <span class="material-symbols-outlined text-[20px]">favorite</span>
+            </button>
+          </div>
+          <div class="p-4 flex flex-col flex-1">
+            <span class="text-xs text-[#6B7280] font-medium">Confeitaria</span>
+            <h3 class="font-display font-semibold text-base text-[#111827] leading-snug mt-1 line-clamp-2">Pasta Americana Tradicional Branca 800g</h3>
+            <div class="mt-auto pt-3 flex items-baseline gap-2">
+              <span class="tnum font-display font-bold text-[17px] text-[#111827]">R$ 24,90</span>
+            </div>
+            <button class="mt-3 w-full bg-brand-600 hover:bg-brand-500 active:bg-brand-700 active:scale-[0.98] text-white font-display font-semibold text-sm rounded-lg h-10 transition-all">
+              Adicionar
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. Admin Panel (Filament Preview) -->
+    <section id="admin" class="space-y-6">
+      <div>
+        <span class="text-xs font-display font-semibold uppercase tracking-wider text-brand-600">05 · Painel Admin (Filament v5)</span>
+        <h2 class="font-display font-bold text-[22px] text-[#111827] mt-1">Tabela de Catálogo &amp; Estoque (Ledger)</h2>
+      </div>
+
+      <div class="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#E5E7EB] flex flex-wrap items-center justify-between gap-3 bg-[#F9FAFB]">
+          <div>
+            <h3 class="font-display font-bold text-base text-[#111827]">Produtos</h3>
+            <p class="text-xs text-[#6B7280]">Valores via MoneyColumn (BRL) · Estoque ajustado exclusivamente via Action de Ledger (ADR 2)</p>
+          </div>
+          <button class="inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white font-display font-semibold text-xs rounded-lg px-4 h-9 transition-colors">
+            <span class="material-symbols-outlined text-[16px]">add</span>
+            Novo produto
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-[#E5E7EB] text-[12px] font-display font-semibold text-[#6B7280] bg-[#F9FAFB]/60">
+                <th class="py-3 px-6">Produto</th>
+                <th class="py-3 px-4">SKU</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Saldo (on_hand)</th>
+                <th class="py-3 px-4 text-right">Preço</th>
+                <th class="py-3 px-6 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#F3F4F6] text-sm">
+              <tr class="hover:bg-[#F9FAFB] transition-colors">
+                <td class="py-3.5 px-6 font-medium text-[#111827]">Chocolate Nobre Meio Amargo 1,05kg</td>
+                <td class="py-3.5 px-4 font-mono text-xs text-[#6B7280]">VEV-CHOC-1050</td>
+                <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-display font-semibold bg-[#F0FDF4] text-[#15803D]">Ativo</span></td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#111827]">42</td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#111827]">R$ 68,90</td>
+                <td class="py-3.5 px-6 text-right">
+                  <button class="text-xs font-display font-semibold text-brand-600 hover:text-brand-700">Ajustar estoque</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-[#F9FAFB] transition-colors">
+                <td class="py-3.5 px-6 font-medium text-[#111827]">Pasta Americana Tradicional 800g</td>
+                <td class="py-3.5 px-4 font-mono text-xs text-[#6B7280]">VEV-PAST-0800</td>
+                <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-display font-semibold bg-[#FFFBEB] text-[#B45309]">Estoque baixo</span></td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#B45309]">3</td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#111827]">R$ 24,90</td>
+                <td class="py-3.5 px-6 text-right">
+                  <button class="text-xs font-display font-semibold text-brand-600 hover:text-brand-700">Ajustar estoque</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-[#F9FAFB] transition-colors">
+                <td class="py-3.5 px-6 font-medium text-[#111827]">Forma de Acetato Ovo 500g</td>
+                <td class="py-3.5 px-4 font-mono text-xs text-[#6B7280]">VEV-FORM-0500</td>
+                <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-display font-semibold bg-[#FEF2F2] text-[#B91C1C]">Sem estoque</span></td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#B91C1C]">0</td>
+                <td class="py-3.5 px-4 text-right tnum font-medium text-[#111827]">R$ 12,50</td>
+                <td class="py-3.5 px-6 text-right">
+                  <button class="text-xs font-display font-semibold text-brand-600 hover:text-brand-700">Ajustar estoque</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Dark Footer (Starbucks-inspired bookend) -->
+  <footer class="bg-[#1F2937] text-white mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <span class="font-display font-extrabold text-lg">Vevey Doces</span>
+        <p class="text-xs text-[#9CA3AF] mt-1">Catálogo visual gerado a partir de DESIGN.md · TCC Laravel + Filament</p>
+      </div>
+      <span class="text-xs text-[#9CA3AF]">Pressione qualquer swatch acima para copiar o HEX</span>
+    </div>
+  </footer>
+
+  <!-- Toast for Copy -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-[#111827] text-white text-xs font-display font-semibold px-4 py-2.5 rounded-full shadow-overlay opacity-0 pointer-events-none transition-opacity">
+    HEX copiado!
+  </div>
+
+  <script>
+    const swatches = [
+      { name: 'Primary · Carmim', role: 'CTAs, orbe de busca, ativo', hex: '#E11D48', text: '#FFFFFF' },
+      { name: 'Primary Hover', role: 'Hover em botões primários', hex: '#F43F5E', text: '#FFFFFF' },
+      { name: 'Primary Soft', role: 'Fundos sutis e abas ativas', hex: '#FFF1F2', text: '#4C0519', border: true },
+      { name: 'Secondary · Âmbar', role: 'Estrelas, alertas, preparação', hex: '#F59E0B', text: '#111827' },
+      { name: 'Tertiary · Violeta', role: 'Novidades, kits festa, VIP', hex: '#8B5CF6', text: '#FFFFFF' },
+      { name: 'Canvas Warm', role: 'Fundo editorial da loja', hex: '#FFFBF8', text: '#111827', border: true },
+      { name: 'Surface Dark', role: 'Rodapé e faixas invertidas', hex: '#1F2937', text: '#FFFFFF' },
+      { name: 'Ink · Títulos', role: 'Headlines e preços', hex: '#111827', text: '#FFFFFF' },
+    ];
+
+    const grid = document.getElementById('swatch-grid');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    swatches.forEach((s) => {
+      const btn = document.createElement('button');
+      btn.className = 'text-left bg-white border border-[#E5E7EB] rounded-xl overflow-hidden hover:shadow-float transition-all group';
+      btn.innerHTML = `
+        <div class="h-20 px-4 py-3 flex items-end justify-between ${s.border ? 'border-b border-[#E5E7EB]' : ''}" style="background:${s.hex}; color:${s.text}">
+          <span class="font-mono text-xs font-semibold">${s.hex}</span>
+          <span class="material-symbols-outlined text-[16px] opacity-60 group-hover:opacity-100">content_copy</span>
+        </div>
+        <div class="p-3.5">
+          <div class="font-display font-semibold text-sm text-[#111827]">${s.name}</div>
+          <div class="text-xs text-[#6B7280] mt-0.5">${s.role}</div>
+        </div>
+      `;
+      btn.onclick = () => {
+        navigator.clipboard?.writeText(s.hex);
+        toast.textContent = `${s.hex} copiado!`;
+        toast.classList.remove('opacity-0');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.add('opacity-0'), 1800);
+      };
+      grid.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

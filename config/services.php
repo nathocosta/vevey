@@ -37,4 +37,11 @@ return [
         ],
     ],
 
+    'melhor_envio' => [
+        'base_url' => env('MELHOR_ENVIO_BASE_URL', 'https://sandbox.melhorenvio.com.br'),
+        'token' => env('MELHOR_ENVIO_TOKEN'),
+        'origin_cep' => env('STORE_ORIGIN_CEP', '01310100'),
+        'user_agent' => env('MELHOR_ENVIO_USER_AGENT', 'VeveyDoces (contato@veveydoces.com.br)'),
+    ],
+
 ];

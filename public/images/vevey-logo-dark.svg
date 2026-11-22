@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 36" fill="none" role="img" aria-label="Vevey Doces">
+  <path d="M4.5 9.5H11.2L17 22.8L13.7 30L4.5 9.5Z" fill="#FDFBF7"/>
+  <path d="M29.5 9.5H22.8L15.3 26.5L17 30.2L29.5 9.5Z" fill="#C7BFB3"/>
+  <circle cx="17" cy="11.2" r="3.6" fill="#F43F5E"/>
+  <text x="39" y="21.5" fill="#FDFBF7" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="18.5" font-weight="600" letter-spacing="-0.03em">Vevey</text>
+  <text x="98.5" y="21.5" fill="#AAA398" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="18.5" font-weight="400" letter-spacing="-0.02em">Doces</text>
+</svg>

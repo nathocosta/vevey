@@ -30,8 +30,9 @@ final class CatalogSeeder extends Seeder
         $balloons = $this->category('Balões', $party, position: 1);
         $disposables = $this->category('Descartáveis', $party, position: 2);
         $sweets = $this->category('Doces', position: 2);
-        $brigadeiros = $this->category('Brigadeiros', $sweets, position: 1);
-        $cakes = $this->category('Bolos', $sweets, position: 2);
+        $chocolates = $this->category('Chocolates', $sweets, position: 1);
+        $candies = $this->category('Balas e Guloseimas', $sweets, position: 2);
+        $packaging = $this->category('Embalagens e Papelões', position: 3);
 
         /** @var list<array{sku: string, name: string, price: int, promo?: int, barcode?: string, categories: list<Category>, values: list<string>, active?: bool}> $products */
         $products = [
@@ -43,11 +44,11 @@ final class CatalogSeeder extends Seeder
             ['sku' => 'PRT-DESC-AZ', 'name' => 'Prato descartável azul (10 unidades)', 'price' => 890, 'categories' => [$disposables], 'values' => ['Cor:Azul']],
             ['sku' => 'PRT-DESC-RS', 'name' => 'Prato descartável rosa (10 unidades)', 'price' => 890, 'categories' => [$disposables], 'values' => ['Cor:Rosa']],
             ['sku' => 'COP-DESC-DR', 'name' => 'Copo descartável dourado (10 unidades)', 'price' => 1090, 'categories' => [$disposables], 'values' => ['Cor:Dourado']],
-            ['sku' => 'BRIG-TRAD-UN', 'name' => 'Brigadeiro tradicional (unidade)', 'price' => 350, 'categories' => [$brigadeiros], 'values' => []],
-            ['sku' => 'BRIG-TRAD-CENTO', 'name' => 'Brigadeiro tradicional (cento)', 'price' => 22000, 'promo' => 19900, 'categories' => [$brigadeiros], 'values' => []],
-            ['sku' => 'BRIG-GOUR-UN', 'name' => 'Brigadeiro gourmet de pistache (unidade)', 'price' => 550, 'categories' => [$brigadeiros], 'values' => []],
-            ['sku' => 'BOLO-CHOC-1KG', 'name' => 'Bolo de chocolate 1 kg', 'price' => 8900, 'categories' => [$cakes], 'values' => []],
-            ['sku' => 'BOLO-NINHO-1KG', 'name' => 'Bolo de ninho com morango 1 kg', 'price' => 9900, 'categories' => [$cakes, $party], 'values' => []],
+            ['sku' => 'DOC-KITKAT-CX24', 'name' => 'Caixa KitKat ao Leite 41,5g (24 unidades)', 'price' => 7490, 'promo' => 6490, 'categories' => [$chocolates], 'values' => []],
+            ['sku' => 'DOC-BIS-CX20', 'name' => 'Caixa Lacta Bis Ao Leite 100,8g (20 unidades)', 'price' => 11900, 'promo' => 10490, 'categories' => [$chocolates], 'values' => []],
+            ['sku' => 'DOC-BALA-FINI-500', 'name' => 'Balas Fini Beijos de Morango (pacote 500g)', 'price' => 2690, 'categories' => [$candies], 'values' => []],
+            ['sku' => 'DOC-PIRU-SORT-50', 'name' => 'Pirulito Pop Sortido (pacote com 50 unidades)', 'price' => 2190, 'categories' => [$candies], 'values' => []],
+            ['sku' => 'EMB-PAP-DOCE-25', 'name' => 'Caixa de papelão kraft para doces e kits (25 unidades)', 'price' => 3890, 'categories' => [$packaging, $party], 'values' => []],
         ];
 
         foreach ($products as $data) {

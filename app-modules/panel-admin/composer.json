@@ -1,0 +1,24 @@
+{
+	"name": "vevey/panel-admin",
+	"description": "",
+	"type": "library",
+	"version": "1.0",
+	"license": "proprietary",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"Vevey\\PanelAdmin\\": "src/",
+			"Vevey\\PanelAdmin\\Tests\\": "tests/",
+			"Vevey\\PanelAdmin\\Database\\Factories\\": "database/factories/",
+			"Vevey\\PanelAdmin\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Vevey\\PanelAdmin\\Providers\\AdminPanelProvider"
+			]
+		}
+	}
+}

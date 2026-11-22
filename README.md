@@ -1,140 +1,58 @@
-# Vevey Doces — E-Commerce & Varejo de Festas (TCC)
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Projeto de E-commerce e Gestão de Varejo/Distribuidora de Confeitaria e Festas (**Vevey Co.**), desenvolvido no âmbito do curso de Engenharia de Software da FATEC.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-A solução adota uma **Arquitetura Desacoplada em Três Camadas (3-Tier Decoupled Architecture)**, permitindo que cada serviço seja hospedado, escalado e mantido de forma independente.
+## About Laravel
 
-> 📖 **Guia Completo da Arquitetura & Continuidade:** Veja os detalhes e o checklist de conexão no arquivo [ARQUITETURA_3_CAMADAS.md](./ARQUITETURA_3_CAMADAS.md).
-> 📋 **Roadmap & Backlog da Equipe:** Acompanhe as tarefas pendentes em [ROADMAP_PROXIMA_SESSAO.md](./ROADMAP_PROXIMA_SESSAO.md).
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
----
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-## 🏗️ Arquitetura do Sistema
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-```text
-┌─────────────────────────┐       HTTPS / JSON       ┌──────────────────────────┐       SSL / Pooler       ┌────────────────────────┐
-│        FRONTEND         │ ───────────────────────> │         BACKEND          │ ───────────────────────> │    BANCO DE DADOS      │
-│     (Vercel / Web)      │ <─────────────────────── │     (Render / Cloud)     │ <─────────────────────── │       (Supabase)       │
-│   HTML5 / CSS3 / JS     │           CORS           │     FastAPI / Python     │        SQLAlchemy        │    PostgreSQL Nativo   │
-└─────────────────────────┘                          └──────────────────────────┘                          └────────────────────────┘
-```
+## Learning Laravel
 
----
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-## 📁 Estrutura de Diretórios
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-```text
-vevey/
-├── frontend/                     # Camada de Apresentação (Interface Web do Usuário)
-│   ├── css/                      # Estilos e tokens visuais (Design System Vevey)
-│   ├── js/                       # Lógica de interface, fallbacks e chamadas de API
-│   ├── index.html                # Tela 1: Home e Destaques
-│   ├── catalogo.html             # Tela 2: Listagem, Busca e Filtros
-│   ├── produto.html              # Tela 3: Detalhes do Produto e Cálculo de Frete
-│   ├── carrinho.html             # Tela 4: Carrinho de Compras
-│   ├── checkout.html             # Tela 5: Checkout Seguro e Simulação de Pagamento
-│   ├── confirmacao.html          # Tela 6: Confirmação do Pedido e Pix Copia-e-Cola
-│   ├── admin-login.html          # Tela 7: Login Restrito de Funcionários
-│   ├── admin.html                # Tela 8: Backoffice Unificado e Gestão Operacional
-│   ├── minha-conta.html          # Tela 9: Portal do Cliente
-│   └── acesso-negado.html        # Tela de Bloqueio RBAC (HTTP 403)
-├── backend/                      # Camada de Lógica de Negócio (API RESTful)
-│   ├── app/
-│   │   ├── api/v1/endpoints/     # Rotas (auth, produtos, pedidos, funcionários, frete)
-│   │   ├── core/                 # Configurações, segurança JWT, rate limiter e banco
-│   │   ├── models.py             # Mapeamento Objeto-Relacional (SQLAlchemy 2.0)
-│   │   ├── schemas.py            # Validação e serialização de dados (Pydantic v2)
-│   │   └── main.py               # Ponto de entrada FastAPI com CORS e Swagger Docs
-│   ├── .env                      # Variáveis de ambiente ativas (Repositório Privado)
-│   ├── .env.example              # Modelo documentado de variáveis
-│   ├── requirements.txt          # Dependências Python do backend
-│   ├── seed.py                   # Script de carga inicial automatizado via SQLAlchemy
-│   └── seed.sql                  # Script SQL com dados de catálogo de Santo André
-├── database/                     # Camada de Persistência (PostgreSQL / Supabase)
-│   ├── schema.sql                # DDL físico completo (Tabelas, índices, triggers)
-│   ├── seed.sql                  # Carga inicial do banco de dados
-│   ├── alteracoes_schema.sql     # Ajustes de migração e controle RBAC de funcionários
-│   └── documentacao_modelagem.md # Especificação técnica do banco e DER (Normas ABNT)
-├── docs/                         # Documentações e Guias de Engenharia
-│   └── design_system.md          # Tokens de design, paleta cromática e componentes
-├── iniciar_backend.bat           # Atalho Windows para iniciar a API em 1 clique
-├── iniciar_frontend.bat          # Atalho Windows para iniciar o frontend em 1 clique
-├── .gitignore                    # Regras de exclusão do repositório Git
-├── ARQUITETURA_3_CAMADAS.md      # Especificação arquitetural profunda
-├── ROADMAP_PROXIMA_SESSAO.md     # Backlog de tarefas e status atual
-└── README.md                     # Documentação geral do projeto
-```
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
 
----
+## Agentic Development
 
-## 🛠️ Tecnologias e Serviços
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
 
-* **Apresentação (Frontend):** HTML5 Semântico, CSS3 (Design Tokens, Grid, Flexbox), Vanilla JavaScript (preparado para deploy estático na Vercel/Netlify).
-* **Lógica de Negócios (Backend):** Python 3.10+, FastAPI, SQLAlchemy 2.0, Pydantic v2, Uvicorn, PyJWT.
-* **Persistência (Database):** PostgreSQL gerenciado na nuvem via **Supabase** (com pooling de conexões PgBouncer/Supavisor).
-
----
-
-## 👥 Guia de Início Rápido para Novos Colaboradores
-
-Se você acabou de ser adicionado ao projeto, siga este passo a passo para rodar tudo na sua máquina em menos de 5 minutos:
-
-### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/nathocosta/vevey.git
-cd vevey
+composer require laravel/boost --dev
+
+php artisan boost:install
 ```
 
-### 2. Configuração do Backend (FastAPI)
-O repositório já inclui o arquivo `backend/.env` configurado com a instância ativa do **Supabase** na nuvem (AWS São Paulo `sa-east-1`), portanto **não é necessário criar um banco de dados local**:
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
 
-1. Acesse o diretório do backend:
-   ```bash
-   cd backend
-   ```
-2. Crie e ative um ambiente virtual Python (recomendado Python 3.10 ou superior):
-   ```bash
-   python -m venv venv
-   # No Windows (PowerShell):
-   .\venv\Scripts\Activate.ps1
-   # No Linux/Mac:
-   source venv/bin/activate
-   ```
-3. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Inicie o servidor da API:
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
-   *Ou use o atalho na raiz:* basta dar duplo clique em `iniciar_backend.bat`.
-5. Acesse a documentação interativa Swagger em: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs).
+## Contributing
 
-### 3. Configuração do Frontend
-O frontend é 100% estático (Vanilla JS / Tailwind CDN):
-1. Inicie um servidor web local na porta 3000 (para manter alinhamento com as permissões de CORS):
-   - **Opção A:** Execute `iniciar_frontend.bat` na raiz.
-   - **Opção B:** Use o **Live Server** do VS Code abrindo `frontend/index.html`.
-   - **Opção C:** Via terminal:
-     ```bash
-     cd frontend
-     python -m http.server 3000
-     ```
-2. Acesse a loja no navegador: [http://localhost:3000/catalogo.html](http://localhost:3000/catalogo.html).
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
----
+## Code of Conduct
 
-## 🔑 Credenciais Padrão de Teste (Seed no Banco)
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-O banco de dados na nuvem já possui os seguintes usuários pré-cadastrados para teste:
+## Security Vulnerabilities
 
-| Tipo | Nome | E-mail | Senha | Nível de Acesso |
-| :--- | :--- | :--- | :--- | :--- |
-| **Admin** | Miriam Sócia | `miriam@veveydoces.com.br` | `admin123` | Total (Visão Financeira, Gestão de Usuários e Catálogo) |
-| **Operador** | Juliana Atendente | `juliana@veveydoces.com.br` | `admin123` | Operacional (Pedidos WhatsApp, Vendas e Estoque Balcão) |
-| **Logística** | Carlos Logística | `carlos@veveydoces.com.br` | `admin123` | Logística e Despacho de Pedidos |
-| **Cliente** | Nathan Costa Santos | `nathan@exemplo.com.br` | `cliente123` | Compras e Acompanhamento de Pedidos |
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-* Para testar o painel administrativo: acesse [http://localhost:3000/admin-login.html](http://localhost:3000/admin-login.html).
+## License
 
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

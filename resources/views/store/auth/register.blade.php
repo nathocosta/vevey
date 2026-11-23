@@ -24,9 +24,15 @@
                     <label for="email" class="block text-xs font-medium text-espresso mb-1.5">E-mail</label>
                     <input id="email" name="email" type="email" value="{{ old('email') }}" required class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
                 </div>
-                <div>
-                    <label for="phone" class="block text-xs font-medium text-espresso mb-1.5">WhatsApp / Telefone</label>
-                    <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                <div class="grid sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="phone" class="block text-xs font-medium text-espresso mb-1.5">WhatsApp / Telefone</label>
+                        <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                    </div>
+                    <div>
+                        <label for="cpf" class="block text-xs font-medium text-espresso mb-1.5">CPF (opcional)</label>
+                        <input id="cpf" name="cpf" type="text" maxlength="14" value="{{ old('cpf') }}" placeholder="000.000.000-00" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                    </div>
                 </div>
                 <div class="grid sm:grid-cols-2 gap-3">
                     <div>

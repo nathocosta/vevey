@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
 final class ShippingCalculator
 {
     public const int FREE_SHIPPING_THRESHOLD_CENTS = 15000;
+
+    public function __construct(
+        private readonly BrasilApiService $brasilApi,
+    ) {}
 
     /**
      * @return array{
@@ -30,7 +35,13 @@ final class ShippingCalculator
     public function quote(string $rawCep, int $subtotalCents = 0, float $weightKg = 1.0): array
     {
         $cep = preg_replace('/\D+/', '', $rawCep) ?? '';
-        $address = $this->lookupViaCep($cep);
+        $lookedUp = $this->brasilApi->lookupCep($cep);
+        $address = $lookedUp !== null ? [
+            'street' => $lookedUp['street'],
+            'neighborhood' => $lookedUp['neighborhood'],
+            'city' => $lookedUp['city'],
+            'state' => $lookedUp['state'],
+        ] : null;
 
         $pickup = [
             'code' => 'pickup',
@@ -203,6 +214,9 @@ final class ShippingCalculator
             default => [2690, 7, 4490, 3],
         };
 
+        $sedexEta = $this->brasilApi->addBusinessDays(CarbonImmutable::today(), $sedexDays)->format('d/m');
+        $pacEta = $this->brasilApi->addBusinessDays(CarbonImmutable::today(), $pacDays)->format('d/m');
+
         return [
             [
                 'code' => 'correios_sedex',
@@ -210,7 +224,7 @@ final class ShippingCalculator
                 'name' => 'Correios SEDEX',
                 'carrier' => 'Correios',
                 'price_cents' => $sedexCents,
-                'delivery_label' => $sedexDays === 1 ? 'Até 1 dia útil' : "Até {$sedexDays} dias úteis",
+                'delivery_label' => ($sedexDays === 1 ? '1 dia útil' : "{$sedexDays} dias úteis") . " (prev. {$sedexEta})",
                 'free_shipping_applied' => false,
             ],
             [
@@ -219,7 +233,7 @@ final class ShippingCalculator
                 'name' => 'Correios PAC',
                 'carrier' => 'Correios',
                 'price_cents' => $freeEligible ? 0 : $pacCents,
-                'delivery_label' => "Até {$pacDays} dias úteis",
+                'delivery_label' => "{$pacDays} dias úteis (prev. {$pacEta})",
                 'free_shipping_applied' => $freeEligible,
             ],
         ];

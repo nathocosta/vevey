@@ -22,6 +22,7 @@ return [
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
+        'from' => env('RESEND_FROM', 'Vevey Doces <onboarding@resend.dev>'),
     ],
 
     'ses' => [

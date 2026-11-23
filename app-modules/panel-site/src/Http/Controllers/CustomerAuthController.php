@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Vevey\PanelSite\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Services\BrasilApiService;
+use App\Services\TransactionalMailer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Throwable;
 use Vevey\Catalog\Models\Category;
 use Vevey\Customers\Actions\FindOrCreateCustomerByContact;
 use Vevey\Customers\Enums\IdentitySource;
@@ -95,8 +94,19 @@ final class CustomerAuthController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:120'],
             'email' => ['required', 'email', 'max:120'],
             'phone' => ['required', 'string', 'min:10', 'max:20'],
+            'cpf' => ['nullable', 'string', 'max:14'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
+
+        $formattedCpf = null;
+        if (! empty($validated['cpf'])) {
+            if (! BrasilApiService::isValidCpf((string) $validated['cpf'])) {
+                throw ValidationException::withMessages([
+                    'cpf' => 'CPF inválido. Verifique os dígitos informados.',
+                ]);
+            }
+            $formattedCpf = BrasilApiService::formatCpf((string) $validated['cpf']);
+        }
 
         $email = mb_strtolower(mb_trim((string) $validated['email']));
 
@@ -125,6 +135,7 @@ final class CustomerAuthController extends Controller
         $customer->update([
             'name' => mb_trim((string) $validated['name']),
             'email' => $email,
+            'cpf' => $formattedCpf ?? $customer->cpf,
             'password' => (string) $validated['password'],
         ]);
 
@@ -235,16 +246,13 @@ final class CustomerAuthController extends Controller
         $request->session()->forget('verification_mail_fallback');
 
         if ($customer->email !== null) {
-            try {
-                Mail::raw(
-                    "Olá, {$customer->name}!\n\nSeu código de verificação Vevey Doces é: {$code}\n\nEste código expira em 15 minutos.",
-                    static function ($message) use ($customer): void {
-                        $message->to((string) $customer->email)
-                            ->subject('Vevey Doces — Código de verificação da sua conta');
-                    },
-                );
-            } catch (Throwable $e) {
-                Log::warning('Falha ao enviar e-mail de verificação 2FA: ' . $e->getMessage());
+            $sentExternally = app(TransactionalMailer::class)->sendVerificationCode(
+                toEmail: (string) $customer->email,
+                customerName: $customer->name,
+                code: $code,
+            );
+
+            if (! $sentExternally) {
                 $request->session()->put('verification_mail_fallback', true);
             }
         }

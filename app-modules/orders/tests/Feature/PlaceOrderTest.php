@@ -7,6 +7,8 @@ use Brick\Money\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Vevey\Catalog\Models\Product;
+use Vevey\Inventory\Actions\ReceiveStock;
+use Vevey\Inventory\DTOs\ReceiveStockData;
 use Vevey\Orders\Actions\PlaceOrder;
 use Vevey\Orders\Actions\UpdateOrderStatus;
 use Vevey\Orders\DTOs\PlaceOrderData;
@@ -44,6 +46,9 @@ it('places a web order with Pix discount, allocates discount across lines, snaps
         'promo_price_cents' => null,
         'is_active' => true,
     ]);
+
+    app(ReceiveStock::class)->handle(new ReceiveStockData(productId: $p1->id, quantity: 10));
+    app(ReceiveStock::class)->handle(new ReceiveStockData(productId: $p2->id, quantity: 10));
 
     $action = app(PlaceOrder::class);
 
@@ -141,6 +146,8 @@ it('applies a valid coupon, increments uses_count and rejects inactive products'
         'is_active' => true,
     ]);
 
+    app(ReceiveStock::class)->handle(new ReceiveStockData(productId: $active->id, quantity: 10));
+
     $inactive = Product::factory()->create([
         'price_cents' => Money::ofMinor(1000, MoneyCast::CURRENCY),
         'is_active' => false,
@@ -184,6 +191,8 @@ it('persists an order via POST /checkout and updates status with history', funct
         'promo_price_cents' => null,
         'is_active' => true,
     ]);
+
+    app(ReceiveStock::class)->handle(new ReceiveStockData(productId: $product->id, quantity: 10));
 
     $response = $this->postJson(route('store.checkout.submit'), [
         'customer_name' => 'Carla Mendes',

@@ -16,14 +16,31 @@ use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Vevey\Catalog\Models\Product;
+use Vevey\Inventory\Models\StockLevel;
+use Vevey\Inventory\Models\StockMovement;
 use Vevey\PanelAdmin\Filament\Auth\Login;
 
 final class AdminPanelProvider extends PanelProvider
 {
+    public function boot(): void
+    {
+        // ADR 8 Rule 5: panels may declare cross-module read relations via resolveRelationUsing
+        StockLevel::resolveRelationUsing(
+            'product',
+            static fn (StockLevel $level): BelongsTo => $level->belongsTo(Product::class, 'product_id'),
+        );
+
+        StockMovement::resolveRelationUsing(
+            'product',
+            static fn (StockMovement $movement): BelongsTo => $movement->belongsTo(Product::class, 'product_id'),
+        );
+    }
     public function panel(Panel $panel): Panel
     {
         return $panel

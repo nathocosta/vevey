@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\DB;
 use Vevey\Catalog\Actions\FindProductsForSale;
 use Vevey\Catalog\DTOs\ProductAttributeData;
 use Vevey\Catalog\DTOs\ProductData;
+use Vevey\Inventory\Actions\RecordDirectSale;
+use Vevey\Inventory\Actions\ReserveStock;
+use Vevey\Inventory\DTOs\RecordSaleData;
+use Vevey\Inventory\DTOs\ReserveStockData;
+use Vevey\Inventory\DTOs\StockItemData;
+use Vevey\Inventory\Exceptions\InsufficientStockException;
 use Vevey\Orders\DTOs\OrderData;
 use Vevey\Orders\DTOs\PlaceOrderData;
 use Vevey\Orders\Enums\AdjustmentType;
@@ -38,6 +44,8 @@ final class PlaceOrder
 
     public function __construct(
         private readonly FindProductsForSale $findProductsForSale,
+        private readonly ReserveStock $reserveStock,
+        private readonly RecordDirectSale $recordDirectSale,
     ) {}
 
     public function handle(PlaceOrderData $data): OrderData
@@ -259,6 +267,34 @@ final class PlaceOrder
                 'note' => $isPos ? 'Entregue no balcão.' : 'Aguardando separação.',
                 'created_at' => $now,
             ]);
+
+            // ADR 2 & 5: POS deducts ledger immediately (allows negative with alert); remote channels reserve stock
+            $stockItems = array_map(
+                static fn (array $line): StockItemData => new StockItemData(
+                    productId: $line['product']->id,
+                    quantity: $line['quantity'],
+                ),
+                $lines,
+            );
+
+            if ($isPos) {
+                $this->recordDirectSale->handle(new RecordSaleData(
+                    orderId: $order->id,
+                    items: $stockItems,
+                    userId: $data->sellerId,
+                    allowNegative: true,
+                    note: "Venda no balcão ({$order->number}).",
+                ));
+            } else {
+                try {
+                    $this->reserveStock->handle(new ReserveStockData(
+                        orderId: $order->id,
+                        items: $stockItems,
+                    ));
+                } catch (InsufficientStockException $exception) {
+                    throw new OrderPlacementException($exception->getMessage(), previous: $exception);
+                }
+            }
 
             $order->load('items');
 

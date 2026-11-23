@@ -20,6 +20,7 @@
         "spatie/laravel-medialibrary": "^11",
         "spatie/laravel-permission": "^8",
         "vevey/catalog": "*",
+        "vevey/inventory": "*",
         "vevey/orders": "*",
         "vevey/panel-admin": "*",
         "vevey/permissions": "*"

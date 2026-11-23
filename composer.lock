@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e0f0ce42e8d3d8ea33dceac7ab02a62",
+    "content-hash": "810d65b072e9535d6bd2c1b6cfa18e38",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10329,6 +10329,39 @@
             "license": [
                 "proprietary"
             ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/inventory",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/inventory",
+                "reference": "d5e72203dcae6f7533740172a19a05630b78261c"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Inventory\\Providers\\InventoryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Inventory\\": "src/",
+                    "Vevey\\Inventory\\Tests\\": "tests/",
+                    "Vevey\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Single-entry stock ledger, reservations and stock levels cache (ADR 2 & 5).",
             "transport-options": {
                 "symlink": true,
                 "relative": true

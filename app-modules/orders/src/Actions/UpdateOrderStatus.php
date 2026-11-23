@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Vevey\Orders\Actions;
 
 use Illuminate\Support\Facades\DB;
+use Vevey\Inventory\Actions\FulfillOrderReservations;
+use Vevey\Inventory\Actions\ReleaseOrderReservations;
 use Vevey\Orders\Enums\FulfillmentStatus;
 use Vevey\Orders\Enums\PaymentStatus;
 use Vevey\Orders\Models\Order;
@@ -14,9 +16,14 @@ use Vevey\Orders\Models\Payment;
 /**
  * Transitions order payment and/or fulfillment status, updates transition timestamps
  * and records an entry in order_status_histories (ADR 4 & RNF011).
+ * Coordinates stock fulfillment on payment confirmation and release on cancellation (ADR 2).
  */
 final class UpdateOrderStatus
 {
+    public function __construct(
+        private readonly FulfillOrderReservations $fulfillOrderReservations,
+        private readonly ReleaseOrderReservations $releaseOrderReservations,
+    ) {}
     public function handle(
         Order $order,
         ?PaymentStatus $paymentStatus = null,
@@ -53,6 +60,18 @@ final class UpdateOrderStatus
                         'paid_at' => $paymentStatus === PaymentStatus::Paid ? ($latestPayment->paid_at ?? $now) : $latestPayment->paid_at,
                     ]);
                 }
+
+                if ($paymentStatus === PaymentStatus::Paid) {
+                    $this->fulfillOrderReservations->handle(
+                        orderId: $order->id,
+                        userId: $userId,
+                        note: $note ?? "Pagamento confirmado ({$order->number}).",
+                    );
+                }
+
+                if (in_array($paymentStatus, [PaymentStatus::Expired, PaymentStatus::Failed], true)) {
+                    $this->releaseOrderReservations->handle($order->id);
+                }
             }
 
             if ($fulfillmentStatus instanceof FulfillmentStatus && $order->fulfillment_status !== $fulfillmentStatus) {
@@ -69,6 +88,7 @@ final class UpdateOrderStatus
 
                 if ($fulfillmentStatus === FulfillmentStatus::Cancelled && $order->cancelled_at === null) {
                     $updates['cancelled_at'] = $now;
+                    $this->releaseOrderReservations->handle($order->id);
                 }
 
                 OrderStatusHistory::query()->create([

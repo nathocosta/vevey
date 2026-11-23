@@ -10,8 +10,11 @@ use Brick\Money\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Vevey\Catalog\Models\Category;
 use Vevey\Catalog\Models\Product;
+use Vevey\Customers\Actions\FindOrCreateCustomerByContact;
+use Vevey\Customers\Enums\IdentitySource;
 use Vevey\Orders\Actions\PlaceOrder;
 use Vevey\Orders\DTOs\OrderItemData;
 use Vevey\Orders\DTOs\PlaceOrderData;
@@ -59,8 +62,12 @@ final class CheckoutController extends Controller
         return response()->json($quote);
     }
 
-    public function submit(Request $request, ShippingCalculator $calculator, PlaceOrder $placeOrder): JsonResponse
-    {
+    public function submit(
+        Request $request,
+        ShippingCalculator $calculator,
+        PlaceOrder $placeOrder,
+        FindOrCreateCustomerByContact $findOrCreateCustomer,
+    ): JsonResponse {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'min:3', 'max:120'],
             'customer_email' => ['required', 'email', 'max:120'],
@@ -121,6 +128,17 @@ final class CheckoutController extends Controller
             );
         }
 
+        $customerId = Auth::guard('customers')->id();
+        if (! is_string($customerId)) {
+            $customerData = $findOrCreateCustomer->handle(
+                name: (string) $validated['customer_name'],
+                email: (string) $validated['customer_email'],
+                phone: (string) $validated['customer_phone'],
+                source: IdentitySource::Web,
+            );
+            $customerId = $customerData->id;
+        }
+
         try {
             $order = $placeOrder->handle(new PlaceOrderData(
                 channel: OrderChannel::Web,
@@ -129,6 +147,7 @@ final class CheckoutController extends Controller
                 customerName: (string) $validated['customer_name'],
                 customerEmail: (string) $validated['customer_email'],
                 customerPhone: (string) $validated['customer_phone'],
+                customerId: $customerId,
                 shippingMethod: $shippingLabel,
                 shippingCost: Money::ofMinor($shippingCents, MoneyCast::CURRENCY),
                 shippingAddress: $shippingAddress,

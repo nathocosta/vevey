@@ -17,13 +17,16 @@ use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Vevey\Catalog\Models\Product;
+use Vevey\Customers\Models\Customer;
 use Vevey\Inventory\Models\StockLevel;
 use Vevey\Inventory\Models\StockMovement;
+use Vevey\Orders\Models\Order;
 use Vevey\PanelAdmin\Filament\Auth\Login;
 
 final class AdminPanelProvider extends PanelProvider
@@ -39,6 +42,11 @@ final class AdminPanelProvider extends PanelProvider
         StockMovement::resolveRelationUsing(
             'product',
             static fn (StockMovement $movement): BelongsTo => $movement->belongsTo(Product::class, 'product_id'),
+        );
+
+        Customer::resolveRelationUsing(
+            'orders',
+            static fn (Customer $customer): HasMany => $customer->hasMany(Order::class, 'customer_id')->latest(),
         );
     }
     public function panel(Panel $panel): Panel

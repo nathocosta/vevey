@@ -68,6 +68,14 @@
                     Painel
                 </a>
 
+                <a
+                    href="{{ auth('customers')->check() ? route('store.account') : route('store.login') }}"
+                    class="inline-flex items-center gap-1.5 h-10 px-3 rounded-lg border hairline bg-paper hover:bg-linen text-xs font-medium text-espresso transition-colors duration-150"
+                >
+                    <span class="material-symbols-outlined text-[18px]">person</span>
+                    <span class="hidden sm:inline">{{ auth('customers')->check() ? \Illuminate\Support\Str::words(auth('customers')->user()->name, 1, '') : 'Minha conta' }}</span>
+                </a>
+
                 <button
                     type="button"
                     data-open-cart

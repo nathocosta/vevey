@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "810d65b072e9535d6bd2c1b6cfa18e38",
+    "content-hash": "cf5034d56af575444d2b5a5455234a26",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10329,6 +10329,39 @@
             "license": [
                 "proprietary"
             ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/customers",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/customers",
+                "reference": "82bc65ebc641f70e3276b894c0ca8aa0a827fc9f"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Customers\\Providers\\CustomersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Customers\\": "src/",
+                    "Vevey\\Customers\\Tests\\": "tests/",
+                    "Vevey\\Customers\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Customers\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Authenticatable customers (separate guard), normalized contact identities with retirement, and shipping addresses (ADR 7).",
             "transport-options": {
                 "symlink": true,
                 "relative": true

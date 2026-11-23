@@ -675,11 +675,89 @@ function initCheckout() {
             const codeEl = document.getElementById('success-order-code');
             const summaryTextEl = document.getElementById('success-summary-text');
             const breakdownEl = document.getElementById('success-breakdown');
+            const pixPanel = document.getElementById('sandbox-pix-panel');
+            const cardPanel = document.getElementById('sandbox-card-panel');
+            const pixCodeInput = document.getElementById('sandbox-pix-code');
+            const qrWrap = document.getElementById('sandbox-qr-wrap');
+            const copyPixBtn = document.getElementById('sandbox-copy-pix');
+            const simulateBtn = document.getElementById('sandbox-simulate-pay-btn');
+            const payFeedback = document.getElementById('sandbox-pay-feedback');
+            const statusIcon = document.getElementById('success-status-icon');
+            const headingEl = document.getElementById('success-heading');
 
             if (codeEl) codeEl.textContent = data.order_code;
             if (summaryTextEl) {
                 summaryTextEl.textContent = `${data.customer_name} · ${data.shipping_label}`;
             }
+
+            if (data.payment_method === 'pix' && data.pix_code) {
+                pixPanel?.classList.remove('hidden');
+                cardPanel?.classList.add('hidden');
+                if (pixCodeInput) pixCodeInput.value = data.pix_code;
+                if (qrWrap) {
+                    // Deterministic visual QR SVG derived from order code for sandbox demo
+                    const seed = data.order_code || 'VEVEY';
+                    let rects = '';
+                    const n = 21;
+                    for (let r = 0; r < n; r++) {
+                        for (let c = 0; c < n; c++) {
+                            const inFinder = (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
+                            let on = false;
+                            if (inFinder) {
+                                const lr = r < 7 ? r : r - (n - 7);
+                                const lc = c < 7 ? c : c - (n - 7);
+                                on = lr === 0 || lr === 6 || lc === 0 || lc === 6 || (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4);
+                            } else {
+                                const h = (seed.charCodeAt((r * n + c) % seed.length) * 31 + r * 17 + c * 13) % 7;
+                                on = h < 3;
+                            }
+                            if (on) rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#1F1B16"/>`;
+                        }
+                    }
+                    qrWrap.innerHTML = `<svg viewBox="0 0 ${n} ${n}" class="w-full h-full" shape-rendering="crispEdges">${rects}</svg>`;
+                }
+                copyPixBtn?.addEventListener('click', () => {
+                    navigator.clipboard?.writeText(data.pix_code);
+                    if (copyPixBtn) copyPixBtn.textContent = 'Copiado!';
+                    setTimeout(() => { if (copyPixBtn) copyPixBtn.textContent = 'Copiar'; }, 2000);
+                });
+            } else {
+                pixPanel?.classList.add('hidden');
+                cardPanel?.classList.remove('hidden');
+            }
+
+            if (simulateBtn && data.simulate_pay_url) {
+                simulateBtn.onclick = async () => {
+                    simulateBtn.disabled = true;
+                    simulateBtn.textContent = 'Aprovando...';
+                    try {
+                        const payRes = await fetch(data.simulate_pay_url, {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application/json',
+                                'X-CSRF-TOKEN': getCsrfToken(),
+                            },
+                        });
+                        const payData = await payRes.json();
+                        if (!payRes.ok) throw new Error(payData.message || 'Erro ao aprovar pagamento');
+
+                        if (headingEl) headingEl.textContent = 'Pagamento aprovado e pedido em separação!';
+                        if (statusIcon) {
+                            statusIcon.className = 'w-10 h-10 rounded-lg bg-positive-soft text-positive flex items-center justify-center shrink-0';
+                            statusIcon.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span>';
+                        }
+                        if (payFeedback) {
+                            payFeedback.textContent = payData.message;
+                            payFeedback.classList.remove('hidden');
+                        }
+                        simulateBtn.classList.add('hidden');
+                    } catch (e) {
+                        simulateBtn.disabled = false;
+                        simulateBtn.textContent = 'Simular pagamento aprovado';
+                    }
+                };
+            }
+
             if (breakdownEl) {
                 breakdownEl.innerHTML =
                     data.items

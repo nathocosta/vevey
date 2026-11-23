@@ -33,17 +33,56 @@
             </a>
         </div>
 
-        <!-- Confirmação de pedido -->
+        <!-- Confirmação de pedido + Pagamento Sandbox (Pix QR Code / Cartão) -->
         <div id="checkout-success" class="hidden bg-porcelain border hairline rounded-2xl p-8 sm:p-10 space-y-6 max-w-2xl mx-auto">
             <div class="flex items-start gap-4">
-                <span class="w-10 h-10 rounded-lg bg-positive-soft text-positive flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                <span id="success-status-icon" class="w-10 h-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">schedule</span>
                 </span>
                 <div>
                     <p class="text-xs font-mono text-espresso-muted" id="success-order-code"></p>
-                    <h2 class="font-display font-semibold text-2xl text-espresso mt-0.5">Pedido confirmado</h2>
+                    <h2 class="font-display font-semibold text-2xl text-espresso mt-0.5" id="success-heading">Pedido registrado — conclua o pagamento</h2>
                     <p class="text-sm text-espresso-soft mt-1" id="success-summary-text"></p>
                 </div>
+            </div>
+
+            <!-- Painel de Pagamento Sandbox (Pix QR Code + Copia e Cola ou Cartão) -->
+            <div id="sandbox-payment-box" class="p-5 rounded-xl bg-paper border hairline-strong space-y-4">
+                <div id="sandbox-pix-panel" class="hidden space-y-4">
+                    <div class="flex flex-col sm:flex-row items-center gap-5">
+                        <div id="sandbox-qr-wrap" class="w-36 h-36 rounded-xl bg-white border hairline p-2.5 flex items-center justify-center shrink-0"></div>
+                        <div class="space-y-2 flex-1 min-w-0">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-positive-soft text-positive text-xs font-medium">
+                                Pix · Válido por 30 minutos
+                            </span>
+                            <p class="text-xs text-espresso-soft">Escaneie o QR Code ou copie o código Pix Copia e Cola abaixo:</p>
+                            <div class="flex gap-2">
+                                <input id="sandbox-pix-code" type="text" readonly class="flex-1 bg-porcelain border hairline rounded-lg px-3 h-9 font-mono text-[11px] text-espresso outline-none" />
+                                <button type="button" id="sandbox-copy-pix" class="px-3.5 h-9 rounded-lg bg-linen hover:bg-[#E5DDD0] text-xs font-medium text-espresso shrink-0 cursor-pointer">
+                                    Copiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sandbox-card-panel" class="hidden text-xs text-espresso-soft space-y-1">
+                    <p class="font-medium text-espresso">Pagamento no cartão pronto para autorização (Ambiente Sandbox)</p>
+                    <p>Clique no botão abaixo para simular a aprovação da operadora e disparar a baixa automática no estoque.</p>
+                </div>
+
+                <div class="pt-3 border-t hairline flex flex-wrap items-center justify-between gap-3">
+                    <span class="text-xs text-espresso-muted">Simulação para demonstração: aprova o pedido e baixa o estoque no ledger.</span>
+                    <button
+                        type="button"
+                        id="sandbox-simulate-pay-btn"
+                        class="inline-flex items-center justify-center gap-2 bg-positive hover:opacity-90 text-white font-medium text-xs rounded-lg px-4 h-10 transition-opacity cursor-pointer"
+                    >
+                        <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                        Simular pagamento aprovado
+                    </button>
+                </div>
+                <p id="sandbox-pay-feedback" class="hidden text-xs font-medium text-positive"></p>
             </div>
 
             <div class="p-5 rounded-xl bg-paper border hairline space-y-3 text-sm" id="success-breakdown"></div>

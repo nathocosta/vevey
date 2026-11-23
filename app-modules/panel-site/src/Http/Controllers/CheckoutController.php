@@ -19,15 +19,19 @@ use Vevey\Customers\Actions\FindOrCreateCustomerByContact;
 use Vevey\Customers\Enums\IdentitySource;
 use Vevey\Customers\Models\Customer;
 use Vevey\Orders\Actions\PlaceOrder;
+use Vevey\Orders\Actions\UpdateOrderStatus;
 use Vevey\Orders\DTOs\OrderItemData;
 use Vevey\Orders\DTOs\PlaceOrderData;
 use Vevey\Orders\DTOs\PlaceOrderItemData;
 use Vevey\Orders\DTOs\ShippingAddressData;
 use Vevey\Orders\Enums\DeliveryMethod;
+use Vevey\Orders\Enums\FulfillmentStatus;
 use Vevey\Orders\Enums\OrderChannel;
 use Vevey\Orders\Enums\PaymentMethod;
+use Vevey\Orders\Enums\PaymentStatus;
 use Vevey\Orders\Exceptions\OrderPlacementException;
 use Vevey\Orders\Models\Coupon;
+use Vevey\Orders\Models\Order;
 
 final class CheckoutController extends Controller
 {
@@ -202,6 +206,11 @@ final class CheckoutController extends Controller
             ], 422);
         }
 
+        $totalCents = $order->total->getMinorAmount()->toInt();
+        $pixCode = $order->paymentMethod === PaymentMethod::Pix
+            ? $this->buildSandboxPixPayload($order->number, $totalCents)
+            : null;
+
         return response()->json([
             'order_id' => $order->id,
             'order_code' => $order->number,
@@ -214,7 +223,9 @@ final class CheckoutController extends Controller
             'subtotal_cents' => $order->subtotal->getMinorAmount()->toInt(),
             'discount_cents' => $order->discount->getMinorAmount()->toInt(),
             'shipping_cents' => $order->shipping->getMinorAmount()->toInt(),
-            'total_cents' => $order->total->getMinorAmount()->toInt(),
+            'total_cents' => $totalCents,
+            'pix_code' => $pixCode,
+            'simulate_pay_url' => route('store.checkout.simulate-pay', ['orderId' => $order->id]),
             'items' => array_map(
                 static fn (OrderItemData $item): array => [
                     'name' => $item->name,
@@ -227,5 +238,47 @@ final class CheckoutController extends Controller
                 $order->items,
             ),
         ], 201);
+    }
+
+    /**
+     * Simula aprovação de pagamento (Sandbox para demonstração do TCC):
+     * confirma pagamento, avança separação e dispara baixa real no ledger de estoque (ADR 2).
+     */
+    public function simulatePayment(string $orderId, UpdateOrderStatus $updater): JsonResponse
+    {
+        $order = Order::query()->findOrFail($orderId);
+
+        if ($order->payment_status === PaymentStatus::Paid) {
+            return response()->json([
+                'order_code' => $order->number,
+                'payment_status' => $order->payment_status->value,
+                'fulfillment_status' => $order->fulfillment_status->value,
+                'message' => 'Pagamento já confirmado.',
+            ]);
+        }
+
+        $updated = $updater->handle(
+            order: $order,
+            paymentStatus: PaymentStatus::Paid,
+            fulfillmentStatus: FulfillmentStatus::Preparing,
+            note: 'Pagamento aprovado via Sandbox de demonstração (Checkout).',
+        );
+
+        return response()->json([
+            'order_code' => $updated->number,
+            'payment_status' => $updated->payment_status->value,
+            'fulfillment_status' => $updated->fulfillment_status->value,
+            'message' => 'Pagamento aprovado! Estoque baixado no ledger e pedido enviado para separação.',
+        ]);
+    }
+
+    private function buildSandboxPixPayload(string $orderNumber, int $totalCents): string
+    {
+        $amount = number_format($totalCents / 100, 2, '.', '');
+        $txid = preg_replace('/[^A-Za-z0-9]/', '', $orderNumber) ?: 'VEVEYDEMO';
+
+        return "00020126580014BR.GOV.BCB.PIX0136pix-sandbox@veveydoces.com.br52040000530398654"
+            . str_pad((string) strlen($amount), 2, '0', STR_PAD_LEFT) . $amount
+            . "5802BR5911VEVEY DOCES6009SAO PAULO62180514{$txid}6304" . strtoupper(substr(md5($txid . $amount), 0, 4));
     }
 }

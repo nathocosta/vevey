@@ -37,8 +37,8 @@ use Vevey\Customers\Policies\CustomerPolicy;
  * @property-read Collection<int, CustomerAddress> $addresses
  */
 #[UsePolicy(CustomerPolicy::class)]
-#[Fillable(['name', 'email', 'cpf', 'password', 'email_verified_at'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'cpf', 'password', 'email_verified_at', 'verification_code', 'verification_expires_at'])]
+#[Hidden(['password', 'remember_token', 'verification_code'])]
 #[Table(name: 'customers')]
 final class Customer extends Authenticatable
 {
@@ -87,6 +87,7 @@ final class Customer extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'verification_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

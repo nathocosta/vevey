@@ -4,13 +4,23 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Casts\MoneyCast;
 use App\Services\ShippingCalculator;
+use Brick\Money\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Vevey\Catalog\Models\Category;
 use Vevey\Catalog\Models\Product;
+use Vevey\Orders\Actions\PlaceOrder;
+use Vevey\Orders\DTOs\OrderItemData;
+use Vevey\Orders\DTOs\PlaceOrderData;
+use Vevey\Orders\DTOs\PlaceOrderItemData;
+use Vevey\Orders\DTOs\ShippingAddressData;
+use Vevey\Orders\Enums\DeliveryMethod;
+use Vevey\Orders\Enums\OrderChannel;
+use Vevey\Orders\Enums\PaymentMethod;
+use Vevey\Orders\Exceptions\OrderPlacementException;
 
 final class CheckoutController extends Controller
 {
@@ -49,7 +59,7 @@ final class CheckoutController extends Controller
         return response()->json($quote);
     }
 
-    public function submit(Request $request, ShippingCalculator $calculator): JsonResponse
+    public function submit(Request $request, ShippingCalculator $calculator, PlaceOrder $placeOrder): JsonResponse
     {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'min:3', 'max:120'],
@@ -58,9 +68,11 @@ final class CheckoutController extends Controller
             'delivery_type' => ['required', 'in:pickup,delivery'],
             'shipping_code' => ['required', 'string', 'max:40'],
             'payment_method' => ['required', 'in:pix,credit_card'],
+            'coupon_code' => ['nullable', 'string', 'max:40'],
             'cep' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'regex:/^\d{5}-?\d{3}$/'],
             'street' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'max:160'],
             'number' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'max:30'],
+            'complement' => ['nullable', 'string', 'max:120'],
             'neighborhood' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'max:100'],
             'city' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'max:100'],
             'state' => ['required_if:delivery_type,delivery', 'nullable', 'string', 'size:2'],
@@ -71,44 +83,25 @@ final class CheckoutController extends Controller
 
         /** @var list<array{id: string, qty: int}> $requestedItems */
         $requestedItems = $validated['items'];
-        $productIds = array_column($requestedItems, 'id');
 
-        $products = Product::query()
-            ->active()
-            ->whereKey($productIds)
-            ->get()
-            ->keyBy('id');
-
-        $subtotalCents = 0;
-        $resolvedItems = [];
-
-        foreach ($requestedItems as $item) {
-            $product = $products->get($item['id']);
-
-            if (! $product instanceof Product) {
-                return response()->json([
-                    'message' => 'Um ou mais itens do carrinho não estão mais disponíveis.',
-                ], 422);
-            }
-
-            $unitCents = $product->sale_price->getMinorAmount()->toInt();
-            $lineCents = $unitCents * (int) $item['qty'];
-            $subtotalCents += $lineCents;
-
-            $resolvedItems[] = [
-                'name' => $product->name,
-                'sku' => $product->sku,
-                'qty' => (int) $item['qty'],
-                'unit_cents' => $unitCents,
-                'line_cents' => $lineCents,
-            ];
-        }
-
+        // Pre-compute shipping quote on the server using current active product prices
         $shippingCents = 0;
         $shippingLabel = 'Retirada na loja Vevey (mesmo dia)';
+        $shippingAddress = null;
 
         if ($validated['delivery_type'] === 'delivery') {
-            $quote = $calculator->quote((string) $validated['cep'], $subtotalCents);
+            $productIds = array_column($requestedItems, 'id');
+            $products = Product::query()->active()->whereKey($productIds)->get()->keyBy('id');
+            $estimatedSubtotalCents = 0;
+
+            foreach ($requestedItems as $item) {
+                $product = $products->get($item['id']);
+                if ($product instanceof Product) {
+                    $estimatedSubtotalCents += $product->sale_price->getMinorAmount()->toInt() * (int) $item['qty'];
+                }
+            }
+
+            $quote = $calculator->quote((string) $validated['cep'], $estimatedSubtotalCents);
             $matched = collect($quote['options'])->firstWhere('code', $validated['shipping_code'])
                 ?? collect($quote['options'])->firstWhere('type', 'delivery');
 
@@ -116,26 +109,68 @@ final class CheckoutController extends Controller
                 $shippingCents = (int) $matched['price_cents'];
                 $shippingLabel = $matched['name'] . ' — ' . $matched['delivery_label'];
             }
+
+            $shippingAddress = new ShippingAddressData(
+                cep: (string) $validated['cep'],
+                street: (string) $validated['street'],
+                number: (string) $validated['number'],
+                neighborhood: (string) $validated['neighborhood'],
+                city: (string) $validated['city'],
+                state: mb_strtoupper((string) $validated['state']),
+                complement: isset($validated['complement']) ? (string) $validated['complement'] : null,
+            );
         }
 
-        $pixDiscountCents = $validated['payment_method'] === 'pix'
-            ? (int) round($subtotalCents * 0.05)
-            : 0;
-
-        $totalCents = max(0, $subtotalCents - $pixDiscountCents + $shippingCents);
-        $orderCode = 'VEV-' . now()->format('Ymd') . '-' . mb_strtoupper(Str::random(4));
+        try {
+            $order = $placeOrder->handle(new PlaceOrderData(
+                channel: OrderChannel::Web,
+                deliveryMethod: DeliveryMethod::from((string) $validated['delivery_type']),
+                paymentMethod: PaymentMethod::from((string) $validated['payment_method']),
+                customerName: (string) $validated['customer_name'],
+                customerEmail: (string) $validated['customer_email'],
+                customerPhone: (string) $validated['customer_phone'],
+                shippingMethod: $shippingLabel,
+                shippingCost: Money::ofMinor($shippingCents, MoneyCast::CURRENCY),
+                shippingAddress: $shippingAddress,
+                couponCode: isset($validated['coupon_code']) ? (string) $validated['coupon_code'] : null,
+                items: array_map(
+                    static fn (array $item): PlaceOrderItemData => new PlaceOrderItemData(
+                        productId: $item['id'],
+                        quantity: (int) $item['qty'],
+                    ),
+                    $requestedItems,
+                ),
+            ));
+        } catch (OrderPlacementException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
 
         return response()->json([
-            'order_code' => $orderCode,
-            'customer_name' => $validated['customer_name'],
-            'delivery_type' => $validated['delivery_type'],
-            'shipping_label' => $shippingLabel,
-            'payment_method' => $validated['payment_method'],
-            'subtotal_cents' => $subtotalCents,
-            'discount_cents' => $pixDiscountCents,
-            'shipping_cents' => $shippingCents,
-            'total_cents' => $totalCents,
-            'items' => $resolvedItems,
+            'order_id' => $order->id,
+            'order_code' => $order->number,
+            'customer_name' => $order->customerName,
+            'delivery_type' => $order->deliveryMethod->value,
+            'shipping_label' => $order->shippingMethod ?? $shippingLabel,
+            'payment_method' => $order->paymentMethod->value,
+            'payment_status' => $order->paymentStatus->value,
+            'fulfillment_status' => $order->fulfillmentStatus->value,
+            'subtotal_cents' => $order->subtotal->getMinorAmount()->toInt(),
+            'discount_cents' => $order->discount->getMinorAmount()->toInt(),
+            'shipping_cents' => $order->shipping->getMinorAmount()->toInt(),
+            'total_cents' => $order->total->getMinorAmount()->toInt(),
+            'items' => array_map(
+                static fn (OrderItemData $item): array => [
+                    'name' => $item->name,
+                    'sku' => $item->sku,
+                    'qty' => $item->quantity,
+                    'unit_cents' => $item->unitPrice->getMinorAmount()->toInt(),
+                    'discount_cents' => $item->discount->getMinorAmount()->toInt(),
+                    'line_cents' => $item->total->getMinorAmount()->toInt(),
+                ],
+                $order->items,
+            ),
         ], 201);
     }
 }

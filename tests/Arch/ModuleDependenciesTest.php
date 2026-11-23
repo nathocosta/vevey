@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 $layers = [
     'Vevey\Catalog' => 'base',
+    'Vevey\Orders' => 'orchestrator',
     'Vevey\PanelAdmin' => 'interface',
     'Vevey\Permissions' => 'shared',
 ];

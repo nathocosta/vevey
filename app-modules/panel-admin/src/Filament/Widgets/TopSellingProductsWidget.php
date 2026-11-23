@@ -29,6 +29,7 @@ final class TopSellingProductsWidget extends TableWidget
                 ->groupBy('order_items.sku', 'order_items.name')
                 ->orderByDesc('units_sold')
                 ->limit(5))
+            ->defaultKeySort(false)
             ->paginated(false)
             ->columns([
                 TextColumn::make('sku')

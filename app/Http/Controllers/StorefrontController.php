@@ -14,6 +14,7 @@ use Vevey\Catalog\Models\Attribute;
 use Vevey\Catalog\Models\AttributeValue;
 use Vevey\Catalog\Models\Category;
 use Vevey\Catalog\Models\Product;
+use Vevey\Inventory\Models\StockLevel;
 
 final class StorefrontController extends Controller
 {
@@ -47,12 +48,17 @@ final class StorefrontController extends Controller
             ->orderBy('value')
             ->get();
 
+        $stockMap = $this->stockMap(
+            $promoProducts->merge($featuredProducts)->merge($heroProducts)
+        );
+
         return view('store.home', [
             'navCategories' => $categories,
             'heroProducts' => $heroProducts,
             'promoProducts' => $promoProducts,
             'featuredProducts' => $featuredProducts,
             'colorValues' => $colorValues,
+            'stockMap' => $stockMap,
         ]);
     }
 
@@ -144,6 +150,8 @@ final class StorefrontController extends Controller
                 ->get()
             : collect();
 
+        $stockMap = $this->stockMap($products->getCollection());
+
         return view('store.catalog', [
             'navCategories' => $navCategories,
             'products' => $products,
@@ -154,6 +162,7 @@ final class StorefrontController extends Controller
             'sort' => $sort,
             'selectedAttributes' => $selectedAttributes,
             'activeAttributeModels' => $activeAttributeModels,
+            'stockMap' => $stockMap,
         ]);
     }
 
@@ -210,11 +219,15 @@ final class StorefrontController extends Controller
             $colorSiblings = $siblingQuery->limit(8)->get();
         }
 
+        $stockMap = $this->stockMap($relatedProducts->push($product));
+
         return view('store.product', [
             'navCategories' => $this->navigationCategories(),
             'product' => $product,
             'relatedProducts' => $relatedProducts,
             'colorSiblings' => $colorSiblings,
+            'stockMap' => $stockMap,
+            'availableStock' => $stockMap[$product->id] ?? 0,
         ]);
     }
 
@@ -318,6 +331,30 @@ final class StorefrontController extends Controller
             'preto' => '#1F1B16',
             default => '#A8A29E',
         };
+    }
+
+    /**
+     * @param  iterable<int, Product>  $products
+     * @return array<string, int>
+     */
+    private function stockMap(iterable $products): array
+    {
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[$product->id] = $product->id;
+        }
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return StockLevel::query()
+            ->whereIn('product_id', array_values($ids))
+            ->get(['product_id', 'on_hand', 'reserved'])
+            ->mapWithKeys(static fn (StockLevel $level): array => [
+                $level->product_id => max(0, $level->on_hand - $level->reserved),
+            ])
+            ->all();
     }
 
     /**

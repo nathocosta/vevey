@@ -171,31 +171,51 @@
                         </div>
                     @endif
 
+                    <!-- Disponibilidade em estoque (ADR 2) -->
+                    <div class="flex items-center gap-2 text-xs font-medium">
+                        @if ($availableStock > 10)
+                            <span class="w-2 h-2 rounded-full bg-positive"></span>
+                            <span class="text-positive">Em estoque · {{ $availableStock }} disponíveis para envio imediato</span>
+                        @elseif ($availableStock > 0)
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <span class="text-amber-700">Últimas {{ $availableStock }} unidades disponíveis</span>
+                        @else
+                            <span class="w-2 h-2 rounded-full bg-espresso-muted"></span>
+                            <span class="text-espresso-muted">Indisponível no momento</span>
+                        @endif
+                    </div>
+
                     <!-- Quantidade + Botão Comprar -->
                     <div class="space-y-3">
-                        <div class="flex items-center gap-3">
-                            <div class="inline-flex items-center border hairline-strong rounded-lg bg-paper h-12">
-                                <button type="button" id="pdp-qty-dec" aria-label="Diminuir quantidade" class="w-10 h-full flex items-center justify-center text-base text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">−</button>
-                                <input id="pdp-qty" type="number" min="1" max="99" value="1" class="tnum w-12 text-center bg-transparent font-medium text-sm text-espresso outline-none" />
-                                <button type="button" id="pdp-qty-inc" aria-label="Aumentar quantidade" class="w-10 h-full flex items-center justify-center text-base text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">+</button>
-                            </div>
+                        @if ($availableStock > 0)
+                            <div class="flex items-center gap-3">
+                                <div class="inline-flex items-center border hairline-strong rounded-lg bg-paper h-12">
+                                    <button type="button" id="pdp-qty-dec" aria-label="Diminuir quantidade" class="w-10 h-full flex items-center justify-center text-base text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">−</button>
+                                    <input id="pdp-qty" type="number" min="1" max="{{ min(99, $availableStock) }}" value="1" class="tnum w-12 text-center bg-transparent font-medium text-sm text-espresso outline-none" />
+                                    <button type="button" id="pdp-qty-inc" aria-label="Aumentar quantidade" class="w-10 h-full flex items-center justify-center text-base text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">+</button>
+                                </div>
 
-                            <button
-                                type="button"
-                                data-add-cart
-                                data-open-after-add
-                                data-qty-input="pdp-qty"
-                                data-product-id="{{ $product->id }}"
-                                data-product-name="{{ $product->name }}"
-                                data-product-price-cents="{{ $salePriceCents }}"
-                                data-product-image="{{ $thumbImage ?? '' }}"
-                                data-product-url="{{ route('store.product', ['slug' => $product->slug]) }}"
-                                class="flex-1 inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white font-medium text-sm rounded-lg h-12 transition-[background-color,transform] duration-150 cursor-pointer"
-                            >
-                                <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                                Adicionar ao carrinho
+                                <button
+                                    type="button"
+                                    data-add-cart
+                                    data-open-after-add
+                                    data-qty-input="pdp-qty"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-price-cents="{{ $salePriceCents }}"
+                                    data-product-image="{{ $thumbImage ?? '' }}"
+                                    data-product-url="{{ route('store.product', ['slug' => $product->slug]) }}"
+                                    class="flex-1 inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white font-medium text-sm rounded-lg h-12 transition-[background-color,transform] duration-150 cursor-pointer"
+                                >
+                                    <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                                    Adicionar ao carrinho
+                                </button>
+                            </div>
+                        @else
+                            <button type="button" disabled class="w-full inline-flex items-center justify-center bg-linen text-espresso-muted font-medium text-sm rounded-lg h-12 cursor-not-allowed">
+                                Produto esgotado
                             </button>
-                        </div>
+                        @endif
 
                         <button
                             type="button"
@@ -234,7 +254,7 @@
                 <h2 class="font-display font-semibold text-2xl text-espresso mb-6">Combine com este item</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                     @foreach ($relatedProducts as $related)
-                        <x-store.product-card :product="$related" />
+                        <x-store.product-card :product="$related" :available="$stockMap[$related->id] ?? null" />
                     @endforeach
                 </div>
             </section>

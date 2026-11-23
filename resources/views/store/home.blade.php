@@ -53,7 +53,7 @@
                                 >
                                     <div class="{{ $isLead ? 'aspect-square' : 'aspect-[4/3]' }} rounded-lg bg-linen border hairline overflow-hidden flex flex-col items-center justify-center mb-3">
                                         @if ($heroImg)
-                                            <img src="{{ $heroImg }}" alt="{{ $heroProduct->name }}" class="w-full h-full object-cover" />
+                                            <img src="{{ $heroImg }}" alt="{{ $heroProduct->name }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]" />
                                         @else
                                             <span class="material-symbols-outlined text-[24px] text-espresso-muted">inventory_2</span>
                                             <span class="mt-1.5 font-mono text-xs text-espresso-muted">{{ $heroProduct->sku }}</span>
@@ -142,9 +142,9 @@
                             default => asset('images/produtos/prt-desc-az.jpg'),
                         };
                     @endphp
-                    <div class="bg-porcelain rounded-xl border hairline overflow-hidden flex items-stretch">
+                    <div class="group bg-porcelain rounded-xl border hairline hover:border-espresso/20 hover:shadow-[var(--shadow-float)] overflow-hidden flex items-stretch transition-[border-color,box-shadow] duration-200">
                         <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="w-28 sm:w-32 shrink-0 bg-linen border-r hairline overflow-hidden">
-                            <img src="{{ $deptImage }}" alt="{{ $category->name }}" loading="lazy" class="w-full h-full object-cover" />
+                            <img src="{{ $deptImage }}" alt="{{ $category->name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]" />
                         </a>
                         <div class="p-4 flex-1 flex flex-col justify-between min-w-0">
                             <div>
@@ -219,7 +219,7 @@
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 @foreach ($promoProducts as $product)
-                    <x-store.product-card :product="$product" />
+                    <x-store.product-card :product="$product" :available="$stockMap[$product->id] ?? null" />
                 @endforeach
             </div>
         </section>
@@ -240,7 +240,7 @@
         @if ($featuredProducts->isNotEmpty())
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 @foreach ($featuredProducts as $product)
-                    <x-store.product-card :product="$product" />
+                    <x-store.product-card :product="$product" :available="$stockMap[$product->id] ?? null" />
                 @endforeach
             </div>
         @else

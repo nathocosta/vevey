@@ -408,6 +408,15 @@ function initCheckout() {
         return form.querySelector('input[name="payment_method"]:checked')?.value || 'pix';
     }
 
+    const couponInput = document.getElementById('checkout-coupon');
+    const couponBtn = document.getElementById('checkout-apply-coupon');
+    const couponStatus = document.getElementById('checkout-coupon-status');
+    const couponRowEl = document.getElementById('summary-coupon-row');
+    const couponLabelEl = document.getElementById('summary-coupon-label');
+    const couponDiscountEl = document.getElementById('summary-coupon-discount');
+
+    let appliedCoupon = null;
+
     function renderSummary() {
         const cart = getCart();
         if (cart.length === 0) {
@@ -420,10 +429,12 @@ function initCheckout() {
         form.classList.remove('hidden');
 
         const subtotalCents = cart.reduce((sum, item) => sum + item.priceCents * item.qty, 0);
+        const couponDiscountCents = appliedCoupon ? Math.min(subtotalCents, appliedCoupon.discountCents) : 0;
+        const afterCouponCents = Math.max(0, subtotalCents - couponDiscountCents);
         const isPix = currentPaymentMethod() === 'pix';
-        const discountCents = isPix ? Math.round(subtotalCents * 0.05) : 0;
+        const pixDiscountCents = isPix ? Math.round(afterCouponCents * 0.05) : 0;
         const shippingCents = currentDeliveryType() === 'pickup' ? 0 : selectedShipping.priceCents;
-        const totalCents = Math.max(0, subtotalCents - discountCents + shippingCents);
+        const totalCents = Math.max(0, subtotalCents - couponDiscountCents - pixDiscountCents + shippingCents);
 
         if (itemsEl) {
             itemsEl.innerHTML = cart
@@ -444,8 +455,11 @@ function initCheckout() {
         }
 
         if (subtotalEl) subtotalEl.textContent = formatBrl(subtotalCents);
-        if (discountRowEl) discountRowEl.classList.toggle('hidden', !isPix);
-        if (discountEl) discountEl.textContent = `- ${formatBrl(discountCents)}`;
+        if (couponRowEl) couponRowEl.classList.toggle('hidden', couponDiscountCents <= 0);
+        if (couponLabelEl && appliedCoupon) couponLabelEl.textContent = appliedCoupon.label;
+        if (couponDiscountEl) couponDiscountEl.textContent = `- ${formatBrl(couponDiscountCents)}`;
+        if (discountRowEl) discountRowEl.classList.toggle('hidden', !isPix || pixDiscountCents <= 0);
+        if (discountEl) discountEl.textContent = `- ${formatBrl(pixDiscountCents)}`;
         if (shippingEl) {
             shippingEl.textContent = shippingCents === 0 ? 'Grátis' : formatBrl(shippingCents);
             shippingEl.classList.toggle('text-positive', shippingCents === 0);
@@ -547,6 +561,63 @@ function initCheckout() {
         }
     });
 
+    page.querySelectorAll('[data-saved-address]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const setVal = (id, attr) => {
+                const el = document.getElementById(id);
+                if (el) el.value = btn.getAttribute(attr) || '';
+            };
+            setVal('checkout-cep', 'data-cep');
+            setVal('street', 'data-street');
+            setVal('number', 'data-number');
+            setVal('neighborhood', 'data-neighborhood');
+            setVal('city', 'data-city');
+            setVal('state', 'data-state');
+            quoteCep();
+        });
+    });
+
+    couponBtn?.addEventListener('click', async () => {
+        const code = (couponInput?.value || '').trim().toUpperCase();
+        if (!code) {
+            appliedCoupon = null;
+            couponStatus?.classList.add('hidden');
+            renderSummary();
+            return;
+        }
+
+        const cart = getCart();
+        const subtotalCents = cart.reduce((sum, item) => sum + item.priceCents * item.qty, 0);
+
+        try {
+            const res = await fetch(page.getAttribute('data-coupon-url') || '/checkout/cupom/validar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ code, subtotal_cents: subtotalCents }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || 'Cupom inválido.');
+            }
+            appliedCoupon = { code: data.code, label: data.label, discountCents: data.discount_cents };
+            if (couponStatus) {
+                couponStatus.textContent = `${data.label} aplicado (- ${formatBrl(data.discount_cents)})`;
+                couponStatus.className = 'text-xs text-positive font-medium';
+            }
+        } catch (err) {
+            appliedCoupon = null;
+            if (couponStatus) {
+                couponStatus.textContent = err.message;
+                couponStatus.className = 'text-xs text-negative font-medium';
+            }
+        }
+        renderSummary();
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         errorEl?.classList.add('hidden');
@@ -563,6 +634,7 @@ function initCheckout() {
             delivery_type: currentDeliveryType(),
             shipping_code: currentDeliveryType() === 'pickup' ? 'pickup' : selectedShipping.code,
             payment_method: currentPaymentMethod(),
+            coupon_code: appliedCoupon ? appliedCoupon.code : null,
             cep: cepInput?.value || null,
             street: document.getElementById('street')?.value || null,
             number: document.getElementById('number')?.value || null,

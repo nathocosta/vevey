@@ -234,7 +234,7 @@
                 @if ($products->isNotEmpty())
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                         @foreach ($products as $product)
-                            <x-store.product-card :product="$product" />
+                            <x-store.product-card :product="$product" :available="$stockMap[$product->id] ?? null" />
                         @endforeach
                     </div>
 

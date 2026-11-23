@@ -2,7 +2,13 @@
     title="Finalizar pedido — Vevey Doces"
     :nav-categories="$navCategories"
 >
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10" id="checkout-page" data-quote-url="{{ route('store.shipping.quote') }}" data-submit-url="{{ route('store.checkout.submit') }}">
+    <div
+        class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10"
+        id="checkout-page"
+        data-quote-url="{{ route('store.shipping.quote') }}"
+        data-coupon-url="{{ route('store.checkout.coupon') }}"
+        data-submit-url="{{ route('store.checkout.submit') }}"
+    >
         <!-- Breadcrumb -->
         <nav aria-label="Navegação estrutural" class="text-xs text-espresso-muted flex items-center gap-2 mb-6">
             <a href="{{ route('store.home') }}" class="hover:text-espresso transition-colors duration-150">Início</a>
@@ -43,6 +49,9 @@
             <div class="p-5 rounded-xl bg-paper border hairline space-y-3 text-sm" id="success-breakdown"></div>
 
             <div class="flex flex-wrap gap-3 pt-2">
+                <a href="{{ auth('customers')->check() ? route('store.account') : route('store.login') }}" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm rounded-lg px-6 h-11 transition-colors duration-150">
+                    Acompanhar em Minha Conta
+                </a>
                 <a href="{{ route('store.catalog') }}" class="inline-flex items-center justify-center bg-espresso hover:bg-[#332D25] text-porcelain font-medium text-sm rounded-lg px-6 h-11 transition-colors duration-150">
                     Continuar comprando
                 </a>
@@ -61,15 +70,15 @@
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label for="customer_name" class="block text-xs font-medium text-espresso mb-1.5">Nome completo</label>
-                            <input id="customer_name" name="customer_name" type="text" required placeholder="Ex.: Maria Oliveira" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
+                            <input id="customer_name" name="customer_name" type="text" value="{{ $customer?->name }}" required placeholder="Ex.: Maria Oliveira" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
                         </div>
                         <div>
                             <label for="customer_email" class="block text-xs font-medium text-espresso mb-1.5">E-mail</label>
-                            <input id="customer_email" name="customer_email" type="email" required placeholder="voce@email.com" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
+                            <input id="customer_email" name="customer_email" type="email" value="{{ $customer?->email }}" required placeholder="voce@email.com" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
                         </div>
                         <div>
                             <label for="customer_phone" class="block text-xs font-medium text-espresso mb-1.5">WhatsApp / Telefone</label>
-                            <input id="customer_phone" name="customer_phone" type="tel" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
+                            <input id="customer_phone" name="customer_phone" type="tel" value="{{ $customer?->primaryPhone() }}" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none transition-colors duration-150" />
                         </div>
                     </div>
                 </section>
@@ -104,6 +113,30 @@
 
                     <!-- Campos de entrega + cotação SEDEX / PAC -->
                     <div id="delivery-fields" class="hidden space-y-4">
+                        @if ($customer && $customer->addresses->isNotEmpty())
+                            <div class="space-y-2">
+                                <span class="block text-xs font-medium text-espresso-soft">Usar endereço salvo</span>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($customer->addresses as $addr)
+                                        <button
+                                            type="button"
+                                            data-saved-address
+                                            data-cep="{{ $addr->cep }}"
+                                            data-street="{{ $addr->street }}"
+                                            data-number="{{ $addr->number }}"
+                                            data-neighborhood="{{ $addr->neighborhood }}"
+                                            data-city="{{ $addr->city }}"
+                                            data-state="{{ $addr->state }}"
+                                            class="px-3 py-2 rounded-lg border hairline-strong bg-paper hover:bg-linen text-left text-xs transition-colors cursor-pointer"
+                                        >
+                                            <span class="font-semibold text-espresso block">{{ $addr->label }}</span>
+                                            <span class="text-espresso-muted">{{ $addr->street }}, {{ $addr->number }} · {{ $addr->city }}/{{ $addr->state }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         <div>
                             <label for="checkout-cep" class="block text-xs font-medium text-espresso mb-1.5">CEP de entrega</label>
                             <div class="flex gap-2">
@@ -175,10 +208,26 @@
 
                     <ul id="checkout-items" class="divide-y divide-[rgba(31,27,22,0.08)] max-h-72 overflow-y-auto"></ul>
 
+                    <!-- Cupom de desconto (ADR 1) -->
+                    <div class="pt-4 border-t hairline space-y-2">
+                        <label for="checkout-coupon" class="block text-xs font-medium text-espresso">Cupom de desconto</label>
+                        <div class="flex gap-2">
+                            <input id="checkout-coupon" type="text" placeholder="Ex.: VEVEY10" class="flex-1 bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3 h-9 text-xs text-espresso uppercase outline-none" />
+                            <button type="button" id="checkout-apply-coupon" class="px-3.5 h-9 rounded-lg bg-linen hover:bg-[#E5DDD0] text-xs font-medium text-espresso transition-colors cursor-pointer">
+                                Aplicar
+                            </button>
+                        </div>
+                        <p id="checkout-coupon-status" class="text-xs text-espresso-muted hidden"></p>
+                    </div>
+
                     <div class="pt-4 border-t hairline space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span class="text-espresso-soft">Subtotal</span>
                             <span id="summary-subtotal" class="tnum font-medium text-espresso">R$ 0,00</span>
+                        </div>
+                        <div id="summary-coupon-row" class="hidden flex justify-between text-positive">
+                            <span id="summary-coupon-label">Cupom</span>
+                            <span id="summary-coupon-discount" class="tnum font-medium">- R$ 0,00</span>
                         </div>
                         <div id="summary-discount-row" class="flex justify-between text-positive">
                             <span>Desconto Pix (5%)</span>

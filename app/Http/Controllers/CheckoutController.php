@@ -15,6 +15,7 @@ use Vevey\Catalog\Models\Category;
 use Vevey\Catalog\Models\Product;
 use Vevey\Customers\Actions\FindOrCreateCustomerByContact;
 use Vevey\Customers\Enums\IdentitySource;
+use Vevey\Customers\Models\Customer;
 use Vevey\Orders\Actions\PlaceOrder;
 use Vevey\Orders\DTOs\OrderItemData;
 use Vevey\Orders\DTOs\PlaceOrderData;
@@ -24,6 +25,7 @@ use Vevey\Orders\Enums\DeliveryMethod;
 use Vevey\Orders\Enums\OrderChannel;
 use Vevey\Orders\Enums\PaymentMethod;
 use Vevey\Orders\Exceptions\OrderPlacementException;
+use Vevey\Orders\Models\Coupon;
 
 final class CheckoutController extends Controller
 {
@@ -40,8 +42,40 @@ final class CheckoutController extends Controller
             ->orderBy('position')
             ->get();
 
+        /** @var Customer|null $customer */
+        $customer = Auth::guard('customers')->user();
+        $customer?->load(['addresses', 'activeIdentities']);
+
         return view('store.checkout', [
             'navCategories' => $navCategories,
+            'customer' => $customer,
+        ]);
+    }
+
+    public function validateCoupon(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:40'],
+            'subtotal_cents' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $code = mb_strtoupper(mb_trim((string) $validated['code']));
+        $subtotal = Money::ofMinor((int) $validated['subtotal_cents'], MoneyCast::CURRENCY);
+
+        $coupon = Coupon::query()->where('code', $code)->first();
+
+        if (! $coupon instanceof Coupon || ! $coupon->isValidFor($subtotal)) {
+            return response()->json([
+                'message' => 'Cupom inválido, expirado ou abaixo do valor mínimo.',
+            ], 422);
+        }
+
+        $discount = $coupon->calculateDiscount($subtotal);
+
+        return response()->json([
+            'code' => $coupon->code,
+            'label' => "Cupom {$coupon->code}",
+            'discount_cents' => $discount->getMinorAmount()->toInt(),
         ]);
     }
 

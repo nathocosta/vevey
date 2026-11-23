@@ -15,6 +15,7 @@ Route::get('/busca/sugestoes', [StorefrontController::class, 'searchSuggestions'
 
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('store.checkout');
 Route::post('/frete/calcular', [CheckoutController::class, 'quoteShipping'])->name('store.shipping.quote');
+Route::post('/checkout/cupom/validar', [CheckoutController::class, 'validateCoupon'])->name('store.checkout.coupon');
 Route::post('/checkout', [CheckoutController::class, 'submit'])->name('store.checkout.submit');
 
 // Área do cliente (guard `customers` — ADR 7)

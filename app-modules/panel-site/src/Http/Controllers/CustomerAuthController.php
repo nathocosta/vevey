@@ -146,12 +146,14 @@ final class CustomerAuthController extends Controller
             return redirect()->route('store.login');
         }
 
-        $isDemoMailer = in_array(config('mail.default'), ['log', 'array'], true);
+        $showDemoCode = in_array(config('mail.default'), ['log', 'array'], true)
+            || app()->isLocal()
+            || (bool) $request->session()->get('verification_mail_fallback', false);
 
         return view('store.auth.verify', [
             'navCategories' => $this->navCategories(),
             'email' => $customer->email,
-            'demoCode' => $isDemoMailer ? $customer->verification_code : null,
+            'demoCode' => $showDemoCode ? $customer->verification_code : null,
         ]);
     }
 
@@ -230,6 +232,7 @@ final class CustomerAuthController extends Controller
         ]);
 
         $request->session()->put('pending_verification_customer_id', $customer->id);
+        $request->session()->forget('verification_mail_fallback');
 
         if ($customer->email !== null) {
             try {
@@ -242,6 +245,7 @@ final class CustomerAuthController extends Controller
                 );
             } catch (Throwable $e) {
                 Log::warning('Falha ao enviar e-mail de verificação 2FA: ' . $e->getMessage());
+                $request->session()->put('verification_mail_fallback', true);
             }
         }
     }

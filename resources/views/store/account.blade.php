@@ -44,7 +44,7 @@
                                 <div class="flex items-center justify-between gap-2 text-espresso-soft">
                                     <span>{{ $item->quantity }}x {{ $item->name }}</span>
                                     <span class="font-mono text-xs text-espresso">
-                                        {{ \App\Http\Controllers\StorefrontController::formatBrl($item->total_cents) }}
+                                        {{ \Vevey\PanelSite\Http\Controllers\StorefrontController::formatBrl($item->total_cents) }}
                                     </span>
                                 </div>
                             @endforeach
@@ -53,7 +53,7 @@
                         <div class="pt-3 border-t hairline flex flex-wrap items-center justify-between gap-2 text-sm">
                             <span class="text-xs text-espresso-muted">{{ $order->shipping_method ?? $order->delivery_method->getLabel() }}</span>
                             <span class="font-display font-semibold text-espresso">
-                                Total: {{ \App\Http\Controllers\StorefrontController::formatBrl($order->total_cents) }}
+                                Total: {{ \Vevey\PanelSite\Http\Controllers\StorefrontController::formatBrl($order->total_cents) }}
                             </span>
                         </div>
                     </div>

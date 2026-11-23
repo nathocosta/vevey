@@ -1,7 +1,7 @@
 @props(['product', 'available' => null])
 
 @php
-    use App\Http\Controllers\StorefrontController;
+    use Vevey\PanelSite\Http\Controllers\StorefrontController;
 
     $imageUrl = StorefrontController::productImageUrl($product);
     $discount = StorefrontController::discountPercent($product);

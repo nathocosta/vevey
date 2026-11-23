@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace Vevey\PanelSite\Http\Controllers;
+
+use App\Http\Controllers\Controller;
 
 use App\Casts\MoneyCast;
 use App\Services\ShippingCalculator;

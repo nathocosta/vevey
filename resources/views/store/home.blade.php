@@ -1,5 +1,5 @@
 @php
-    use App\Http\Controllers\StorefrontController;
+    use Vevey\PanelSite\Http\Controllers\StorefrontController;
 @endphp
 
 <x-store.layout

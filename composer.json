@@ -24,6 +24,7 @@
         "vevey/inventory": "*",
         "vevey/orders": "*",
         "vevey/panel-admin": "*",
+        "vevey/panel-site": "*",
         "vevey/permissions": "*"
     },
     "require-dev": {

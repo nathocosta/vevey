@@ -12,6 +12,7 @@ $layers = [
     'Vevey\Inventory' => 'base',
     'Vevey\Orders' => 'orchestrator',
     'Vevey\PanelAdmin' => 'interface',
+    'Vevey\PanelSite' => 'interface',
     'Vevey\Permissions' => 'shared',
 ];
 

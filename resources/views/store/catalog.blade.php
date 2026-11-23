@@ -204,7 +204,7 @@
                                             @if ($attribute->slug === 'cor')
                                                 <span
                                                     class="w-3.5 h-3.5 rounded-full border hairline-strong shrink-0"
-                                                    style="background-color: {{ \App\Http\Controllers\StorefrontController::colorSwatchHex($value->slug) }}"
+                                                    style="background-color: {{ \Vevey\PanelSite\Http\Controllers\StorefrontController::colorSwatchHex($value->slug) }}"
                                                 ></span>
                                             @endif
                                             <span>{{ $value->value }}</span>

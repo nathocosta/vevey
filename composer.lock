@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf5034d56af575444d2b5a5455234a26",
+    "content-hash": "b0daffd98d33cbedbd4c2677fea0dd78",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10460,6 +10460,37 @@
             "license": [
                 "proprietary"
             ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/panel-site",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/panel-site",
+                "reference": "33fff87a3e0b3a1f0ae65e403815618a015f5dfb"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\PanelSite\\Providers\\PanelSiteServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\PanelSite\\": "src/",
+                    "Vevey\\PanelSite\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Public storefront interface (catalog, predictive search, checkout, customer account — ADR 8).",
             "transport-options": {
                 "symlink": true,
                 "relative": true

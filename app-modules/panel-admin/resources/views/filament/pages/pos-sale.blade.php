@@ -1,126 +1,278 @@
 <x-filament-panels::page>
+    <style>
+        .vevey-pos-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (min-width: 1024px) {
+            .vevey-pos-grid {
+                grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            }
+        }
+        .vevey-pos-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 0.75rem;
+            max-height: 540px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+        .vevey-pos-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.5rem;
+            text-align: left;
+            padding: 0.875rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.03);
+            transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+            cursor: pointer;
+        }
+        .dark .vevey-pos-card {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .vevey-pos-card:hover {
+            border-color: #e11d48;
+            background: rgba(225, 29, 72, 0.06);
+        }
+        .vevey-pos-card:active {
+            transform: scale(0.99);
+        }
+        .vevey-pos-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+        }
+        .vevey-pos-sku {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            opacity: 0.65;
+        }
+        .vevey-pos-stock {
+            font-weight: 600;
+            padding: 0.125rem 0.45rem;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.14);
+            color: #10b981;
+        }
+        .vevey-pos-stock.is-low {
+            background: rgba(239, 68, 68, 0.16);
+            color: #f87171;
+        }
+        .vevey-pos-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .vevey-pos-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #f43f5e;
+            font-variant-numeric: tabular-nums;
+        }
+        .vevey-pos-cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .vevey-pos-cart-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding-bottom: 0.625rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        }
+        .vevey-pos-qty-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .vevey-pos-qty-btn:hover {
+            border-color: #e11d48;
+            color: #f43f5e;
+        }
+        .vevey-pos-field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .vevey-pos-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            opacity: 0.85;
+        }
+        .vevey-pos-total-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding-top: 0.875rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .vevey-pos-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            background: rgba(16, 185, 129, 0.1);
+            font-size: 0.875rem;
+        }
+    </style>
+
     @if ($lastOrderNumber)
-        <div class="rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40 p-4 flex items-center justify-between gap-4">
-            <div class="text-sm text-emerald-900 dark:text-emerald-200">
-                Última venda concluída: <strong class="font-mono">{{ $lastOrderNumber }}</strong>
-            </div>
+        <div class="vevey-pos-banner">
+            <span>
+                Última venda concluída: <strong style="font-family: ui-monospace, monospace;">{{ $lastOrderNumber }}</strong>
+            </span>
             @if ($lastOrderUrl)
-                <a href="{{ $lastOrderUrl }}" class="text-sm font-semibold text-emerald-700 dark:text-emerald-300 underline">
+                <x-filament::link :href="$lastOrderUrl" weight="semibold">
                     Ver pedido
-                </a>
+                </x-filament::link>
             @endif
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="vevey-pos-grid">
         <!-- Catálogo rápido -->
-        <div class="lg:col-span-7 space-y-4">
-            <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 p-4 space-y-4">
+        <x-filament::section heading="Catálogo rápido" description="Clique nos produtos para adicionar à venda de balcão">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div>
-                    <label for="pos-search" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                        Buscar por nome, SKU ou código de barras
-                    </label>
-                    <input
-                        id="pos-search"
-                        type="search"
-                        wire:model.live.debounce.250ms="search"
-                        placeholder="Ex.: KitKat, BAL-MET-9-AZ..."
-                        class="w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-gray-800 text-sm"
-                    />
+                    <label for="pos-search" class="vevey-pos-label">Buscar por nome, SKU ou código de barras</label>
+                    <x-filament::input.wrapper>
+                        <x-filament::input
+                            id="pos-search"
+                            type="search"
+                            wire:model.live.debounce.250ms="search"
+                            placeholder="Ex.: KitKat, BAL-MET-9-AZ..."
+                        />
+                    </x-filament::input.wrapper>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[540px] overflow-y-auto pr-1">
+                <div class="vevey-pos-products">
                     @forelse ($this->products as $product)
                         <button
                             type="button"
                             wire:click="addToCart('{{ $product['id'] }}')"
-                            class="text-left rounded-lg border border-gray-200 dark:border-white/10 hover:border-rose-500 p-3 transition flex flex-col justify-between gap-2 bg-gray-50/50 dark:bg-gray-800/50"
+                            class="vevey-pos-card"
                         >
-                            <div>
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="text-[11px] font-mono text-gray-500">{{ $product['sku'] }}</span>
-                                    <span class="text-[11px] font-medium px-1.5 py-0.5 rounded {{ $product['on_hand'] <= 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem; width: 100%;">
+                                <div class="vevey-pos-meta">
+                                    <span class="vevey-pos-sku">{{ $product['sku'] }}</span>
+                                    <span class="vevey-pos-stock {{ $product['on_hand'] <= 0 ? 'is-low' : '' }}">
                                         Est.: {{ $product['on_hand'] }}
                                     </span>
                                 </div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white mt-1 line-clamp-2">{{ $product['name'] }}</p>
+                                <div class="vevey-pos-name">{{ $product['name'] }}</div>
                             </div>
-                            <p class="text-sm font-semibold text-rose-600 dark:text-rose-400">
+                            <div class="vevey-pos-price">
                                 R$ {{ number_format($product['price_cents'] / 100, 2, ',', '.') }}
-                            </p>
+                            </div>
                         </button>
                     @empty
-                        <p class="col-span-2 text-sm text-gray-500 py-8 text-center">Nenhum produto encontrado.</p>
+                        <p style="grid-column: 1 / -1; text-align: center; padding: 2rem 0; opacity: 0.65; font-size: 0.875rem;">
+                            Nenhum produto encontrado.
+                        </p>
                     @endforelse
                 </div>
             </div>
-        </div>
+        </x-filament::section>
 
         <!-- Carrinho do Balcão -->
-        <div class="lg:col-span-5">
-            <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 p-5 space-y-5">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Itens da venda</h3>
-                    @if ($cart !== [])
-                        <button type="button" wire:click="clearCart" class="text-xs text-gray-500 hover:text-red-600">
-                            Limpar
-                        </button>
-                    @endif
-                </div>
+        <x-filament::section heading="Itens da venda">
+            <x-slot name="headerEnd">
+                @if ($cart !== [])
+                    <x-filament::link tag="button" wire:click="clearCart" color="danger" size="sm">
+                        Limpar
+                    </x-filament::link>
+                @endif
+            </x-slot>
 
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
                 @if ($cart === [])
-                    <p class="text-sm text-gray-500 py-6 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-lg">
+                    <div style="padding: 1.5rem; text-align: center; border-radius: 0.75rem; border: 1px dashed rgba(148, 163, 184, 0.35); opacity: 0.7; font-size: 0.875rem;">
                         Clique nos produtos ao lado para adicionar ao balcão.
-                    </p>
+                    </div>
                 @else
-                    <div class="divide-y divide-gray-100 dark:divide-white/10 max-h-64 overflow-y-auto">
+                    <div class="vevey-pos-cart-list">
                         @foreach ($cart as $item)
-                            <div class="py-2.5 flex items-center justify-between gap-3">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $item['name'] }}</p>
-                                    <p class="text-xs text-gray-500 font-mono">
+                            <div class="vevey-pos-cart-row">
+                                <div style="min-width: 0; flex: 1;">
+                                    <div style="font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ $item['name'] }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; opacity: 0.65; font-family: ui-monospace, monospace;">
                                         {{ $item['sku'] }} · R$ {{ number_format($item['unit_cents'] / 100, 2, ',', '.') }}
-                                    </p>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <button type="button" wire:click="updateQty('{{ $item['id'] }}', -1)" class="w-7 h-7 rounded border border-gray-300 dark:border-white/15 text-sm font-semibold">−</button>
-                                    <span class="w-6 text-center text-sm font-medium">{{ $item['qty'] }}</span>
-                                    <button type="button" wire:click="updateQty('{{ $item['id'] }}', 1)" class="w-7 h-7 rounded border border-gray-300 dark:border-white/15 text-sm font-semibold">+</button>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+                                    <button type="button" wire:click="updateQty('{{ $item['id'] }}', -1)" class="vevey-pos-qty-btn">−</button>
+                                    <span style="min-width: 1.5rem; text-align: center; font-weight: 600; font-size: 0.875rem;">{{ $item['qty'] }}</span>
+                                    <button type="button" wire:click="updateQty('{{ $item['id'] }}', 1)" class="vevey-pos-qty-btn">+</button>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @endif
 
-                <div class="space-y-3 pt-3 border-t border-gray-200 dark:border-white/10">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid rgba(148, 163, 184, 0.2);">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Cliente</label>
-                        <input type="text" wire:model="customerName" class="w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-gray-800 text-sm" />
+                        <label class="vevey-pos-label">Cliente</label>
+                        <x-filament::input.wrapper>
+                            <x-filament::input type="text" wire:model="customerName" />
+                        </x-filament::input.wrapper>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+
+                    <div class="vevey-pos-field-grid">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Telefone (opcional)</label>
-                            <input type="text" wire:model="customerPhone" placeholder="(11) 99999-9999" class="w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-gray-800 text-sm" />
+                            <label class="vevey-pos-label">Telefone (opcional)</label>
+                            <x-filament::input.wrapper>
+                                <x-filament::input type="text" wire:model="customerPhone" placeholder="(11) 99999-9999" />
+                            </x-filament::input.wrapper>
                         </div>
+
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Pagamento</label>
-                            <select wire:model="paymentMethod" class="w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-gray-800 text-sm">
-                                <option value="cash">Dinheiro</option>
-                                <option value="pix">Pix</option>
-                                <option value="debit_card">Cartão de débito</option>
-                                <option value="credit_card">Cartão de crédito</option>
-                            </select>
+                            <label class="vevey-pos-label">Pagamento</label>
+                            <x-filament::input.wrapper>
+                                <x-filament::input.select wire:model="paymentMethod">
+                                    <option value="cash">Dinheiro</option>
+                                    <option value="pix">Pix</option>
+                                    <option value="debit_card">Cartão de débito</option>
+                                    <option value="credit_card">Cartão de crédito</option>
+                                </x-filament::input.select>
+                            </x-filament::input.wrapper>
                         </div>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Observação (opcional)</label>
-                        <input type="text" wire:model="notes" placeholder="Ex.: Embalagem para presente" class="w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-gray-800 text-sm" />
+                        <label class="vevey-pos-label">Observação (opcional)</label>
+                        <x-filament::input.wrapper>
+                            <x-filament::input type="text" wire:model="notes" placeholder="Ex.: Embalagem para presente" />
+                        </x-filament::input.wrapper>
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total da venda</span>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white">
+                <div class="vevey-pos-total-row">
+                    <span style="font-size: 0.875rem; font-weight: 500; opacity: 0.75;">Total da venda</span>
+                    <span style="font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums;">
                         R$ {{ number_format($this->subtotalCents / 100, 2, ',', '.') }}
                     </span>
                 </div>
@@ -129,12 +281,12 @@
                     wire:click="submitSale"
                     color="primary"
                     size="lg"
-                    class="w-full"
+                    style="width: 100%;"
                     :disabled="$cart === []"
                 >
                     Concluir venda no balcão
                 </x-filament::button>
             </div>
-        </div>
+        </x-filament::section>
     </div>
 </x-filament-panels::page>

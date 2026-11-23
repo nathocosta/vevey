@@ -38,20 +38,25 @@
                 <x-brand.logo />
             </a>
 
-            <!-- Busca (Desktop) -->
-            <form action="{{ route('store.catalog') }}" method="GET" class="hidden md:flex items-center flex-1 max-w-md bg-paper border hairline focus-within:border-espresso/40 focus-within:bg-porcelain rounded-lg h-10 pl-3 pr-1 transition-colors duration-150">
-                <span class="material-symbols-outlined text-[18px] text-espresso-muted mr-2 shrink-0">search</span>
-                <input
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Buscar doces, balões, descartáveis ou SKU"
-                    class="w-full bg-transparent text-sm text-espresso placeholder:text-espresso-muted outline-none"
-                />
-                <button type="submit" class="px-3 h-8 rounded-md bg-porcelain border hairline hover:bg-linen text-xs font-medium text-espresso transition-colors duration-150 shrink-0 cursor-pointer">
-                    Buscar
-                </button>
-            </form>
+            <!-- Busca Preditiva (Desktop) -->
+            <div class="hidden md:block relative flex-1 max-w-md" id="live-search-wrapper" data-suggestions-url="{{ route('store.search.suggestions') }}">
+                <form action="{{ route('store.catalog') }}" method="GET" class="flex items-center bg-paper border hairline focus-within:border-espresso/40 focus-within:bg-porcelain rounded-lg h-10 pl-3 pr-1 transition-colors duration-150">
+                    <span class="material-symbols-outlined text-[18px] text-espresso-muted mr-2 shrink-0">search</span>
+                    <input
+                        id="live-search-input"
+                        type="search"
+                        name="q"
+                        autocomplete="off"
+                        value="{{ $search }}"
+                        placeholder="Buscar doces, balões, descartáveis ou SKU"
+                        class="w-full bg-transparent text-sm text-espresso placeholder:text-espresso-muted outline-none"
+                    />
+                    <button type="submit" class="px-3 h-8 rounded-md bg-porcelain border hairline hover:bg-linen text-xs font-medium text-espresso transition-colors duration-150 shrink-0 cursor-pointer">
+                        Buscar
+                    </button>
+                </form>
+                <div id="live-search-results" class="hidden absolute top-12 inset-x-0 z-40 bg-porcelain border hairline-strong rounded-xl shadow-[var(--shadow-float)] overflow-hidden"></div>
+            </div>
 
             <!-- Navegação direita -->
             <div class="flex items-center gap-2 sm:gap-4 shrink-0">

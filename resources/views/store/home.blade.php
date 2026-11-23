@@ -119,7 +119,7 @@
         </div>
     </section>
 
-    <!-- Departamentos -->
+    <!-- Departamentos Visuais (com fotos reais do catálogo) -->
     @if ($navCategories->isNotEmpty())
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
             <div class="flex items-end justify-between gap-4 mb-6">
@@ -132,33 +132,74 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 @foreach ($navCategories as $category)
-                    <div class="bg-porcelain rounded-xl border hairline p-5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-2">
-                                <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="font-display font-semibold text-base text-espresso hover:text-brand-700 transition-colors duration-150">
-                                    {{ $category->name }}
-                                </a>
-                                <span class="material-symbols-outlined text-[18px] text-espresso-muted">chevron_right</span>
+                    @php
+                        $deptImage = match ($category->slug) {
+                            'festa' => asset('images/produtos/bal-met-9-az.jpg'),
+                            'doces' => asset('images/produtos/doc-kitkat-cx24.jpg'),
+                            'embalagens-e-papeloes' => asset('images/produtos/emb-pap-doce-25.jpg'),
+                            default => asset('images/produtos/prt-desc-az.jpg'),
+                        };
+                    @endphp
+                    <div class="bg-porcelain rounded-xl border hairline overflow-hidden flex items-stretch">
+                        <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="w-28 sm:w-32 shrink-0 bg-linen border-r hairline overflow-hidden">
+                            <img src="{{ $deptImage }}" alt="{{ $category->name }}" loading="lazy" class="w-full h-full object-cover" />
+                        </a>
+                        <div class="p-4 flex-1 flex flex-col justify-between min-w-0">
+                            <div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="font-display font-semibold text-base text-espresso hover:text-brand-700 transition-colors duration-150 truncate">
+                                        {{ $category->name }}
+                                    </a>
+                                    <span class="material-symbols-outlined text-[18px] text-espresso-muted shrink-0">chevron_right</span>
+                                </div>
+
+                                @if ($category->children->isNotEmpty())
+                                    <div class="mt-2.5 flex flex-wrap gap-1.5">
+                                        @foreach ($category->children as $child)
+                                            <a href="{{ route('store.catalog', ['categoria' => $child->slug]) }}" class="px-2 py-0.5 rounded-md text-xs font-medium bg-paper border hairline text-espresso-soft hover:text-espresso hover:bg-linen transition-colors duration-150">
+                                                {{ $child->name }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
 
-                            @if ($category->children->isNotEmpty())
-                                <div class="mt-3 flex flex-wrap gap-1.5">
-                                    @foreach ($category->children as $child)
-                                        <a href="{{ route('store.catalog', ['categoria' => $child->slug]) }}" class="px-2.5 py-1 rounded-md text-xs font-medium bg-paper border hairline text-espresso-soft hover:text-espresso hover:bg-linen transition-colors duration-150">
-                                            {{ $child->name }}
-                                        </a>
-                                    @endforeach
-                                </div>
-                            @endif
+                            <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="mt-4 text-xs font-medium text-brand-700 hover:text-brand-800 transition-colors duration-150">
+                                Explorar {{ mb_strtolower($category->name) }}
+                            </a>
                         </div>
-
-                        <a href="{{ route('store.catalog', ['categoria' => $category->slug]) }}" class="mt-5 text-xs font-medium text-espresso-soft hover:text-brand-700 transition-colors duration-150">
-                            Explorar {{ mb_strtolower($category->name) }}
-                        </a>
                     </div>
                 @endforeach
+            </div>
+        </section>
+    @endif
+
+    <!-- Compre por Cor da Festa (inspirado em Festabox / Rizzo) -->
+    @if ($colorValues->isNotEmpty())
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
+            <div class="bg-porcelain border hairline rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h2 class="font-display font-semibold text-lg text-espresso">Monte pela paleta de cores da festa</h2>
+                    <p class="text-sm text-espresso-soft mt-0.5">Filtre balões e descartáveis combinando na mesma cor</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    @foreach ($colorValues as $color)
+                        <a
+                            href="{{ route('store.catalog', ['atributos' => [$color->slug]]) }}"
+                            class="inline-flex items-center gap-2.5 px-3.5 h-10 rounded-lg bg-paper border hairline-strong hover:border-espresso/40 text-sm font-medium text-espresso transition-colors duration-150"
+                        >
+                            <span
+                                class="w-4 h-4 rounded-full border hairline-strong shrink-0"
+                                style="background-color: {{ StorefrontController::colorSwatchHex($color->slug) }}"
+                            ></span>
+                            <span>{{ $color->value }}</span>
+                            <span class="tnum text-xs text-espresso-muted">{{ $color->products_count }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </section>
     @endif

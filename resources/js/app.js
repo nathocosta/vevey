@@ -640,11 +640,94 @@ function initCheckout() {
     renderSummary();
 }
 
+function initLiveSearch() {
+    const wrapper = document.getElementById('live-search-wrapper');
+    const input = document.getElementById('live-search-input');
+    const results = document.getElementById('live-search-results');
+
+    if (!wrapper || !input || !results) {
+        return;
+    }
+
+    const endpoint = wrapper.getAttribute('data-suggestions-url') || '/busca/sugestoes';
+    let debounceTimer = null;
+
+    const hideResults = () => {
+        results.classList.add('hidden');
+        results.innerHTML = '';
+    };
+
+    input.addEventListener('input', () => {
+        const term = input.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (term.length < 2) {
+            hideResults();
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`${endpoint}?q=${encodeURIComponent(term)}`, {
+                    headers: { Accept: 'application/json' },
+                });
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                const items = data.items || [];
+
+                if (items.length === 0) {
+                    results.innerHTML = `<div class="px-4 py-3 text-xs text-espresso-muted">Nenhum produto encontrado para "${term}"</div>`;
+                    results.classList.remove('hidden');
+                    return;
+                }
+
+                results.innerHTML =
+                    items
+                        .map(
+                            (item) => `
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-paper border-b hairline last:border-b-0 transition-colors duration-150">
+                                <div class="w-10 h-10 rounded-md bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
+                                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-espresso truncate">${item.name}</p>
+                                    <p class="text-xs text-espresso-muted">${item.category || item.sku}</p>
+                                </div>
+                                <span class="tnum text-sm font-medium text-espresso shrink-0">${item.price}</span>
+                            </a>`
+                        )
+                        .join('') +
+                    `<a href="/catalogo?q=${encodeURIComponent(term)}" class="block px-4 py-2.5 bg-paper text-xs font-medium text-brand-700 hover:bg-linen text-center transition-colors duration-150">Ver todos os resultados</a>`;
+
+                results.classList.remove('hidden');
+            } catch {
+                hideResults();
+            }
+        }, 220);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!wrapper.contains(event.target)) {
+            hideResults();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            hideResults();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderCart();
     initFavorites();
     initPdpControls();
     initCheckout();
+    initLiveSearch();
 
     document.querySelectorAll('[data-open-cart]').forEach((btn) => {
         btn.addEventListener('click', openCartDrawer);
@@ -661,11 +744,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (event) => {
+        const cardDec = event.target.closest('[data-card-qty-dec]');
+        if (cardDec) {
+            event.preventDefault();
+            const qtyEl = cardDec.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = String(Math.max(1, Number(qtyEl.textContent || 1) - 1));
+            }
+            return;
+        }
+
+        const cardInc = event.target.closest('[data-card-qty-inc]');
+        if (cardInc) {
+            event.preventDefault();
+            const qtyEl = cardInc.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = String(Math.min(99, Number(qtyEl.textContent || 1) + 1));
+            }
+            return;
+        }
+
         const addBtn = event.target.closest('[data-add-cart]');
         if (addBtn) {
             event.preventDefault();
             const qtySource = addBtn.getAttribute('data-qty-input');
-            const qty = qtySource ? Math.max(1, Number(document.getElementById(qtySource)?.value || 1)) : 1;
+            const cardQtyEl = addBtn.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            const qty = qtySource
+                ? Math.max(1, Number(document.getElementById(qtySource)?.value || 1))
+                : cardQtyEl
+                  ? Math.max(1, Number(cardQtyEl.textContent || 1))
+                  : 1;
 
             addToCart(
                 {

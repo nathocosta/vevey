@@ -144,6 +144,33 @@
                         </p>
                     </div>
 
+                    <!-- Outras cores disponíveis (produtos irmãos — ADR 6) -->
+                    @if ($colorSiblings->count() > 1)
+                        <div class="space-y-2">
+                            <span class="text-xs font-medium text-espresso-soft block">Outras cores disponíveis</span>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($colorSiblings as $sibling)
+                                    @php
+                                        $siblingColor = $sibling->attributeValues->first(fn ($v) => $v->attribute->slug === 'cor');
+                                        $isCurrent = $sibling->id === $product->id;
+                                    @endphp
+                                    @if ($siblingColor)
+                                        <a
+                                            href="{{ route('store.product', ['slug' => $sibling->slug]) }}"
+                                            class="inline-flex items-center gap-2 px-3 h-9 rounded-lg border text-xs font-medium transition-colors duration-150 {{ $isCurrent ? 'border-brand-600 bg-brand-50/60 text-espresso' : 'hairline-strong bg-paper text-espresso-soft hover:text-espresso hover:bg-linen' }}"
+                                        >
+                                            <span
+                                                class="w-3.5 h-3.5 rounded-full border hairline-strong shrink-0"
+                                                style="background-color: {{ StorefrontController::colorSwatchHex($siblingColor->slug) }}"
+                                            ></span>
+                                            <span>{{ $siblingColor->value }}</span>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Quantidade + Botão Comprar -->
                     <div class="space-y-3">
                         <div class="flex items-center gap-3">

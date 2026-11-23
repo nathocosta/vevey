@@ -7,9 +7,11 @@ namespace App\Http\Controllers;
 use Brick\Money\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Vevey\Catalog\Models\Attribute;
+use Vevey\Catalog\Models\AttributeValue;
 use Vevey\Catalog\Models\Category;
 use Vevey\Catalog\Models\Product;
 
@@ -38,11 +40,19 @@ final class StorefrontController extends Controller
             ? $promoProducts->take(3)
             : $featuredProducts->take(3);
 
+        $colorValues = AttributeValue::query()
+            ->whereHas('attribute', static fn (Builder $query): Builder => $query->where('slug', 'cor'))
+            ->whereHas('products', static fn (Builder $query): Builder => $query->active())
+            ->withCount(['products' => static fn (Builder $query): Builder => $query->active()])
+            ->orderBy('value')
+            ->get();
+
         return view('store.home', [
             'navCategories' => $categories,
             'heroProducts' => $heroProducts,
             'promoProducts' => $promoProducts,
             'featuredProducts' => $featuredProducts,
+            'colorValues' => $colorValues,
         ]);
     }
 
@@ -91,10 +101,20 @@ final class StorefrontController extends Controller
             $query->whereNotNull('promo_price_cents');
         }
 
+        // ADR 6: valores do mesmo atributo são OU; atributos diferentes são E.
         if ($selectedAttributes !== []) {
-            $query->whereHas('attributeValues', static function (Builder $builder) use ($selectedAttributes): void {
-                $builder->whereIn('attribute_values.slug', $selectedAttributes);
-            });
+            $groupedByAttribute = AttributeValue::query()
+                ->whereIn('slug', $selectedAttributes)
+                ->get(['id', 'attribute_id'])
+                ->groupBy('attribute_id');
+
+            foreach ($groupedByAttribute as $attributeValues) {
+                $valueIds = $attributeValues->pluck('id')->all();
+
+                $query->whereHas('attributeValues', static function (Builder $builder) use ($valueIds): void {
+                    $builder->whereIn('attribute_values.id', $valueIds);
+                });
+            }
         }
 
         match ($sort) {
@@ -107,10 +127,22 @@ final class StorefrontController extends Controller
         $products = $query->paginate(12)->withQueryString();
 
         $attributes = Attribute::query()
-            ->with(['values' => fn ($q) => $q->whereHas('products', fn ($p) => $p->active())->orderBy('value')])
+            ->with([
+                'values' => fn ($q) => $q
+                    ->whereHas('products', fn ($p) => $p->active())
+                    ->withCount(['products' => fn ($p) => $p->active()])
+                    ->orderBy('value'),
+            ])
             ->whereHas('values.products', fn ($p) => $p->active())
             ->orderBy('name')
             ->get();
+
+        $activeAttributeModels = $selectedAttributes !== []
+            ? AttributeValue::query()
+                ->whereIn('slug', $selectedAttributes)
+                ->with('attribute')
+                ->get()
+            : collect();
 
         return view('store.catalog', [
             'navCategories' => $navCategories,
@@ -121,6 +153,7 @@ final class StorefrontController extends Controller
             'onlyPromo' => $onlyPromo,
             'sort' => $sort,
             'selectedAttributes' => $selectedAttributes,
+            'activeAttributeModels' => $activeAttributeModels,
         ]);
     }
 
@@ -146,11 +179,71 @@ final class StorefrontController extends Controller
             ->limit(4)
             ->get();
 
+        // Produtos irmãos por cor (ADR 6: catálogo plano, cada cor é um produto)
+        $hasColor = $product->attributeValues->contains(
+            static fn (AttributeValue $val): bool => $val->attribute->slug === 'cor'
+        );
+
+        $colorSiblings = collect();
+        if ($hasColor && $categoryIds !== []) {
+            $nonColorIds = $product->attributeValues
+                ->filter(static fn (AttributeValue $val): bool => $val->attribute->slug !== 'cor')
+                ->pluck('id')
+                ->all();
+
+            $siblingQuery = Product::query()
+                ->active()
+                ->whereHas('categories', static function (Builder $builder) use ($categoryIds): void {
+                    $builder->whereIn('categories.id', $categoryIds);
+                })
+                ->whereHas('attributeValues.attribute', static function (Builder $builder): void {
+                    $builder->where('slug', 'cor');
+                })
+                ->with(['attributeValues.attribute']);
+
+            foreach ($nonColorIds as $nonColorId) {
+                $siblingQuery->whereHas('attributeValues', static function (Builder $builder) use ($nonColorId): void {
+                    $builder->where('attribute_values.id', $nonColorId);
+                });
+            }
+
+            $colorSiblings = $siblingQuery->limit(8)->get();
+        }
+
         return view('store.product', [
             'navCategories' => $this->navigationCategories(),
             'product' => $product,
             'relatedProducts' => $relatedProducts,
+            'colorSiblings' => $colorSiblings,
         ]);
+    }
+
+    public function searchSuggestions(Request $request): JsonResponse
+    {
+        $term = mb_trim((string) $request->string('q'));
+
+        if (mb_strlen($term) < 2) {
+            return response()->json(['items' => []]);
+        }
+
+        $products = Product::query()
+            ->active()
+            ->search($term)
+            ->with(['categories', 'media'])
+            ->limit(5)
+            ->get();
+
+        $items = $products->map(static fn (Product $product): array => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category' => $product->categories->first()?->name,
+            'price' => self::formatBrl($product->sale_price),
+            'image' => self::productImageUrl($product),
+            'url' => route('store.product', ['slug' => $product->slug]),
+        ])->values()->all();
+
+        return response()->json(['items' => $items]);
     }
 
     public static function formatBrl(Money $money): string
@@ -210,6 +303,21 @@ final class StorefrontController extends Controller
         }
 
         return null;
+    }
+
+    public static function colorSwatchHex(string $colorSlug): string
+    {
+        return match (mb_strtolower($colorSlug)) {
+            'azul' => '#2563EB',
+            'rosa' => '#EC4899',
+            'dourado' => '#D97706',
+            'branco' => '#FDFBF7',
+            'vermelho' => '#E11D48',
+            'verde' => '#16A34A',
+            'roxo' => '#7C3AED',
+            'preto' => '#1F1B16',
+            default => '#A8A29E',
+        };
     }
 
     /**

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [StorefrontController::class, 'home'])->name('store.home');
 Route::get('/catalogo', [StorefrontController::class, 'catalog'])->name('store.catalog');
 Route::get('/produto/{slug}', [StorefrontController::class, 'product'])->name('store.product');
+Route::get('/busca/sugestoes', [StorefrontController::class, 'searchSuggestions'])->name('store.search.suggestions');
 
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('store.checkout');
 Route::post('/frete/calcular', [CheckoutController::class, 'quoteShipping'])->name('store.shipping.quote');

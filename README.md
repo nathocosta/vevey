@@ -1,58 +1,64 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vevey Doces — E-commerce, Estoque Integrado & PDV Balcão
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma completa de vendas (varejo, atacado/caixas fechadas e balcão presencial) desenvolvida em **Laravel 13 + Filament 5 + PostgreSQL** seguindo arquitetura de **monólito modular** (`internachi/modular`) documentada em [`docs/MODELAGEM_LARAVEL_ADR.md`](docs/MODELAGEM_LARAVEL_ADR.md).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Arquitetura Modular (ADR 8)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Módulo | Camada | Responsabilidade |
+| :--- | :--- | :--- |
+| `app-modules/catalog` | `base` | Produtos planos (cada cor = SKU próprio — ADR 6), categorias, atributos dinâmicos, busca full-text (`tsvector` + GIN) e mídia (`spatie/laravel-medialibrary`). |
+| `app-modules/inventory` | `base` | Ledger append-only (`stock_movements`), reservas de 30 min (`stock_reservations`) e cache de saldo (`stock_levels`) sob `lockForUpdate` ordenado por `product_id` (ADR 2). |
+| `app-modules/customers` | `base` | Guard separado `customers`, identidades de contato normalizadas com aposentadoria (`customer_identities` — ADR 7) e endereços salvos. |
+| `app-modules/orders` | `orchestrator` | Serviço único `PlaceOrder` (Site, PDV Balcão e WhatsApp), snapshot histórico de linha (ADR 3), cupons, rateio de desconto via `Money::allocate()` (ADR 1), pagamentos 1:N e histórico de status. |
+| `app-modules/permissions` | `shared` | RBAC sobre `spatie/laravel-permission` com papéis `SuperAdmin`, `Admin`, `Attendant` e `Logistics`. |
+| `app-modules/panel-admin` | `interface` | Painel administrativo Filament (`/admin`): Dashboard de métricas, PDV Balcão (`/admin/pdv`), Pedidos, Cupons, Estoque, Clientes, Catálogo e **Logs de auditoria** (`/admin/audit-log`). |
+| `app-modules/panel-site` | `interface` | Loja pública em Blade + Tailwind v4: Home editorial, busca preditiva ao vivo, Catálogo com filtros ADR 6, PDP com estoque real e cores irmãs, Carrinho, Checkout (ViaCEP/SEDEX/PAC + cupom) e Área do Cliente (`/conta`). |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Decisões técnicas principais
+- **Dinheiro em centavos (`brick/money` + `MoneyCast`)** com `CHECK (total_cents = subtotal_cents - discount_cents + shipping_cents)` no PostgreSQL (ADR 1).
+- **Zero triggers e zero enums nativos no banco**: toda regra roda em transações PHP com enums tipados.
+- **Venda física é pedido `pos` (ADR 5)**: nasce paga e entregue no PDV Balcão, com permissão controlada para saldo negativo + alerta visual de divergência.
+- **UUIDs (v7)** em todas as chaves primárias e estrangeiras.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Como rodar localmente
 
 ```bash
-composer require laravel/boost --dev
+# 1. Instalar dependências PHP e JS
+composer install
+npm install && npm run build
 
-php artisan boost:install
+# 2. Configurar .env apontando para PostgreSQL e rodar migrations
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+
+# 3. Popular catálogo de exemplo, estoque inicial, equipe RBAC e permissões
+php artisan db:seed --class="Vevey\Catalog\Database\Seeders\CatalogSeeder"
+php artisan db:seed --class="Vevey\Inventory\Database\Seeders\InitialStockSeeder"
+php artisan db:seed --class="Database\Seeders\StaffUsersSeeder"
+php artisan sync:permissions
+
+# 4. Subir servidor local
+php -S 127.0.0.1:8000 -t public
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Comandos úteis de operação
+- `php artisan stock:rebuild` — recalcula `stock_levels` a partir do ledger `stock_movements`.
+- `php artisan stock:expire-reservations` — libera reservas vencidas (agendado a cada 5 min em `routes/console.php`).
+- `php artisan sync:permissions` — sincroniza permissões RBAC de todos os módulos.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Acessos para teste local
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Loja:** `http://127.0.0.1:8000/` (cupom ativo para teste no checkout: **`VEVEY10`** — 10% OFF acima de R$ 30)
+- **Área do Cliente:** `http://127.0.0.1:8000/entrar` / `/cadastro` / `/conta`
+- **Painel Admin:** `http://127.0.0.1:8000/admin` (senha padrão: **`password`**)
+  - `admin@vevey.com` — Super Admin (acesso total + Logs de auditoria)
+  - `dona@vevey.com` — Administrador (dona da loja)
+  - `atendente@vevey.com` — Atendente (PDV Balcão, pedidos e clientes)
+  - `logistica@vevey.com` — Logística (separação, entrega e estoque)

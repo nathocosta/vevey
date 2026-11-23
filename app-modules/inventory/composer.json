@@ -1,0 +1,24 @@
+{
+    "name": "vevey/inventory",
+    "description": "Single-entry stock ledger, reservations and stock levels cache (ADR 2 & 5).",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Vevey\\Inventory\\": "src/",
+            "Vevey\\Inventory\\Tests\\": "tests/",
+            "Vevey\\Inventory\\Database\\Factories\\": "database/factories/",
+            "Vevey\\Inventory\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vevey\\Inventory\\Providers\\InventoryServiceProvider"
+            ]
+        }
+    }
+}

@@ -81,6 +81,46 @@
             </div>
         </div>
 
+        <!-- Chips de filtros ativos -->
+        @if ($search !== '' || $activeCategory !== null || $onlyPromo || $activeAttributeModels->isNotEmpty())
+            <div class="flex flex-wrap items-center gap-2 pt-4">
+                @if ($search !== '')
+                    <a href="{{ route('store.catalog', array_filter(['categoria' => $activeCategory?->slug, 'ofertas' => $onlyPromo ? 1 : null, 'atributos' => $selectedAttributes, 'ordenar' => $sort])) }}" class="inline-flex items-center gap-1.5 px-3 h-8 rounded-md bg-porcelain border hairline-strong text-xs font-medium text-espresso hover:border-brand-600 transition-colors duration-150">
+                        Busca: "{{ $search }}"
+                        <span class="material-symbols-outlined text-[14px] text-espresso-muted">close</span>
+                    </a>
+                @endif
+
+                @if ($activeCategory)
+                    <a href="{{ route('store.catalog', array_filter(['q' => $search, 'ofertas' => $onlyPromo ? 1 : null, 'atributos' => $selectedAttributes, 'ordenar' => $sort])) }}" class="inline-flex items-center gap-1.5 px-3 h-8 rounded-md bg-porcelain border hairline-strong text-xs font-medium text-espresso hover:border-brand-600 transition-colors duration-150">
+                        {{ $activeCategory->name }}
+                        <span class="material-symbols-outlined text-[14px] text-espresso-muted">close</span>
+                    </a>
+                @endif
+
+                @if ($onlyPromo)
+                    <a href="{{ route('store.catalog', array_filter(['q' => $search, 'categoria' => $activeCategory?->slug, 'atributos' => $selectedAttributes, 'ordenar' => $sort])) }}" class="inline-flex items-center gap-1.5 px-3 h-8 rounded-md bg-brand-50 border border-brand-200 text-xs font-medium text-brand-700 transition-colors duration-150">
+                        Somente ofertas
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                    </a>
+                @endif
+
+                @foreach ($activeAttributeModels as $attrModel)
+                    @php
+                        $remainingAttrs = array_values(array_diff($selectedAttributes, [$attrModel->slug]));
+                    @endphp
+                    <a href="{{ route('store.catalog', array_filter(['q' => $search, 'categoria' => $activeCategory?->slug, 'ofertas' => $onlyPromo ? 1 : null, 'atributos' => $remainingAttrs, 'ordenar' => $sort])) }}" class="inline-flex items-center gap-1.5 px-3 h-8 rounded-md bg-porcelain border hairline-strong text-xs font-medium text-espresso hover:border-brand-600 transition-colors duration-150">
+                        {{ $attrModel->attribute->name }}: {{ $attrModel->value }}
+                        <span class="material-symbols-outlined text-[14px] text-espresso-muted">close</span>
+                    </a>
+                @endforeach
+
+                <a href="{{ route('store.catalog') }}" class="text-xs font-medium text-espresso-muted hover:text-espresso px-2">
+                    Limpar tudo
+                </a>
+            </div>
+        @endif
+
         <div class="grid lg:grid-cols-12 gap-8 pt-8">
             <!-- Sidebar de Filtros -->
             <aside id="catalog-filters" class="hidden lg:block lg:col-span-3 space-y-6">
@@ -152,15 +192,24 @@
                             <h3 class="font-display font-medium text-sm text-espresso mb-3">{{ $attribute->name }}</h3>
                             <div class="space-y-2">
                                 @foreach ($attribute->values as $value)
-                                    <label class="flex items-center gap-2.5 cursor-pointer text-sm text-espresso-soft hover:text-espresso">
-                                        <input
-                                            type="checkbox"
-                                            name="atributos[]"
-                                            value="{{ $value->slug }}"
-                                            @checked(in_array($value->slug, $selectedAttributes, true))
-                                            class="w-4 h-4 rounded-xs border hairline-strong accent-brand-600"
-                                        />
-                                        <span>{{ $value->value }}</span>
+                                    <label class="flex items-center justify-between gap-2 cursor-pointer text-sm text-espresso-soft hover:text-espresso">
+                                        <span class="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                name="atributos[]"
+                                                value="{{ $value->slug }}"
+                                                @checked(in_array($value->slug, $selectedAttributes, true))
+                                                class="w-4 h-4 rounded-xs border hairline-strong accent-brand-600"
+                                            />
+                                            @if ($attribute->slug === 'cor')
+                                                <span
+                                                    class="w-3.5 h-3.5 rounded-full border hairline-strong shrink-0"
+                                                    style="background-color: {{ \Vevey\PanelSite\Http\Controllers\StorefrontController::colorSwatchHex($value->slug) }}"
+                                                ></span>
+                                            @endif
+                                            <span>{{ $value->value }}</span>
+                                        </span>
+                                        <span class="tnum text-xs text-espresso-muted">{{ $value->products_count }}</span>
                                     </label>
                                 @endforeach
                             </div>
@@ -185,7 +234,7 @@
                 @if ($products->isNotEmpty())
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                         @foreach ($products as $product)
-                            <x-store.product-card :product="$product" />
+                            <x-store.product-card :product="$product" :available="$stockMap[$product->id] ?? null" />
                         @endforeach
                     </div>
 

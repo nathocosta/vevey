@@ -1,0 +1,22 @@
+{
+    "name": "vevey/panel-site",
+    "description": "Public storefront interface (catalog, predictive search, checkout, customer account — ADR 8).",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Vevey\\PanelSite\\": "src/",
+            "Vevey\\PanelSite\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vevey\\PanelSite\\Providers\\PanelSiteServiceProvider"
+            ]
+        }
+    }
+}

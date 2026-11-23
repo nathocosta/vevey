@@ -8,7 +8,11 @@ declare(strict_types=1);
  */
 $layers = [
     'Vevey\Catalog' => 'base',
+    'Vevey\Customers' => 'base',
+    'Vevey\Inventory' => 'base',
+    'Vevey\Orders' => 'orchestrator',
     'Vevey\PanelAdmin' => 'interface',
+    'Vevey\PanelSite' => 'interface',
     'Vevey\Permissions' => 'shared',
 ];
 

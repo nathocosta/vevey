@@ -6,9 +6,7 @@
 
 @php
     $isDark = $theme === 'dark';
-    $primaryArm = $isDark ? '#FDFBF7' : '#1F1B16';
-    $secondaryArm = $isDark ? '#C7BFB3' : '#4A4137';
-    $cherry = $isDark ? '#F43F5E' : '#E11D48';
+    $sealColor = $isDark ? '#F43F5E' : '#E11D48';
 
     $iconSize = match ($size) {
         'sm' => 'w-7 h-7',
@@ -24,10 +22,13 @@
 @endphp
 
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-2.5 select-none']) }}>
-    <svg viewBox="0 0 36 36" fill="none" class="{{ $iconSize }} shrink-0" aria-hidden="true">
-        <path d="M5.5 9.5H12.2L18 22.8L14.7 30L5.5 9.5Z" fill="{{ $primaryArm }}" />
-        <path d="M30.5 9.5H23.8L16.3 26.5L18 30.2L30.5 9.5Z" fill="{{ $secondaryArm }}" />
-        <circle cx="18" cy="11.2" r="3.6" fill="{{ $cherry }}" />
+    <!-- Selo Confeitaria Vevey (medalhão ondulado de 8 pétalas com V em espaço negativo) -->
+    <svg viewBox="0 0 256 256" fill="none" class="{{ $iconSize }} shrink-0" aria-hidden="true">
+        <path
+            fill="{{ $sealColor }}"
+            fill-rule="evenodd"
+            d="M128 24 C146 24 156 36 168 41 C180 46 196 42 206 52 C216 62 212 78 217 90 C222 102 234 112 234 128 C234 144 222 154 217 166 C212 178 216 194 206 204 C196 214 180 210 168 215 C156 220 146 232 128 232 C110 232 100 220 88 215 C76 210 60 214 50 204 C40 194 44 178 39 166 C34 154 22 144 22 128 C22 112 34 102 39 90 C44 78 40 62 50 52 C60 42 76 46 88 41 C100 36 110 24 128 24 Z M74 78 L108 78 L128 136 L148 78 L182 78 L142 186 L114 186 Z"
+        />
     </svg>
 
     <span class="flex flex-col leading-none">

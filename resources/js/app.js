@@ -408,6 +408,15 @@ function initCheckout() {
         return form.querySelector('input[name="payment_method"]:checked')?.value || 'pix';
     }
 
+    const couponInput = document.getElementById('checkout-coupon');
+    const couponBtn = document.getElementById('checkout-apply-coupon');
+    const couponStatus = document.getElementById('checkout-coupon-status');
+    const couponRowEl = document.getElementById('summary-coupon-row');
+    const couponLabelEl = document.getElementById('summary-coupon-label');
+    const couponDiscountEl = document.getElementById('summary-coupon-discount');
+
+    let appliedCoupon = null;
+
     function renderSummary() {
         const cart = getCart();
         if (cart.length === 0) {
@@ -420,10 +429,12 @@ function initCheckout() {
         form.classList.remove('hidden');
 
         const subtotalCents = cart.reduce((sum, item) => sum + item.priceCents * item.qty, 0);
+        const couponDiscountCents = appliedCoupon ? Math.min(subtotalCents, appliedCoupon.discountCents) : 0;
+        const afterCouponCents = Math.max(0, subtotalCents - couponDiscountCents);
         const isPix = currentPaymentMethod() === 'pix';
-        const discountCents = isPix ? Math.round(subtotalCents * 0.05) : 0;
+        const pixDiscountCents = isPix ? Math.round(afterCouponCents * 0.05) : 0;
         const shippingCents = currentDeliveryType() === 'pickup' ? 0 : selectedShipping.priceCents;
-        const totalCents = Math.max(0, subtotalCents - discountCents + shippingCents);
+        const totalCents = Math.max(0, subtotalCents - couponDiscountCents - pixDiscountCents + shippingCents);
 
         if (itemsEl) {
             itemsEl.innerHTML = cart
@@ -444,8 +455,11 @@ function initCheckout() {
         }
 
         if (subtotalEl) subtotalEl.textContent = formatBrl(subtotalCents);
-        if (discountRowEl) discountRowEl.classList.toggle('hidden', !isPix);
-        if (discountEl) discountEl.textContent = `- ${formatBrl(discountCents)}`;
+        if (couponRowEl) couponRowEl.classList.toggle('hidden', couponDiscountCents <= 0);
+        if (couponLabelEl && appliedCoupon) couponLabelEl.textContent = appliedCoupon.label;
+        if (couponDiscountEl) couponDiscountEl.textContent = `- ${formatBrl(couponDiscountCents)}`;
+        if (discountRowEl) discountRowEl.classList.toggle('hidden', !isPix || pixDiscountCents <= 0);
+        if (discountEl) discountEl.textContent = `- ${formatBrl(pixDiscountCents)}`;
         if (shippingEl) {
             shippingEl.textContent = shippingCents === 0 ? 'Grátis' : formatBrl(shippingCents);
             shippingEl.classList.toggle('text-positive', shippingCents === 0);
@@ -547,6 +561,63 @@ function initCheckout() {
         }
     });
 
+    page.querySelectorAll('[data-saved-address]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const setVal = (id, attr) => {
+                const el = document.getElementById(id);
+                if (el) el.value = btn.getAttribute(attr) || '';
+            };
+            setVal('checkout-cep', 'data-cep');
+            setVal('street', 'data-street');
+            setVal('number', 'data-number');
+            setVal('neighborhood', 'data-neighborhood');
+            setVal('city', 'data-city');
+            setVal('state', 'data-state');
+            quoteCep();
+        });
+    });
+
+    couponBtn?.addEventListener('click', async () => {
+        const code = (couponInput?.value || '').trim().toUpperCase();
+        if (!code) {
+            appliedCoupon = null;
+            couponStatus?.classList.add('hidden');
+            renderSummary();
+            return;
+        }
+
+        const cart = getCart();
+        const subtotalCents = cart.reduce((sum, item) => sum + item.priceCents * item.qty, 0);
+
+        try {
+            const res = await fetch(page.getAttribute('data-coupon-url') || '/checkout/cupom/validar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ code, subtotal_cents: subtotalCents }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || 'Cupom inválido.');
+            }
+            appliedCoupon = { code: data.code, label: data.label, discountCents: data.discount_cents };
+            if (couponStatus) {
+                couponStatus.textContent = `${data.label} aplicado (- ${formatBrl(data.discount_cents)})`;
+                couponStatus.className = 'text-xs text-positive font-medium';
+            }
+        } catch (err) {
+            appliedCoupon = null;
+            if (couponStatus) {
+                couponStatus.textContent = err.message;
+                couponStatus.className = 'text-xs text-negative font-medium';
+            }
+        }
+        renderSummary();
+    });
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
         errorEl?.classList.add('hidden');
@@ -563,6 +634,7 @@ function initCheckout() {
             delivery_type: currentDeliveryType(),
             shipping_code: currentDeliveryType() === 'pickup' ? 'pickup' : selectedShipping.code,
             payment_method: currentPaymentMethod(),
+            coupon_code: appliedCoupon ? appliedCoupon.code : null,
             cep: cepInput?.value || null,
             street: document.getElementById('street')?.value || null,
             number: document.getElementById('number')?.value || null,
@@ -640,11 +712,94 @@ function initCheckout() {
     renderSummary();
 }
 
+function initLiveSearch() {
+    const wrapper = document.getElementById('live-search-wrapper');
+    const input = document.getElementById('live-search-input');
+    const results = document.getElementById('live-search-results');
+
+    if (!wrapper || !input || !results) {
+        return;
+    }
+
+    const endpoint = wrapper.getAttribute('data-suggestions-url') || '/busca/sugestoes';
+    let debounceTimer = null;
+
+    const hideResults = () => {
+        results.classList.add('hidden');
+        results.innerHTML = '';
+    };
+
+    input.addEventListener('input', () => {
+        const term = input.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (term.length < 2) {
+            hideResults();
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`${endpoint}?q=${encodeURIComponent(term)}`, {
+                    headers: { Accept: 'application/json' },
+                });
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                const items = data.items || [];
+
+                if (items.length === 0) {
+                    results.innerHTML = `<div class="px-4 py-3 text-xs text-espresso-muted">Nenhum produto encontrado para "${term}"</div>`;
+                    results.classList.remove('hidden');
+                    return;
+                }
+
+                results.innerHTML =
+                    items
+                        .map(
+                            (item) => `
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-paper border-b hairline last:border-b-0 transition-colors duration-150">
+                                <div class="w-10 h-10 rounded-md bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
+                                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-espresso truncate">${item.name}</p>
+                                    <p class="text-xs text-espresso-muted">${item.category || item.sku}</p>
+                                </div>
+                                <span class="tnum text-sm font-medium text-espresso shrink-0">${item.price}</span>
+                            </a>`
+                        )
+                        .join('') +
+                    `<a href="/catalogo?q=${encodeURIComponent(term)}" class="block px-4 py-2.5 bg-paper text-xs font-medium text-brand-700 hover:bg-linen text-center transition-colors duration-150">Ver todos os resultados</a>`;
+
+                results.classList.remove('hidden');
+            } catch {
+                hideResults();
+            }
+        }, 220);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!wrapper.contains(event.target)) {
+            hideResults();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            hideResults();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderCart();
     initFavorites();
     initPdpControls();
     initCheckout();
+    initLiveSearch();
 
     document.querySelectorAll('[data-open-cart]').forEach((btn) => {
         btn.addEventListener('click', openCartDrawer);
@@ -661,11 +816,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (event) => {
+        const cardDec = event.target.closest('[data-card-qty-dec]');
+        if (cardDec) {
+            event.preventDefault();
+            const qtyEl = cardDec.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = String(Math.max(1, Number(qtyEl.textContent || 1) - 1));
+            }
+            return;
+        }
+
+        const cardInc = event.target.closest('[data-card-qty-inc]');
+        if (cardInc) {
+            event.preventDefault();
+            const qtyEl = cardInc.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            if (qtyEl) {
+                qtyEl.textContent = String(Math.min(99, Number(qtyEl.textContent || 1) + 1));
+            }
+            return;
+        }
+
         const addBtn = event.target.closest('[data-add-cart]');
         if (addBtn) {
             event.preventDefault();
             const qtySource = addBtn.getAttribute('data-qty-input');
-            const qty = qtySource ? Math.max(1, Number(document.getElementById(qtySource)?.value || 1)) : 1;
+            const cardQtyEl = addBtn.closest('[data-product-card]')?.querySelector('[data-card-qty]');
+            const qty = qtySource
+                ? Math.max(1, Number(document.getElementById(qtySource)?.value || 1))
+                : cardQtyEl
+                  ? Math.max(1, Number(cardQtyEl.textContent || 1))
+                  : 1;
 
             addToCart(
                 {

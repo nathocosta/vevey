@@ -1,0 +1,24 @@
+{
+    "name": "vevey/orders",
+    "description": "Order orchestration, line snapshots, adjustments, coupons, status history and payments (ADR 1, 3, 4, 5).",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Vevey\\Orders\\": "src/",
+            "Vevey\\Orders\\Tests\\": "tests/",
+            "Vevey\\Orders\\Database\\Factories\\": "database/factories/",
+            "Vevey\\Orders\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vevey\\Orders\\Providers\\OrdersServiceProvider"
+            ]
+        }
+    }
+}

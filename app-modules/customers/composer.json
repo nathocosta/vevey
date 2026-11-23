@@ -1,0 +1,24 @@
+{
+    "name": "vevey/customers",
+    "description": "Authenticatable customers (separate guard), normalized contact identities with retirement, and shipping addresses (ADR 7).",
+    "type": "library",
+    "version": "1.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Vevey\\Customers\\": "src/",
+            "Vevey\\Customers\\Tests\\": "tests/",
+            "Vevey\\Customers\\Database\\Factories\\": "database/factories/",
+            "Vevey\\Customers\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vevey\\Customers\\Providers\\CustomersServiceProvider"
+            ]
+        }
+    }
+}

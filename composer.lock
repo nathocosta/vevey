@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f9bdc25cab94bf18b4d039e605939fd",
+    "content-hash": "b0daffd98d33cbedbd4c2677fea0dd78",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10335,6 +10335,105 @@
             }
         },
         {
+            "name": "vevey/customers",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/customers",
+                "reference": "82bc65ebc641f70e3276b894c0ca8aa0a827fc9f"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Customers\\Providers\\CustomersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Customers\\": "src/",
+                    "Vevey\\Customers\\Tests\\": "tests/",
+                    "Vevey\\Customers\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Customers\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Authenticatable customers (separate guard), normalized contact identities with retirement, and shipping addresses (ADR 7).",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/inventory",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/inventory",
+                "reference": "d5e72203dcae6f7533740172a19a05630b78261c"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Inventory\\Providers\\InventoryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Inventory\\": "src/",
+                    "Vevey\\Inventory\\Tests\\": "tests/",
+                    "Vevey\\Inventory\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Inventory\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Single-entry stock ledger, reservations and stock levels cache (ADR 2 & 5).",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/orders",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/orders",
+                "reference": "4e5d71a8354c27a10a87b570ee11bfc7d1149283"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\Orders\\Providers\\OrdersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\Orders\\": "src/",
+                    "Vevey\\Orders\\Tests\\": "tests/",
+                    "Vevey\\Orders\\Database\\Factories\\": "database/factories/",
+                    "Vevey\\Orders\\Database\\Seeders\\": "database/seeders/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Order orchestration, line snapshots, adjustments, coupons, status history and payments (ADR 1, 3, 4, 5).",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "vevey/panel-admin",
             "version": "1.0",
             "dist": {
@@ -10361,6 +10460,37 @@
             "license": [
                 "proprietary"
             ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "vevey/panel-site",
+            "version": "1.0",
+            "dist": {
+                "type": "path",
+                "url": "app-modules/panel-site",
+                "reference": "33fff87a3e0b3a1f0ae65e403815618a015f5dfb"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vevey\\PanelSite\\Providers\\PanelSiteServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vevey\\PanelSite\\": "src/",
+                    "Vevey\\PanelSite\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Public storefront interface (catalog, predictive search, checkout, customer account — ADR 8).",
             "transport-options": {
                 "symlink": true,
                 "relative": true

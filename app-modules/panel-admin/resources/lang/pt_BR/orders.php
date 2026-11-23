@@ -8,4 +8,8 @@ return [
         'label' => 'Pedido',
         'plural_label' => 'Pedidos',
     ],
+    'coupons' => [
+        'label' => 'Cupom',
+        'plural_label' => 'Cupons',
+    ],
 ];

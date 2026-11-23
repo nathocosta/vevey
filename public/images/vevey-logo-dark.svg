@@ -1,7 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 36" fill="none" role="img" aria-label="Vevey Doces">
-  <path d="M4.5 9.5H11.2L17 22.8L13.7 30L4.5 9.5Z" fill="#FDFBF7"/>
-  <path d="M29.5 9.5H22.8L15.3 26.5L17 30.2L29.5 9.5Z" fill="#C7BFB3"/>
-  <circle cx="17" cy="11.2" r="3.6" fill="#F43F5E"/>
-  <text x="39" y="21.5" fill="#FDFBF7" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="18.5" font-weight="600" letter-spacing="-0.03em">Vevey</text>
-  <text x="98.5" y="21.5" fill="#AAA398" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="18.5" font-weight="400" letter-spacing="-0.02em">Doces</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
+  <title>Vevey Doces</title>
+  <g transform="translate(2 2) scale(0.171875)">
+    <path fill="#F43F5E" fill-rule="evenodd" d="
+      M128 24
+      C146 24 156 36 168 41
+      C180 46 196 42 206 52
+      C216 62 212 78 217 90
+      C222 102 234 112 234 128
+      C234 144 222 154 217 166
+      C212 178 216 194 206 204
+      C196 214 180 210 168 215
+      C156 220 146 232 128 232
+      C110 232 100 220 88 215
+      C76 210 60 214 50 204
+      C40 194 44 178 39 166
+      C34 154 22 144 22 128
+      C22 112 34 102 39 90
+      C44 78 40 62 50 52
+      C60 42 76 46 88 41
+      C100 36 110 24 128 24 Z
+      M74 78 L108 78 L128 136 L148 78 L182 78 L142 186 L114 186 Z
+    "/>
+  </g>
+  <text x="56" y="31" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.025em" fill="#FDFBF7">Vevey</text>
+  <text x="126" y="31" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" letter-spacing="-0.02em" fill="#AAA398">Doces</text>
 </svg>

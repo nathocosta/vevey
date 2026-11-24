@@ -143,7 +143,7 @@ def main() -> None:
     <div class="tag" style="color:#FB7185;">EQUIPE VEVEY CO. · 30 DE NOVEMBRO DE 2026</div>
     <h1 style="font-size:38pt;color:#FDFBF7;">Vevey Doces</h1>
     <p class="lead" style="font-size:16pt;">Plataforma modular de E-commerce, Estoque Integrado com Ledger, PDV Balcão e Auditoria Operacional.</p>
-    <p style="margin-top:8mm;font-size:11pt;color:#C8C0B4;">Barbara Vitoria da Silva · Matheus da Silva Araújo · Nathan Costa Santos · Ricardo Martins Pighin</p>
+    <p style="margin-top:8mm;font-size:11pt;color:#C8C0B4;">Matheus da Silva Araújo · Nathan Costa Santos · Ricardo Martins Pighin</p>
   </div>
   <div class="footer"><span>github.com/nathocosta/vevey</span><span>Slide 1 / 10</span></div>
 </section>

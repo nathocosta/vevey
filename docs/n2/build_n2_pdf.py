@@ -1135,6 +1135,12 @@ def build_html() -> str:
     shot_catalog = shot_b64("catalog.png")
     shot_product = shot_b64("product.png")
     shot_register = shot_b64("register.png")
+    shot_checkout = shot_b64("checkout.png")
+    shot_account = shot_b64("account.png")
+    shot_admin_dashboard = shot_b64("admin_dashboard.png")
+    shot_admin_pdv = shot_b64("admin_pdv.png")
+    shot_admin_stock = shot_b64("admin_stock.png")
+    shot_admin_audit = shot_b64("admin_audit.png")
 
     rep_matheus = report_page(
         "Matheus da Silva Araújo", "1680482421029", 2,
@@ -1937,84 +1943,92 @@ def build_html() -> str:
 <div class="page-break"></div>
 <h1 style="margin-top:0;">Sumário</h1>
 <ul class="toc-list">
-  <li class="toc-l1"><span>1. Visão e Escopo do Projeto</span><span>7</span></li>
-  <li class="toc-l2"><span>1.1. Descrição do problema</span><span>7</span></li>
-  <li class="toc-l3"><span>1.1.1. Contexto do projeto</span><span>7</span></li>
-  <li class="toc-l3"><span>1.1.2. Stakeholders</span><span>8</span></li>
-  <li class="toc-l3"><span>1.1.3. Usuários</span><span>8</span></li>
-  <li class="toc-l3"><span>1.1.4. Premissas</span><span>9</span></li>
-  <li class="toc-l2"><span>1.2. Visão da solução</span><span>9</span></li>
-  <li class="toc-l3"><span>1.2.1. Declaração de visão</span><span>9</span></li>
-  <li class="toc-l3"><span>1.2.2. Cenários de utilização do sistema</span><span>9</span></li>
-  <li class="toc-l3"><span>1.2.3. Features do produto</span><span>10</span></li>
-  <li class="toc-l1"><span>2. Requisitos de software</span><span>11</span></li>
-  <li class="toc-l2"><span>2.1. Casos de uso</span><span>11</span></li>
-  <li class="toc-l3"><span>2.1.1. Documentação dos casos de uso</span><span>11</span></li>
-  <li class="toc-l3"><span>2.1.2. Documentação dos atores</span><span>17</span></li>
-  <li class="toc-l2"><span>2.2. Requisitos funcionais</span><span>19</span></li>
-  <li class="toc-l2"><span>2.3. Requisitos não funcionais</span><span>20</span></li>
-  <li class="toc-l2"><span>2.4. Protótipos do software</span><span>21</span></li>
-  <li class="toc-l3"><span>2.4.1. Protótipos de telas</span><span>21</span></li>
-  <li class="toc-l3"><span>2.4.2. Modelo de navegação</span><span>25</span></li>
-  <li class="toc-l1"><span>3. Projeto do Sistema</span><span>27</span></li>
-  <li class="toc-l2"><span>3.1. Modelo estrutural do sistema</span><span>27</span></li>
-  <li class="toc-l3"><span>3.1.1. Diagrama de pacotes</span><span>27</span></li>
-  <li class="toc-l3"><span>3.1.2. Diagramas de classes</span><span>28</span></li>
-  <li class="toc-l2"><span>3.2. Modelo de banco de dados do sistema</span><span>34</span></li>
-  <li class="toc-l2"><span>3.3. Modelo de comportamentos do sistema</span><span>39</span></li>
-  <li class="toc-l1"><span>4. Documentação técnica do sistema</span><span>41</span></li>
-  <li class="toc-l2"><span>4.1. Modelo de implementação do sistema</span><span>41</span></li>
-  <li class="toc-l2"><span>4.2. Modelos de testes do sistema</span><span>41</span></li>
-  <li class="toc-l2"><span>4.3. Modelos de implantação do sistema</span><span>42</span></li>
-  <li class="toc-l2"><span>4.4. Elaboração do procedimento de instalação</span><span>43</span></li>
-  <li class="toc-l2"><span>4.5. Elaboração da documentação técnica do sistema</span><span>44</span></li>
-  <li class="toc-l2"><span>4.6. Elaboração do manual do usuário</span><span>45</span></li>
-  <li class="toc-l1"><span>5. Referências bibliográficas</span><span>48</span></li>
+  <li class="toc-l1"><span>1. Visão e Escopo do Projeto</span><span>8</span></li>
+  <li class="toc-l2"><span>1.1. Descrição do problema</span><span>8</span></li>
+  <li class="toc-l3"><span>1.1.1. Contexto do projeto</span><span>8</span></li>
+  <li class="toc-l3"><span>1.1.2. Stakeholders</span><span>9</span></li>
+  <li class="toc-l3"><span>1.1.3. Usuários</span><span>9</span></li>
+  <li class="toc-l3"><span>1.1.4. Premissas</span><span>10</span></li>
+  <li class="toc-l2"><span>1.2. Visão da solução</span><span>10</span></li>
+  <li class="toc-l3"><span>1.2.1. Declaração de visão</span><span>10</span></li>
+  <li class="toc-l3"><span>1.2.2. Cenários de utilização do sistema</span><span>10</span></li>
+  <li class="toc-l3"><span>1.2.3. Features do produto</span><span>11</span></li>
+  <li class="toc-l1"><span>2. Requisitos de software</span><span>12</span></li>
+  <li class="toc-l2"><span>2.1. Casos de uso</span><span>12</span></li>
+  <li class="toc-l3"><span>2.1.1. Documentação dos casos de uso</span><span>12</span></li>
+  <li class="toc-l3"><span>2.1.2. Documentação dos atores</span><span>18</span></li>
+  <li class="toc-l2"><span>2.2. Requisitos funcionais</span><span>20</span></li>
+  <li class="toc-l2"><span>2.3. Requisitos não funcionais</span><span>21</span></li>
+  <li class="toc-l2"><span>2.4. Protótipos do software</span><span>22</span></li>
+  <li class="toc-l3"><span>2.4.1. Protótipos de telas</span><span>22</span></li>
+  <li class="toc-l3"><span>2.4.2. Modelo de navegação</span><span>32</span></li>
+  <li class="toc-l1"><span>3. Projeto do Sistema</span><span>34</span></li>
+  <li class="toc-l2"><span>3.1. Modelo estrutural do sistema</span><span>34</span></li>
+  <li class="toc-l3"><span>3.1.1. Diagrama de pacotes</span><span>34</span></li>
+  <li class="toc-l3"><span>3.1.2. Diagramas de classes</span><span>35</span></li>
+  <li class="toc-l2"><span>3.2. Modelo de banco de dados do sistema</span><span>41</span></li>
+  <li class="toc-l2"><span>3.3. Modelo de comportamentos do sistema</span><span>46</span></li>
+  <li class="toc-l1"><span>4. Documentação técnica do sistema</span><span>48</span></li>
+  <li class="toc-l2"><span>4.1. Modelo de implementação do sistema</span><span>48</span></li>
+  <li class="toc-l2"><span>4.2. Modelos de testes do sistema</span><span>48</span></li>
+  <li class="toc-l2"><span>4.3. Modelos de implantação do sistema</span><span>49</span></li>
+  <li class="toc-l2"><span>4.4. Elaboração do procedimento de instalação</span><span>50</span></li>
+  <li class="toc-l2"><span>4.5. Elaboração da documentação técnica do sistema</span><span>51</span></li>
+  <li class="toc-l2"><span>4.6. Elaboração do manual do usuário</span><span>52</span></li>
+  <li class="toc-l1"><span>5. Referências bibliográficas</span><span>55</span></li>
 </ul>
 
-<!-- ==================== ÍNDICE DE FIGURAS E TABELAS ==================== -->
+<!-- ==================== ÍNDICE DE FIGURAS ==================== -->
 <div class="page-break"></div>
-<h2 style="margin-top:0;margin-bottom:4pt;">Índice de Figuras</h2>
-<ul class="toc-list index-list">
-  <li><span>Figura 1 — Formulário Project Model Canvas do projeto Website Vevey</span><span>7</span></li>
-  <li><span>Figura 2 — Diagrama de Casos de Uso do Sistema Vevey Doces</span><span>11</span></li>
-  <li><span>Figura 3 — Tela 01 — Página Inicial da Loja Vevey Doces</span><span>22</span></li>
-  <li><span>Figura 4 — Tela 02 — Catálogo de Produtos com filtros combinados (ADR 6)</span><span>23</span></li>
-  <li><span>Figura 5 — Tela 03 — Página de Produto (PDP) com cores irmãs e estoque real</span><span>24</span></li>
-  <li><span>Figura 6 — Tela 04 — Cadastro de Cliente com CPF e verificação em 2 etapas (2FA)</span><span>25</span></li>
-  <li><span>Figura 7 — Diagrama UML de Atividade: Modelo de Navegação do Sistema</span><span>26</span></li>
-  <li><span>Figura 8 — Diagrama de Pacotes do Monólito Modular (ADR 8)</span><span>27</span></li>
-  <li><span>Figura 9 — Diagrama de Classes de Domínio do Sistema Vevey Doces</span><span>29</span></li>
-  <li><span>Figura 10 — Diagrama Entidade-Relacionamento (DER) do PostgreSQL</span><span>35</span></li>
-  <li><span>Figura 11 — Diagrama de Sequência: Cenário Realizar Compra Online (UC02)</span><span>39</span></li>
-  <li><span>Figura 12 — Diagrama de Sequência: Cenário Registrar Venda PDV Balcão (UC04)</span><span>40</span></li>
-  <li><span>Figura 13 — Diagrama de Artefatos («artifact») da Arquitetura de Implementação</span><span>41</span></li>
-  <li><span>Figura 14 — Diagrama de Implantação UML (Docker, Render, PostgreSQL e APIs)</span><span>43</span></li>
+<h2 style="margin-top:0;margin-bottom:6pt;">Índice de Figuras</h2>
+<ul class="toc-list">
+  <li><span>Figura 1 — Formulário Project Model Canvas do projeto Website Vevey</span><span>8</span></li>
+  <li><span>Figura 2 — Diagrama de Casos de Uso do Sistema Vevey Doces</span><span>12</span></li>
+  <li><span>Figura 3 — Tela 01 — Página Inicial da Loja Vevey Doces</span><span>23</span></li>
+  <li><span>Figura 4 — Tela 02 — Catálogo de Produtos com filtros combinados (ADR 6)</span><span>24</span></li>
+  <li><span>Figura 5 — Tela 03 — Página de Produto (PDP) com cores irmãs e estoque real</span><span>25</span></li>
+  <li><span>Figura 6 — Tela 04 — Cadastro de Cliente com CPF e verificação em 2 etapas (2FA)</span><span>26</span></li>
+  <li><span>Figura 7 — Tela 05 — Checkout Online com Cupom VEVEY10 e Desconto Pix</span><span>27</span></li>
+  <li><span>Figura 8 — Tela 06 — Área do Cliente Minha Conta (Pedidos e Endereços)</span><span>28</span></li>
+  <li><span>Figura 9 — Tela 07 — Dashboard Administrativo com KPIs e Vendas por Canal</span><span>29</span></li>
+  <li><span>Figura 10 — Tela 08 — PDV Balcão para Vendas Presenciais Integradas ao Estoque</span><span>30</span></li>
+  <li><span>Figura 11 — Tela 09 — Saldos de Estoque (Físico, Reservado e Disponível)</span><span>31</span></li>
+  <li><span>Figura 12 — Tela 10 — Logs de Auditoria Unificados de Estoque e Pedidos (RNF011)</span><span>32</span></li>
+  <li><span>Figura 13 — Diagrama UML de Atividade: Modelo de Navegação do Sistema</span><span>33</span></li>
+  <li><span>Figura 14 — Diagrama de Pacotes do Monólito Modular (ADR 8)</span><span>34</span></li>
+  <li><span>Figura 15 — Diagrama de Classes de Domínio do Sistema Vevey Doces</span><span>36</span></li>
+  <li><span>Figura 16 — Diagrama Entidade-Relacionamento (DER) do PostgreSQL</span><span>42</span></li>
+  <li><span>Figura 17 — Diagrama de Sequência: Cenário Realizar Compra Online (UC02)</span><span>46</span></li>
+  <li><span>Figura 18 — Diagrama de Sequência: Cenário Registrar Venda PDV Balcão (UC04)</span><span>47</span></li>
+  <li><span>Figura 19 — Diagrama de Artefatos («artifact») da Arquitetura de Implementação</span><span>48</span></li>
+  <li><span>Figura 20 — Diagrama de Implantação UML (Docker, Render, PostgreSQL e APIs)</span><span>50</span></li>
 </ul>
 
-<h2 style="margin-top:8pt;margin-bottom:4pt;">Índice de Tabelas</h2>
-<ul class="toc-list index-list">
+<!-- ==================== ÍNDICE DE TABELAS ==================== -->
+<div class="page-break"></div>
+<h2 style="margin-top:0;margin-bottom:6pt;">Índice de Tabelas</h2>
+<ul class="toc-list">
   <li><span>Tabela 1 — Integrantes da equipe Vevey Co.</span><span>1</span></li>
   <li><span>Tabela 2 — Relatório de andamento: Matheus da Silva Araújo</span><span>2</span></li>
   <li><span>Tabela 3 — Relatório de andamento: Nathan Costa Santos</span><span>3</span></li>
   <li><span>Tabela 4 — Relatório de andamento: Ricardo Martins Pighin</span><span>4</span></li>
-  <li><span>Tabela 5 — Stakeholders do projeto e suas necessidades</span><span>8</span></li>
-  <li><span>Tabela 6 — Usuários do sistema, papéis RBAC e necessidades</span><span>8</span></li>
-  <li><span>Tabela 7 — Requisitos Funcionais (RF001 a RF018)</span><span>20</span></li>
-  <li><span>Tabela 8 — Requisitos Não Funcionais (RNF001 a RNF012)</span><span>21</span></li>
-  <li><span>Tabela 9 — Especificação da tabela products</span><span>35</span></li>
-  <li><span>Tabela 10 — Especificação da tabela categories e attributes</span><span>36</span></li>
-  <li><span>Tabela 11 — Especificação da tabela stock_levels</span><span>36</span></li>
-  <li><span>Tabela 12 — Especificação da tabela stock_movements</span><span>37</span></li>
-  <li><span>Tabela 13 — Especificação da tabela stock_reservations</span><span>37</span></li>
-  <li><span>Tabela 14 — Especificação da tabela orders e order_items</span><span>38</span></li>
-  <li><span>Tabela 15 — Especificação da tabela coupons, payments e order_status_histories</span><span>38</span></li>
-  <li><span>Tabela 16 — Especificação da tabela customers, customer_identities e addresses</span><span>39</span></li>
-  <li><span>Tabela 17 — Organização dos diretórios e artefatos de implementação</span><span>41</span></li>
-  <li><span>Tabela 18 — Matriz de Rastreabilidade de Casos de Teste do Sistema (TC01 a TC10)</span><span>42</span></li>
-  <li><span>Tabela 19 — Resumo das Decisões Arquiteturais (ADRs 1 a 9)</span><span>45</span></li>
-  <li><span>Tabela 20 — Credenciais de homologação para testes e demonstração</span><span>46</span></li>
-  <li><span>Tabela 21 — Guia rápido de resolução de problemas</span><span>47</span></li>
+  <li><span>Tabela 5 — Stakeholders do projeto e suas necessidades</span><span>9</span></li>
+  <li><span>Tabela 6 — Usuários do sistema, papéis RBAC e necessidades</span><span>9</span></li>
+  <li><span>Tabela 7 — Requisitos Funcionais (RF001 a RF018)</span><span>21</span></li>
+  <li><span>Tabela 8 — Requisitos Não Funcionais (RNF001 a RNF012)</span><span>22</span></li>
+  <li><span>Tabela 9 — Especificação da tabela products</span><span>42</span></li>
+  <li><span>Tabela 10 — Especificação da tabela categories e attributes</span><span>43</span></li>
+  <li><span>Tabela 11 — Especificação da tabela stock_levels</span><span>43</span></li>
+  <li><span>Tabela 12 — Especificação da tabela stock_movements</span><span>44</span></li>
+  <li><span>Tabela 13 — Especificação da tabela stock_reservations</span><span>44</span></li>
+  <li><span>Tabela 14 — Especificação da tabela orders e order_items</span><span>45</span></li>
+  <li><span>Tabela 15 — Especificação da tabela coupons, payments e order_status_histories</span><span>45</span></li>
+  <li><span>Tabela 16 — Especificação da tabela customers, customer_identities e addresses</span><span>46</span></li>
+  <li><span>Tabela 17 — Organização dos diretórios e artefatos de implementação</span><span>48</span></li>
+  <li><span>Tabela 18 — Matriz de Rastreabilidade de Casos de Teste do Sistema (TC01 a TC10)</span><span>49</span></li>
+  <li><span>Tabela 19 — Resumo das Decisões Arquiteturais (ADRs 1 a 9)</span><span>52</span></li>
+  <li><span>Tabela 20 — Credenciais de homologação para testes e demonstração</span><span>53</span></li>
+  <li><span>Tabela 21 — Guia rápido de resolução de problemas</span><span>54</span></li>
 </ul>
 
 <!-- ==================== 1. VISÃO E ESCOPO DO PROJETO ==================== -->
@@ -2199,7 +2213,7 @@ def build_html() -> str:
 <h2>2.4. Protótipos do software</h2>
 
 <h3>2.4.1. Protótipos de telas</h3>
-<p>As Figuras 3 a 6 apresentam capturas reais das interfaces implementadas, numeradas de <strong>Tela 01</strong> a <strong>Tela 04</strong> para associação direta ao Modelo de Navegação (Seção 2.4.2) e ao Manual do Usuário (Seção 4.6.4).</p>
+<p>As Figuras 3 a 12 apresentam capturas reais de todas as interfaces implementadas — cobrindo integralmente a Loja Virtual (<strong>Tela 01</strong> a <strong>Tela 06</strong>) e o Painel Administrativo / PDV Balcão (<strong>Tela 07</strong> a <strong>Tela 10</strong>) — para associação direta ao Modelo de Navegação (Seção 2.4.2) e ao Manual do Usuário (Seção 4.6.4).</p>
 
 <div class="figure-wrap">
   <img src="{shot_home}" alt="Tela 01 — Página Inicial"/>
@@ -2229,12 +2243,54 @@ def build_html() -> str:
 </div>
 <p><strong>Elementos da Tela 04 (Cadastro de Cliente — <code>/cadastro</code>):</strong> formulário centralizado com campos de nome completo, e-mail (para vínculo automático com pedidos anteriores do WhatsApp/site), WhatsApp/Telefone com máscara, CPF opcional validado por Módulo 11, senha e confirmação de senha, botão <em>Criar minha conta</em> (que dispara o código OTP de 6 dígitos para <code>/verificar-conta</code>) e link de redirecionamento para login.</p>
 
+<div class="figure-wrap">
+  <img src="{shot_checkout}" alt="Tela 05 — Checkout Online"/>
+  <div class="figure-caption">Figura 7 — Tela 05 — Checkout Online com Cupom VEVEY10 e Desconto Pix</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 05 (Checkout — <code>/checkout</code>):</strong> bloco <em>Seus dados</em> autopreenchido para clientes autenticados; seletor <em>Retirada na loja</em> (grátis no mesmo dia) ou <em>Entrega Correios</em> (SEDEX/PAC com autopreenchimento por CEP e dias úteis reais via BrasilAPI/ViaCEP); resumo lateral com miniaturas dos itens, campo interativo de cupom (exibindo <code>Cupom VEVEY10 aplicado</code>), cálculo automático de 5% OFF no Pix e total líquido validado em centavos.</p>
+
+<div class="figure-wrap">
+  <img src="{shot_account}" alt="Tela 06 — Minha Conta"/>
+  <div class="figure-caption">Figura 8 — Tela 06 — Área do Cliente Minha Conta (Pedidos e Endereços)</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 06 (Minha Conta — <code>/conta</code>):</strong> cabeçalho personalizado no guard isolado <code>customers</code> com botão <em>Sair da conta</em>; lista <em>Meus pedidos</em> exibindo código sequencial (<code>VV-2026-XXXXXX</code>), data/hora, badges independentes de status financeiro e logístico (<code>Pago</code> / <code>Entregue</code>) e itens comprados com snapshot de preço; painel lateral <em>Endereços salvos</em> e formulário <em>Novo endereço</em>.</p>
+
+<div class="figure-wrap">
+  <img src="{shot_admin_dashboard}" alt="Tela 07 — Dashboard Administrativo"/>
+  <div class="figure-caption">Figura 9 — Tela 07 — Dashboard Administrativo com KPIs e Vendas por Canal</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 07 (Dashboard Administrativo — <code>/admin</code>):</strong> menu lateral organizado por grupos RBAC (<em>Vendas</em>, <em>Clientes</em>, <em>Catálogo</em>, <em>Estoque</em> e <em>Auditoria</em>); cartões de KPIs em tempo real (Faturamento de pedidos pagos, Ticket médio, Pedidos em aberto e Alertas de estoque); gráfico de rosca <em>Vendas pagas por canal</em> (Site, Balcão PDV e WhatsApp); ranking de <em>Produtos mais vendidos</em> e painel de alertas de reposição.</p>
+
+<div class="figure-wrap">
+  <img src="{shot_admin_pdv}" alt="Tela 08 — PDV Balcão"/>
+  <div class="figure-caption">Figura 10 — Tela 08 — PDV Balcão para Vendas Presenciais Integradas ao Estoque</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 08 (PDV Balcão — <code>/admin/pdv</code>):</strong> busca instantânea por nome, SKU ou código de barras; grade de <em>Catálogo rápido</em> exibindo o saldo real em estoque de cada item (<code>Est.: 49</code>); painel lateral <em>Itens da venda</em> com controle de quantidade (<code>- 1 +</code>), identificação opcional do cliente/telefone, seletor de forma de pagamento (Dinheiro, Pix, Débito ou Crédito), totalizador em destaque e botão <em>Concluir venda no balcão</em>.</p>
+
+<div class="figure-wrap">
+  <img src="{shot_admin_stock}" alt="Tela 09 — Saldos de Estoque"/>
+  <div class="figure-caption">Figura 11 — Tela 09 — Saldos de Estoque (Físico, Reservado e Disponível)</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 09 (Saldos de Estoque — <code>/admin/stock-levels</code>):</strong> tabela transacional sincronizada ao ledger exibindo SKU, nome do produto, saldo <em>Físico</em> (<code>on_hand</code>), quantidade <em>Reservada</em> em checkouts ativos (<code>reserved</code>), saldo <em>Disponível</em> calculado pelo PostgreSQL (<code>available</code>) e <em>Estoque mínimo</em> para disparo de alertas, com ações auditáveis de entrada e contagem física.</p>
+
+<div class="figure-wrap">
+  <img src="{shot_admin_audit}" alt="Tela 10 — Logs de Auditoria"/>
+  <div class="figure-caption">Figura 12 — Tela 10 — Logs de Auditoria Unificados de Estoque e Pedidos (RNF011)</div>
+  <div class="figure-source">Fonte: Captura real do sistema desenvolvido (2026).</div>
+</div>
+<p><strong>Elementos da Tela 10 (Logs de Auditoria — <code>/admin/audit-log</code>):</strong> painel exclusivo para papéis gerenciais (<code>admin</code> / <code>super_admin</code>) com filtros por módulo (<em>Estoque</em> ou <em>Pedidos</em>), responsável e busca textual; linha do tempo unificada registrando data/hora exata, ator autenticado, descrição da movimentação ou transição de status, motivo/observação e atalho direto para o registro correspondente.</p>
+
 <h3>2.4.2. Modelo de navegação</h3>
-<p>A Figura 7 ilustra o modelo de navegação elaborado como um <strong>Diagrama UML de Atividade</strong>. Os retângulos arredondados representam as telas numeradas (<strong>Tela 01</strong> a <strong>Tela 08</strong>), os losangos representam decisões de navegação disparadas por eventos do usuário (como <code>[Catálogo]</code>, <code>[Minha conta]</code>, <code>[escolhe "PDV"]</code> e <code>[escolhe "Estoque"]</code>), e os arcos orientados indicam os caminhos percorridos desde o nó inicial até o encerramento do fluxo.</p>
+<p>A Figura 13 ilustra o modelo de navegação elaborado como um <strong>Diagrama UML de Atividade</strong>. Os retângulos arredondados representam as telas numeradas (<strong>Tela 01</strong> a <strong>Tela 10</strong>), os losangos representam decisões de navegação disparadas por eventos do usuário (como <code>[Catálogo]</code>, <code>[Minha conta]</code>, <code>[escolhe "PDV"]</code> e <code>[escolhe "Estoque"]</code>), e os arcos orientados indicam os caminhos percorridos desde o nó inicial até o encerramento do fluxo.</p>
 
 <div class="figure-wrap">
   {SVG_NAVIGATION}
-  <div class="figure-caption">Figura 7 — Diagrama UML de Atividade: Modelo de Navegação do Sistema</div>
+  <div class="figure-caption">Figura 13 — Diagrama UML de Atividade: Modelo de Navegação do Sistema</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
@@ -2245,33 +2301,33 @@ def build_html() -> str:
 <h2>3.1. Modelo estrutural do sistema</h2>
 
 <h3>3.1.1. Diagrama de pacotes</h3>
-<p>O sistema foi estruturado segundo o critério combinado de <strong>Camadas</strong> e <strong>Domínio (DDD / Monólito Modular — ADR 8)</strong>, utilizando <code>internachi/modular</code>. A Figura 8 apresenta os sete pacotes lógicos e suas dependências unidirecionais (<code>«use»</code>), seguidos pela especificação individual de cada pacote.</p>
+<p>O sistema foi estruturado segundo o critério combinado de <strong>Camadas</strong> e <strong>Domínio (DDD / Monólito Modular — ADR 8)</strong>, utilizando <code>internachi/modular</code>. A Figura 14 apresenta os sete pacotes lógicos e suas dependências unidirecionais (<code>«use»</code>), seguidos pela especificação individual de cada pacote.</p>
 
 <div class="figure-wrap">
   {SVG_PACKAGES}
-  <div class="figure-caption">Figura 8 — Diagrama de Pacotes do Monólito Modular (ADR 8)</div>
+  <div class="figure-caption">Figura 14 — Diagrama de Pacotes do Monólito Modular (ADR 8)</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
 {pkgs_html}
 
 <h3>3.1.2. Diagramas de classes</h3>
-<p>A Figura 9 apresenta o Diagrama de Classes UML das principais entidades de domínio do sistema, com visibilidade pública (<code>+</code>), tipos estritos (<code>Money</code>, enums PHP, <code>uuid</code>) e multiplicidades entre os objetos. Na sequência, as cinco classes centrais de negócio são especificadas segundo o modelo completo da disciplina.</p>
+<p>A Figura 15 apresenta o Diagrama de Classes UML das principais entidades de domínio do sistema, com visibilidade pública (<code>+</code>), tipos estritos (<code>Money</code>, enums PHP, <code>uuid</code>) e multiplicidades entre os objetos. Na sequência, as cinco classes centrais de negócio são especificadas segundo o modelo completo da disciplina.</p>
 
 <div class="figure-wrap">
   {SVG_CLASSES}
-  <div class="figure-caption">Figura 9 — Diagrama de Classes de Domínio do Sistema Vevey Doces</div>
+  <div class="figure-caption">Figura 15 — Diagrama de Classes de Domínio do Sistema Vevey Doces</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
 {classes_html}
 
 <h2>3.2. Modelo de banco de dados do sistema</h2>
-<p>Por adotar o SGBD relacional <strong>PostgreSQL 16</strong>, o modelo de persistência é representado pelo Diagrama Entidade-Relacionamento (DER) da Figura 10, evidenciando chaves primárias (<code>PK</code>), chaves estrangeiras (<code>FK</code>) e cardinalidades. Todas as tabelas empregam chaves primárias UUID v7, restrições <code>CHECK</code> de integridade financeira, colunas geradas <code>STORED</code> e ausência de triggers (lógica concentrada na camada de domínio). As Tabelas 9 a 16 detalham os atributos de cada entidade.</p>
+<p>Por adotar o SGBD relacional <strong>PostgreSQL 16</strong>, o modelo de persistência é representado pelo Diagrama Entidade-Relacionamento (DER) da Figura 16, evidenciando chaves primárias (<code>PK</code>), chaves estrangeiras (<code>FK</code>) e cardinalidades. Todas as tabelas empregam chaves primárias UUID v7, restrições <code>CHECK</code> de integridade financeira, colunas geradas <code>STORED</code> e ausência de triggers (lógica concentrada na camada de domínio). As Tabelas 9 a 16 detalham os atributos de cada entidade.</p>
 
 <div class="figure-wrap">
   {SVG_DER}
-  <div class="figure-caption">Figura 10 — Diagrama Entidade-Relacionamento (DER) do PostgreSQL</div>
+  <div class="figure-caption">Figura 16 — Diagrama Entidade-Relacionamento (DER) do PostgreSQL</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
@@ -2281,20 +2337,20 @@ def build_html() -> str:
 <p>Os diagramas de sequência a seguir demonstram dinamicamente como os objetos das classes especificadas na Seção 3.1.2 colaboram para realizar os dois cenários operacionais mais críticos do sistema.</p>
 
 <h3>3.3.1. Cenário: Realizar Compra Online (Checkout e Baixa no Ledger — UC02)</h3>
-<p>A Figura 11 detalha a troca de mensagens desde a submissão do checkout pelo cliente até a gravação do pedido com snapshot, criação de reservas temporárias sob <code>lockForUpdate</code> e conversão definitiva em movimento <code>sale</code> no ledger após a confirmação do pagamento.</p>
+<p>A Figura 17 detalha a troca de mensagens desde a submissão do checkout pelo cliente até a gravação do pedido com snapshot, criação de reservas temporárias sob <code>lockForUpdate</code> e conversão definitiva em movimento <code>sale</code> no ledger após a confirmação do pagamento.</p>
 
 <div class="figure-wrap">
   {SVG_SEQ_CHECKOUT}
-  <div class="figure-caption">Figura 11 — Diagrama de Sequência: Cenário Realizar Compra Online (UC02)</div>
+  <div class="figure-caption">Figura 17 — Diagrama de Sequência: Cenário Realizar Compra Online (UC02)</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
 <h3>3.3.2. Cenário: Registrar Venda Presencial no PDV Balcão (UC04)</h3>
-<p>A Figura 12 ilustra o fluxo síncrono de venda presencial no balcão (<code>/admin/pdv</code>), onde o pedido nasce com status pago e entregue e aciona diretamente <code>RecordDirectSale</code>, emitindo alerta caso algum item fique com saldo negativo (ADR 5).</p>
+<p>A Figura 18 ilustra o fluxo síncrono de venda presencial no balcão (<code>/admin/pdv</code>), onde o pedido nasce com status pago e entregue e aciona diretamente <code>RecordDirectSale</code>, emitindo alerta caso algum item fique com saldo negativo (ADR 5).</p>
 
 <div class="figure-wrap">
   {SVG_SEQ_PDV}
-  <div class="figure-caption">Figura 12 — Diagrama de Sequência: Cenário Registrar Venda PDV Balcão (UC04)</div>
+  <div class="figure-caption">Figura 18 — Diagrama de Sequência: Cenário Registrar Venda PDV Balcão (UC04)</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
@@ -2303,11 +2359,11 @@ def build_html() -> str:
 <h1 style="margin-top:0;">4. Documentação técnica do sistema</h1>
 
 <h2>4.1. Modelo de implementação do sistema</h2>
-<p>O código-fonte foi implementado em <strong>PHP 8.4</strong> com <strong>Laravel 13</strong>, <strong>Filament 5</strong>, <strong>Tailwind CSS v4</strong> e <strong>Vite 8</strong>, utilizando <code>declare(strict_types=1)</code>, DTOs imutáveis (<code>final readonly</code>), casts monetários (<code>MoneyCast</code>) e gerenciamento de imagens em formato WebP (<code>spatie/laravel-medialibrary</code>). A Figura 13 apresenta o Diagrama de Artefatos (<code>«artifact»</code>) e a Tabela 17 descreve a organização de diretórios e pacotes.</p>
+<p>O código-fonte foi implementado em <strong>PHP 8.4</strong> com <strong>Laravel 13</strong>, <strong>Filament 5</strong>, <strong>Tailwind CSS v4</strong> e <strong>Vite 8</strong>, utilizando <code>declare(strict_types=1)</code>, DTOs imutáveis (<code>final readonly</code>), casts monetários (<code>MoneyCast</code>) e gerenciamento de imagens em formato WebP (<code>spatie/laravel-medialibrary</code>). A Figura 19 apresenta o Diagrama de Artefatos (<code>«artifact»</code>) e a Tabela 17 descreve a organização de diretórios e pacotes.</p>
 
 <div class="figure-wrap">
   {SVG_ARTIFACTS}
-  <div class="figure-caption">Figura 13 — Diagrama de Artefatos («artifact») da Arquitetura de Implementação</div>
+  <div class="figure-caption">Figura 19 — Diagrama de Artefatos («artifact») da Arquitetura de Implementação</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
@@ -2360,11 +2416,11 @@ def build_html() -> str:
 </div>
 
 <h2>4.3. Modelos de implantação do sistema</h2>
-<p>A Figura 14 apresenta o Diagrama de Implantação UML (Deployment Diagram) ilustrando os nós físicos e virtuais de execução, os artefatos implantados em cada ambiente e os protocolos de comunicação utilizados em produção.</p>
+<p>A Figura 20 apresenta o Diagrama de Implantação UML (Deployment Diagram) ilustrando os nós físicos e virtuais de execução, os artefatos implantados em cada ambiente e os protocolos de comunicação utilizados em produção.</p>
 
 <div class="figure-wrap">
   {SVG_DEPLOY}
-  <div class="figure-caption">Figura 14 — Diagrama de Implantação UML (Docker, Render, PostgreSQL e APIs)</div>
+  <div class="figure-caption">Figura 20 — Diagrama de Implantação UML (Docker, Render, PostgreSQL e APIs)</div>
   <div class="figure-source">Fonte: Elaborado pelos autores (2026).</div>
 </div>
 
@@ -2435,15 +2491,15 @@ def build_html() -> str:
 <p>A instalação local segue integralmente os passos da Seção 4.4. Em ambiente de nuvem (Render.com), o arquivo <code>render.yaml</code> automatiza a criação do banco PostgreSQL, execução das migrations, carga do catálogo, criação das contas da equipe e ativação do cupom demonstrativo <code>VEVEY10</code>. Para envio real de e-mails de verificação 2FA, basta informar a chave <code>RESEND_API_KEY</code> nas variáveis de ambiente.</p>
 
 <h3>4.6.4. Utilização do sistema</h3>
-<p><strong>Operação na Loja Virtual (<code>/</code> — Telas 01 a 04, ilustradas nas Figuras 3 a 6):</strong></p>
+<p><strong>Operação na Loja Virtual (<code>/</code> — Telas 01 a 06, ilustradas nas Figuras 3 a 8):</strong></p>
 <ol>
   <li>Na <strong>Tela 01</strong> (Figura 3), digite o nome, SKU ou código de barras na busca em pílula ou navegue pelos departamentos.</li>
   <li>Na <strong>Tela 02</strong> (Figura 4), combine filtros de categoria e cor no catálogo e adicione produtos ajustando a quantidade (<code>- 1 +</code>).</li>
   <li>Na <strong>Tela 03</strong> (Figura 5), alterne entre cores irmãs, confira o saldo real disponível e clique em <em>Adicionar ao carrinho</em>.</li>
-  <li>Abra o carrinho lateral e clique em <em>Finalizar pedido</em>; informe o CEP para cotar SEDEX/PAC com previsão em dias úteis reais (ou escolha Retirada na loja), aplique o cupom <code>VEVEY10</code> e conclua via Pix (5% OFF) ou Cartão.</li>
-  <li>Para criar sua conta, acesse <em>Minha conta → Criar conta</em> (<strong>Tela 04</strong>, Figura 6) e informe o código de 6 dígitos na tela de verificação em duas etapas (fluxo ilustrado na Figura 7).</li>
+  <li>Abra o carrinho lateral e clique em <em>Finalizar pedido</em> (<strong>Tela 05</strong>, Figura 7); informe o CEP para cotar SEDEX/PAC com previsão em dias úteis reais (ou escolha Retirada na loja), aplique o cupom <code>VEVEY10</code> e conclua via Pix (5% OFF) ou Cartão.</li>
+  <li>Para criar sua conta, acesse <em>Minha conta → Criar conta</em> (<strong>Tela 04</strong>, Figura 6), confirme o código OTP de 6 dígitos e acompanhe pedidos e endereços em <strong>Tela 06</strong> (Figura 8).</li>
 </ol>
-<p><strong>Operação no Painel Administrativo (<code>/admin</code> — Telas 07 e 08, fluxo na Figura 7):</strong> autentique-se utilizando uma das credenciais da Tabela 20. Utilize <strong>Vendas → PDV Balcão</strong> (<code>/admin/pdv</code>) para vendas presenciais; <strong>Vendas → Pedidos</strong> para confirmar pagamentos e avançar entregas; <strong>Vendas → Cupons</strong> para gerenciar promoções; <strong>Estoque → Saldos de estoque</strong> para lançar entradas de fornecedor ou contagens físicas; e <strong>Auditoria → Logs de auditoria</strong> para consultar o histórico completo.</p>
+<p><strong>Operação no Painel Administrativo (<code>/admin</code> — Telas 07 a 10, ilustradas nas Figuras 9 a 12):</strong> autentique-se utilizando uma das credenciais da Tabela 20 para acessar o Dashboard gerencial (<strong>Tela 07</strong>, Figura 9). Utilize <strong>Vendas → PDV Balcão</strong> (<strong>Tela 08</strong>, Figura 10) para vendas presenciais; <strong>Vendas → Pedidos</strong> para confirmar pagamentos e avançar entregas; <strong>Vendas → Cupons</strong> para gerenciar promoções; <strong>Estoque → Saldos de estoque</strong> (<strong>Tela 09</strong>, Figura 11) para lançar entradas de fornecedor ou contagens físicas; e <strong>Auditoria → Logs de auditoria</strong> (<strong>Tela 10</strong>, Figura 12) para consultar o histórico completo.</p>
 <p><strong>Aviso importante:</strong> nunca altere saldos de estoque diretamente no banco de dados. Toda entrada ou contagem física deve ser registrada pelas ações do menu <em>Saldos de estoque</em> para preservar a integridade do ledger e da auditoria.</p>
 
 <div class="table-wrap">

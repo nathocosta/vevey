@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
+
         Relation::enforceMorphMap([
             'users' => User::class,
             'media' => Media::class,

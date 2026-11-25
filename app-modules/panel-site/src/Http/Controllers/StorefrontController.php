@@ -11,7 +11,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Vevey\Catalog\Models\Attribute;
 use Vevey\Catalog\Models\AttributeValue;
 use Vevey\Catalog\Models\Category;
@@ -68,16 +70,20 @@ final class StorefrontController extends Controller
     {
         $navCategories = $this->navigationCategories();
 
-        $search = mb_trim((string) $request->string('q'));
-        $categorySlug = mb_trim((string) $request->string('categoria'));
+        $search = mb_substr(mb_trim((string) $request->string('q')), 0, 100);
+        $categorySlug = mb_substr(mb_trim((string) $request->string('categoria')), 0, 100);
         $onlyPromo = $request->boolean('ofertas');
         $sort = (string) $request->string('ordenar', 'relevancia');
 
         /** @var list<string> $selectedAttributes */
-        $selectedAttributes = array_values(array_filter(
-            array_map(strval(...), (array) $request->input('atributos', [])),
-            static fn (string $value): bool => $value !== '',
-        ));
+        $selectedAttributes = array_slice(
+            array_values(array_filter(
+                array_map(strval(...), (array) $request->input('atributos', [])),
+                static fn (string $value): bool => $value !== '' && mb_strlen($value) <= 60,
+            )),
+            0,
+            20,
+        );
 
         $activeCategory = $categorySlug !== ''
             ? Category::query()
@@ -221,7 +227,7 @@ final class StorefrontController extends Controller
             $colorSiblings = $siblingQuery->limit(8)->get();
         }
 
-        $stockMap = $this->stockMap($relatedProducts->push($product));
+        $stockMap = $this->stockMap($relatedProducts->concat([$product]));
 
         return view('store.product', [
             'navCategories' => $this->navigationCategories(),
@@ -235,7 +241,7 @@ final class StorefrontController extends Controller
 
     public function searchSuggestions(Request $request): JsonResponse
     {
-        $term = mb_trim((string) $request->string('q'));
+        $term = mb_substr(mb_trim((string) $request->string('q')), 0, 80);
 
         if (mb_strlen($term) < 2) {
             return response()->json(['items' => []]);
@@ -248,17 +254,147 @@ final class StorefrontController extends Controller
             ->limit(5)
             ->get();
 
+        $stockMap = $this->stockMap($products);
+
         $items = $products->map(static fn (Product $product): array => [
             'id' => $product->id,
             'name' => $product->name,
             'sku' => $product->sku,
             'category' => $product->categories->first()?->name,
             'price' => self::formatBrl($product->sale_price),
-            'image' => self::productImageUrl($product),
+            'available_stock' => $stockMap[$product->id] ?? 0,
+            'image' => self::productImageUrl($product, thumb: true),
+            'url' => route('store.product', ['slug' => $product->slug]),
+        ])->values()->all();
+
+        return response()
+            ->json(['items' => $items])
+            ->header('Cache-Control', 'public, max-age=30');
+    }
+
+    public function favorites(): View
+    {
+        return view('store.favorites', [
+            'navCategories' => $this->navigationCategories(),
+        ]);
+    }
+
+    public function favoriteItems(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'max:50'],
+            'ids.*' => ['required', 'uuid'],
+        ]);
+
+        /** @var list<string> $ids */
+        $ids = array_values(array_unique($validated['ids']));
+
+        $products = Product::query()
+            ->active()
+            ->whereKey($ids)
+            ->with(['categories', 'media'])
+            ->get();
+
+        $stockMap = $this->stockMap($products);
+
+        $items = $products->map(static fn (Product $product): array => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category' => $product->categories->first()?->name,
+            'price' => self::formatBrl($product->sale_price),
+            'price_cents' => $product->sale_price->getMinorAmount()->toInt(),
+            'regular_price' => $product->promo_price_cents !== null ? self::formatBrl($product->price_cents) : null,
+            'discount' => self::discountPercent($product),
+            'available_stock' => $stockMap[$product->id] ?? 0,
+            'image' => self::productImageUrl($product, thumb: true),
             'url' => route('store.product', ['slug' => $product->slug]),
         ])->values()->all();
 
         return response()->json(['items' => $items]);
+    }
+
+    public function about(): View
+    {
+        return view('store.pages.about', [
+            'navCategories' => $this->navigationCategories(),
+        ]);
+    }
+
+    public function privacy(): View
+    {
+        return view('store.pages.privacy', [
+            'navCategories' => $this->navigationCategories(),
+        ]);
+    }
+
+    public function returns(): View
+    {
+        return view('store.pages.returns', [
+            'navCategories' => $this->navigationCategories(),
+        ]);
+    }
+
+    public function sitemap(): Response
+    {
+        $xml = Cache::remember('vevey:sitemap:xml', now()->addHour(), static function (): string {
+            $urls = [
+                ['loc' => route('store.home'), 'priority' => '1.0', 'changefreq' => 'daily'],
+                ['loc' => route('store.catalog'), 'priority' => '0.9', 'changefreq' => 'daily'],
+                ['loc' => route('store.track'), 'priority' => '0.5', 'changefreq' => 'monthly'],
+                ['loc' => route('store.about'), 'priority' => '0.5', 'changefreq' => 'monthly'],
+                ['loc' => route('store.privacy'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+                ['loc' => route('store.returns'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+            ];
+
+            $categories = Category::query()
+                ->where('is_active', true)
+                ->orderBy('position')
+                ->get(['slug', 'updated_at']);
+
+            foreach ($categories as $category) {
+                $urls[] = [
+                    'loc' => route('store.catalog', ['categoria' => $category->slug]),
+                    'lastmod' => $category->updated_at?->toAtomString(),
+                    'priority' => '0.8',
+                    'changefreq' => 'weekly',
+                ];
+            }
+
+            $products = Product::query()
+                ->active()
+                ->orderByDesc('updated_at')
+                ->get(['slug', 'updated_at']);
+
+            foreach ($products as $product) {
+                $urls[] = [
+                    'loc' => route('store.product', ['slug' => $product->slug]),
+                    'lastmod' => $product->updated_at?->toAtomString(),
+                    'priority' => '0.7',
+                    'changefreq' => 'weekly',
+                ];
+            }
+
+            $lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
+            foreach ($urls as $entry) {
+                $lines[] = '  <url>';
+                $lines[] = '    <loc>' . e($entry['loc']) . '</loc>';
+                if (! empty($entry['lastmod'])) {
+                    $lines[] = '    <lastmod>' . e($entry['lastmod']) . '</lastmod>';
+                }
+                $lines[] = '    <changefreq>' . $entry['changefreq'] . '</changefreq>';
+                $lines[] = '    <priority>' . $entry['priority'] . '</priority>';
+                $lines[] = '  </url>';
+            }
+            $lines[] = '</urlset>';
+
+            return implode("\n", $lines);
+        });
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 
     public static function formatBrl(Money $money): string
@@ -293,28 +429,43 @@ final class StorefrontController extends Controller
                 return $media->getUrl(Product::THUMB_CONVERSION);
             }
 
+            if (! $thumb && $media->hasGeneratedConversion(Product::LARGE_CONVERSION)) {
+                return $media->getUrl(Product::LARGE_CONVERSION);
+            }
+
             return $media->getUrl();
         }
 
         $skuFile = mb_strtolower($product->sku);
-        foreach (['png', 'webp', 'jpg'] as $ext) {
-            $relative = "images/produtos/{$skuFile}.{$ext}";
+        $candidates = $thumb
+            ? ["images/produtos/{$skuFile}-thumb.webp", "images/produtos/{$skuFile}.webp", "images/produtos/{$skuFile}.png", "images/produtos/{$skuFile}.jpg"]
+            : ["images/produtos/{$skuFile}.webp", "images/produtos/{$skuFile}.png", "images/produtos/{$skuFile}.jpg"];
+
+        foreach ($candidates as $relative) {
             if (is_file(public_path($relative))) {
                 return asset($relative);
             }
         }
 
-        $categoryFallback = match ($product->categories->first()?->slug) {
-            'baloes' => 'images/produtos/bal-met-9-az.jpg',
-            'descartaveis' => 'images/produtos/prt-desc-az.jpg',
-            'chocolates' => 'images/produtos/doc-kitkat-cx24.jpg',
-            'balas-e-guloseimas' => 'images/produtos/doc-bala-fini-500.jpg',
-            'embalagens-e-papeloes' => 'images/produtos/emb-pap-doce-25.jpg',
+        $categoryBase = match ($product->categories->first()?->slug) {
+            'baloes' => 'images/produtos/bal-met-9-az',
+            'descartaveis' => 'images/produtos/prt-desc-az',
+            'chocolates' => 'images/produtos/doc-kitkat-cx24',
+            'balas-e-guloseimas' => 'images/produtos/doc-bala-fini-500',
+            'embalagens-e-papeloes' => 'images/produtos/emb-pap-doce-25',
             default => null,
         };
 
-        if ($categoryFallback !== null && is_file(public_path($categoryFallback))) {
-            return asset($categoryFallback);
+        if ($categoryBase !== null) {
+            $fallbackCandidates = $thumb
+                ? ["{$categoryBase}-thumb.webp", "{$categoryBase}.webp", "{$categoryBase}.jpg"]
+                : ["{$categoryBase}.webp", "{$categoryBase}.jpg"];
+
+            foreach ($fallbackCandidates as $fallback) {
+                if (is_file(public_path($fallback))) {
+                    return asset($fallback);
+                }
+            }
         }
 
         return null;

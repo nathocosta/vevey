@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Vevey\PanelSite\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-
+use App\Services\BrasilApiService;
+use App\Services\TransactionalMailer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,6 +60,17 @@ final class CustomerAuthController extends Controller
             ]);
         }
 
+        /** @var Customer $customer */
+        $customer = Auth::guard('customers')->user();
+
+        // Se a conta ainda não concluiu a verificação em 2 etapas, redireciona para confirmar o código
+        if ($customer->email_verified_at === null) {
+            Auth::guard('customers')->logout();
+            $this->issueVerificationCode($customer, $request);
+
+            return redirect()->route('store.verify');
+        }
+
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
@@ -82,23 +94,35 @@ final class CustomerAuthController extends Controller
             'name' => ['required', 'string', 'min:3', 'max:120'],
             'email' => ['required', 'email', 'max:120'],
             'phone' => ['required', 'string', 'min:10', 'max:20'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'cpf' => ['nullable', 'string', 'max:14'],
+            'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
         ]);
+
+        $formattedCpf = null;
+        if (! empty($validated['cpf'])) {
+            if (! BrasilApiService::isValidCpf((string) $validated['cpf'])) {
+                throw ValidationException::withMessages([
+                    'cpf' => 'CPF inválido. Verifique os dígitos informados.',
+                ]);
+            }
+            $formattedCpf = BrasilApiService::formatCpf((string) $validated['cpf']);
+        }
 
         $email = mb_strtolower(mb_trim((string) $validated['email']));
 
-        $existingWithPassword = Customer::query()
+        $existingVerified = Customer::query()
             ->whereRaw('lower(email) = ?', [$email])
             ->whereNotNull('password')
+            ->whereNotNull('email_verified_at')
             ->exists();
 
-        if ($existingWithPassword) {
+        if ($existingVerified) {
             throw ValidationException::withMessages([
                 'email' => 'Já existe uma conta cadastrada com este e-mail. Faça login para continuar.',
             ]);
         }
 
-        // ADR 7: ativa conta de cliente já existente (ex.: compra anterior como visitante/WhatsApp) ou cria novo
+        // ADR 7: ativa conta de cliente já existente (visitante/WhatsApp) ou cria novo
         $customerData = $findOrCreate->handle(
             name: (string) $validated['name'],
             email: $email,
@@ -111,13 +135,111 @@ final class CustomerAuthController extends Controller
         $customer->update([
             'name' => mb_trim((string) $validated['name']),
             'email' => $email,
+            'cpf' => $formattedCpf ?? $customer->cpf,
             'password' => (string) $validated['password'],
         ]);
 
+        $this->issueVerificationCode($customer, $request);
+
+        return redirect()->route('store.verify')
+            ->with('status', 'Enviamos um código de 6 dígitos para confirmar sua conta.');
+    }
+
+    public function showVerify(Request $request): View|RedirectResponse
+    {
+        $customerId = $request->session()->get('pending_verification_customer_id');
+        if (! is_string($customerId)) {
+            return redirect()->route('store.login');
+        }
+
+        $customer = Customer::query()->find($customerId);
+        if (! $customer instanceof Customer) {
+            return redirect()->route('store.login');
+        }
+
+        $showDemoCode = in_array(config('mail.default'), ['log', 'array'], true)
+            || app()->isLocal()
+            || (bool) $request->session()->get('verification_mail_fallback', false);
+
+        return view('store.auth.verify', [
+            'navCategories' => $this->navCategories(),
+            'email' => $customer->email,
+            'demoCode' => $showDemoCode ? $customer->verification_code : null,
+        ]);
+    }
+
+    public function verify(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'digits:6'],
+        ]);
+
+        $customerId = $request->session()->get('pending_verification_customer_id');
+        if (! is_string($customerId)) {
+            return redirect()->route('store.login');
+        }
+
+        $customer = Customer::query()->find($customerId);
+        if (! $customer instanceof Customer) {
+            return redirect()->route('store.login');
+        }
+
+        $otpThrottleKey = 'customer-otp:' . $customer->id;
+
+        if (RateLimiter::tooManyAttempts($otpThrottleKey, 5)) {
+            $customer->update([
+                'verification_code' => null,
+                'verification_expires_at' => null,
+            ]);
+
+            throw ValidationException::withMessages([
+                'code' => 'Muitas tentativas incorretas. O código foi invalidado — solicite um novo código abaixo.',
+            ]);
+        }
+
+        if (
+            $customer->verification_code === null
+            || $customer->verification_expires_at === null
+            || now()->gt($customer->verification_expires_at)
+            || ! hash_equals((string) $customer->verification_code, (string) $validated['code'])
+        ) {
+            RateLimiter::hit($otpThrottleKey, 900);
+
+            throw ValidationException::withMessages([
+                'code' => 'Código inválido ou expirado. Solicite um novo código abaixo.',
+            ]);
+        }
+
+        RateLimiter::clear($otpThrottleKey);
+
+        $customer->update([
+            'email_verified_at' => now(),
+            'verification_code' => null,
+            'verification_expires_at' => null,
+        ]);
+
+        $request->session()->forget(['pending_verification_customer_id', 'verification_mail_fallback']);
         Auth::guard('customers')->login($customer);
         $request->session()->regenerate();
 
-        return redirect()->route('store.account');
+        return redirect()->route('store.account')
+            ->with('status', 'Conta verificada com sucesso! Bem-vindo(a) à Vevey Doces.');
+    }
+
+    public function resendVerification(Request $request): RedirectResponse
+    {
+        $customerId = $request->session()->get('pending_verification_customer_id');
+        if (! is_string($customerId)) {
+            return redirect()->route('store.login');
+        }
+
+        $customer = Customer::query()->find($customerId);
+        if ($customer instanceof Customer) {
+            $this->issueVerificationCode($customer, $request);
+        }
+
+        return redirect()->route('store.verify')
+            ->with('status', 'Novo código de verificação gerado.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -127,6 +249,31 @@ final class CustomerAuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('store.home');
+    }
+
+    private function issueVerificationCode(Customer $customer, Request $request): void
+    {
+        $code = (string) random_int(100000, 999999);
+
+        $customer->update([
+            'verification_code' => $code,
+            'verification_expires_at' => now()->addMinutes(15),
+        ]);
+
+        $request->session()->put('pending_verification_customer_id', $customer->id);
+        $request->session()->forget('verification_mail_fallback');
+
+        if ($customer->email !== null) {
+            $sentExternally = app(TransactionalMailer::class)->sendVerificationCode(
+                toEmail: (string) $customer->email,
+                customerName: $customer->name,
+                code: $code,
+            );
+
+            if (! $sentExternally) {
+                $request->session()->put('verification_mail_fallback', true);
+            }
+        }
     }
 
     /**

@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: vevey-doces
+    runtime: docker
+    plan: free
+    region: ohio
+    branch: feat/storefront
+    envVars:
+      - key: APP_NAME
+        value: "Vevey Doces"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: MAIL_MAILER
+        value: log
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: vevey-postgres
+          property: connectionString
+
+databases:
+  - name: vevey-postgres
+    plan: free
+    region: ohio
+    databaseName: vevey
+    user: vevey

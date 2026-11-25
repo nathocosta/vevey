@@ -24,18 +24,24 @@
                     <label for="email" class="block text-xs font-medium text-espresso mb-1.5">E-mail</label>
                     <input id="email" name="email" type="email" value="{{ old('email') }}" required class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
                 </div>
-                <div>
-                    <label for="phone" class="block text-xs font-medium text-espresso mb-1.5">WhatsApp / Telefone</label>
-                    <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                <div class="grid sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="phone" class="block text-xs font-medium text-espresso mb-1.5">WhatsApp / Telefone</label>
+                        <input id="phone" name="phone" data-mask="phone" type="tel" maxlength="15" value="{{ old('phone') }}" required placeholder="(11) 99999-9999" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                    </div>
+                    <div>
+                        <label for="cpf" class="block text-xs font-medium text-espresso mb-1.5">CPF (opcional)</label>
+                        <input id="cpf" name="cpf" data-mask="cpf" type="text" maxlength="14" value="{{ old('cpf') }}" placeholder="000.000.000-00" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                    </div>
                 </div>
                 <div class="grid sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="password" class="block text-xs font-medium text-espresso mb-1.5">Senha</label>
-                        <input id="password" name="password" type="password" required minlength="6" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                        <label for="password" class="block text-xs font-medium text-espresso mb-1.5">Senha (mín. 8 caracteres)</label>
+                        <input id="password" name="password" type="password" required minlength="8" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
                     </div>
                     <div>
                         <label for="password_confirmation" class="block text-xs font-medium text-espresso mb-1.5">Confirmar senha</label>
-                        <input id="password_confirmation" name="password_confirmation" type="password" required minlength="6" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
+                        <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" class="w-full bg-paper border hairline focus:border-espresso/40 focus:bg-porcelain rounded-lg px-3.5 h-10 text-sm text-espresso outline-none" />
                     </div>
                 </div>
 

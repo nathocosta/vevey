@@ -68,6 +68,8 @@ final class Product extends Model implements HasMedia
 
     public const string THUMB_CONVERSION = 'thumb';
 
+    public const string LARGE_CONVERSION = 'large';
+
     /**
      * @return BelongsToMany<Category, $this>
      */
@@ -105,6 +107,10 @@ final class Product extends Model implements HasMedia
     {
         $this->addMediaConversion(self::THUMB_CONVERSION)
             ->fit(Fit::Crop, 400, 400)
+            ->format('webp');
+
+        $this->addMediaConversion(self::LARGE_CONVERSION)
+            ->fit(Fit::Contain, 900, 900)
             ->format('webp');
     }
 

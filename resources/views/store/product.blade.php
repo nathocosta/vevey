@@ -13,9 +13,33 @@
 
 <x-store.layout
     :title="$product->name . ' — Vevey Doces'"
+    :description="$product->description ?: ($product->name . ' na Vevey Doces. Retirada no mesmo dia ou entrega pelos Correios.')"
+    :og-image="$primaryImage"
+    og-type="product"
     :nav-categories="$navCategories"
     :active-category-slug="$primaryCategory?->slug"
 >
+    @php
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'description' => $product->description ?: $product->name,
+            'image' => $primaryImage ? [$primaryImage] : [],
+            'brand' => ['@type' => 'Brand', 'name' => 'Vevey Doces'],
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => route('store.product', ['slug' => $product->slug]),
+                'priceCurrency' => 'BRL',
+                'price' => number_format($salePriceCents / 100, 2, '.', ''),
+                'availability' => $availableStock > 0
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-24 lg:pb-12">
         <!-- Breadcrumb -->
         <nav aria-label="Navegação estrutural" class="text-xs text-espresso-muted flex items-center gap-2 mb-6 flex-wrap">
@@ -45,7 +69,7 @@
                 <div class="bg-porcelain rounded-2xl border hairline overflow-hidden">
                     <div class="relative aspect-square bg-linen flex flex-col items-center justify-center">
                         @if ($primaryImage)
-                            <img id="pdp-main-image" src="{{ $primaryImage }}" alt="{{ $product->name }}" class="w-full h-full object-cover" />
+                            <img id="pdp-main-image" src="{{ $primaryImage }}" alt="{{ $product->name }}" width="900" height="900" fetchpriority="high" decoding="async" class="w-full h-full object-cover" />
                         @else
                             <span class="material-symbols-outlined text-[32px] text-espresso-muted">inventory_2</span>
                             <span class="mt-2 font-mono text-xs text-espresso-muted">{{ $product->sku }}</span>

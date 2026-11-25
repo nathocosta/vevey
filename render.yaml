@@ -10,6 +10,10 @@ services:
         value: "Vevey Doces"
       - key: APP_ENV
         value: production
+      - key: APP_LOCALE
+        value: pt_BR
+      - key: APP_FALLBACK_LOCALE
+        value: pt_BR
       - key: APP_DEBUG
         value: "false"
       - key: APP_KEY

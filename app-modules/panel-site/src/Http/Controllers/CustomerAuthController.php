@@ -95,7 +95,7 @@ final class CustomerAuthController extends Controller
             'email' => ['required', 'email', 'max:120'],
             'phone' => ['required', 'string', 'min:10', 'max:20'],
             'cpf' => ['nullable', 'string', 'max:14'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
         ]);
 
         $formattedCpf = null;
@@ -184,15 +184,33 @@ final class CustomerAuthController extends Controller
             return redirect()->route('store.login');
         }
 
+        $otpThrottleKey = 'customer-otp:' . $customer->id;
+
+        if (RateLimiter::tooManyAttempts($otpThrottleKey, 5)) {
+            $customer->update([
+                'verification_code' => null,
+                'verification_expires_at' => null,
+            ]);
+
+            throw ValidationException::withMessages([
+                'code' => 'Muitas tentativas incorretas. O código foi invalidado — solicite um novo código abaixo.',
+            ]);
+        }
+
         if (
-            $customer->verification_code !== (string) $validated['code']
+            $customer->verification_code === null
             || $customer->verification_expires_at === null
             || now()->gt($customer->verification_expires_at)
+            || ! hash_equals((string) $customer->verification_code, (string) $validated['code'])
         ) {
+            RateLimiter::hit($otpThrottleKey, 900);
+
             throw ValidationException::withMessages([
                 'code' => 'Código inválido ou expirado. Solicite um novo código abaixo.',
             ]);
         }
+
+        RateLimiter::clear($otpThrottleKey);
 
         $customer->update([
             'email_verified_at' => now(),
@@ -200,7 +218,7 @@ final class CustomerAuthController extends Controller
             'verification_expires_at' => null,
         ]);
 
-        $request->session()->forget('pending_verification_customer_id');
+        $request->session()->forget(['pending_verification_customer_id', 'verification_mail_fallback']);
         Auth::guard('customers')->login($customer);
         $request->session()->regenerate();
 

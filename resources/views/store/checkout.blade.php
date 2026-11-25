@@ -87,15 +87,16 @@
 
             <div class="p-5 rounded-xl bg-paper border hairline space-y-3 text-sm" id="success-breakdown"></div>
 
-            <div class="flex flex-wrap gap-3 pt-2">
+            <div class="flex flex-wrap gap-3 pt-2 print:hidden">
                 <a href="{{ auth('customers')->check() ? route('store.account') : route('store.login') }}" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm rounded-lg px-6 h-11 transition-colors duration-150">
                     Acompanhar em Minha Conta
                 </a>
+                <button type="button" onclick="window.print()" class="inline-flex items-center justify-center gap-1.5 bg-paper border hairline-strong hover:bg-linen text-espresso font-medium text-sm rounded-lg px-5 h-11 transition-colors duration-150 cursor-pointer">
+                    <span class="material-symbols-outlined text-[18px]">print</span>
+                    Imprimir comprovante
+                </button>
                 <a href="{{ route('store.catalog') }}" class="inline-flex items-center justify-center bg-espresso hover:bg-[#332D25] text-porcelain font-medium text-sm rounded-lg px-6 h-11 transition-colors duration-150">
                     Continuar comprando
-                </a>
-                <a href="{{ route('store.home') }}" class="inline-flex items-center justify-center bg-porcelain border hairline-strong hover:bg-linen text-espresso font-medium text-sm rounded-lg px-6 h-11 transition-colors duration-150">
-                    Voltar ao início
                 </a>
             </div>
         </div>
@@ -286,7 +287,10 @@
                         Confirmar pedido
                     </button>
 
-                    <p class="text-xs text-espresso-muted text-center">Valores finais recalculados em centavos no servidor</p>
+                    <p class="text-xs text-espresso-muted text-center flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-positive">lock</span>
+                        <span>Compra protegida · Ambiente seguro</span>
+                    </p>
                 </div>
             </aside>
         </form>

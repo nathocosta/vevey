@@ -6,6 +6,26 @@ function formatBrl(cents) {
     return 'R$ ' + (cents / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function safeUrl(value) {
+    const raw = String(value ?? '').trim();
+    if (!raw) {
+        return '#';
+    }
+    if (raw.startsWith('/') || raw.startsWith('http://') || raw.startsWith('https://')) {
+        return escapeHtml(raw);
+    }
+    return '#';
+}
+
 function readStorage(key, fallback) {
     try {
         const raw = localStorage.getItem(key);
@@ -171,25 +191,25 @@ function renderCart() {
         .map(
             (item) => `
             <li class="flex gap-4 py-4 border-b hairline">
-                <a href="${item.url}" class="w-16 h-16 rounded-lg bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
+                <a href="${safeUrl(item.url)}" class="w-16 h-16 rounded-lg bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
                     ${
                         item.image
-                            ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />`
+                            ? `<img src="${safeUrl(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover" />`
                             : `<span class="material-symbols-outlined text-espresso-muted text-[18px]">inventory_2</span>`
                     }
                 </a>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-start justify-between gap-2">
-                        <a href="${item.url}" class="font-medium text-sm text-espresso hover:text-brand-700 line-clamp-2 leading-snug transition-colors duration-150">${item.name}</a>
-                        <button type="button" data-cart-remove="${item.id}" aria-label="Remover item" class="text-espresso-muted hover:text-negative p-1 -mr-1 transition-colors duration-150 cursor-pointer">
+                        <a href="${safeUrl(item.url)}" class="font-medium text-sm text-espresso hover:text-brand-700 line-clamp-2 leading-snug transition-colors duration-150">${escapeHtml(item.name)}</a>
+                        <button type="button" data-cart-remove="${escapeHtml(item.id)}" aria-label="Remover item" class="text-espresso-muted hover:text-negative p-1 -mr-1 transition-colors duration-150 cursor-pointer">
                             <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
                     <div class="mt-3 flex items-center justify-between gap-2">
                         <div class="inline-flex items-center border hairline rounded-lg bg-paper">
-                            <button type="button" data-cart-dec="${item.id}" aria-label="Diminuir quantidade" class="w-8 h-8 flex items-center justify-center text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">−</button>
-                            <span class="tnum text-xs font-medium text-espresso px-2">${item.qty}</span>
-                            <button type="button" data-cart-inc="${item.id}" aria-label="Aumentar quantidade" class="w-8 h-8 flex items-center justify-center text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">+</button>
+                            <button type="button" data-cart-dec="${escapeHtml(item.id)}" aria-label="Diminuir quantidade" class="w-8 h-8 flex items-center justify-center text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">−</button>
+                            <span class="tnum text-xs font-medium text-espresso px-2">${Number(item.qty) || 1}</span>
+                            <button type="button" data-cart-inc="${escapeHtml(item.id)}" aria-label="Aumentar quantidade" class="w-8 h-8 flex items-center justify-center text-espresso-soft hover:text-espresso transition-colors duration-150 cursor-pointer">+</button>
                         </div>
                         <span class="tnum font-medium text-sm text-espresso">${formatBrl(item.priceCents * item.qty)}</span>
                     </div>
@@ -207,6 +227,10 @@ function initFavorites() {
         document.querySelectorAll('[data-fav-toggle]').forEach((btn) => {
             const id = btn.getAttribute('data-fav-toggle');
             btn.classList.toggle('fav-active', favs.has(id));
+        });
+        document.querySelectorAll('[data-fav-count]').forEach((el) => {
+            el.textContent = String(favs.size);
+            el.classList.toggle('hidden', favs.size === 0);
         });
     };
 
@@ -230,7 +254,155 @@ function initFavorites() {
 
         writeStorage(FAV_KEY, Array.from(favs));
         syncButtons();
+        document.dispatchEvent(new CustomEvent('vevey:favs-changed', { detail: Array.from(favs) }));
     });
+}
+
+function initFavoritesPage() {
+    const page = document.getElementById('favorites-page');
+    if (!page) {
+        return;
+    }
+
+    const endpoint = page.getAttribute('data-endpoint') || '/favoritos/itens';
+    const grid = document.getElementById('favorites-grid');
+    const emptyEl = document.getElementById('favorites-empty');
+    const subtitleEl = document.getElementById('favorites-subtitle');
+    const clearBtn = document.getElementById('favorites-clear-btn');
+
+    const loadFavorites = async () => {
+        const ids = readStorage(FAV_KEY, []);
+        if (!Array.isArray(ids) || ids.length === 0) {
+            if (grid) grid.innerHTML = '';
+            emptyEl?.classList.remove('hidden');
+            clearBtn?.classList.add('hidden');
+            if (subtitleEl) subtitleEl.textContent = 'Nenhum produto salvo no momento';
+            return;
+        }
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({ ids: ids.slice(0, 50) }),
+            });
+
+            if (!res.ok) {
+                throw new Error('Falha ao carregar favoritos');
+            }
+
+            const data = await res.json();
+            const items = Array.isArray(data.items) ? data.items : [];
+
+            if (items.length === 0) {
+                if (grid) grid.innerHTML = '';
+                emptyEl?.classList.remove('hidden');
+                clearBtn?.classList.add('hidden');
+                if (subtitleEl) subtitleEl.textContent = 'Nenhum produto ativo encontrado nos favoritos';
+                return;
+            }
+
+            emptyEl?.classList.add('hidden');
+            clearBtn?.classList.remove('hidden');
+            if (subtitleEl) {
+                subtitleEl.textContent = `${items.length} ${items.length === 1 ? 'produto salvo' : 'produtos salvos'}`;
+            }
+
+            if (grid) {
+                grid.innerHTML = items
+                    .map((item) => {
+                        const outOfStock = Number(item.available_stock) <= 0;
+                        return `
+                        <article class="group bg-porcelain rounded-xl border hairline hover:border-espresso/20 hover:shadow-[var(--shadow-float)] overflow-hidden flex flex-col transition-[border-color,box-shadow] duration-200" data-product-card>
+                            <div class="relative aspect-square overflow-hidden bg-linen border-b hairline">
+                                <a href="${safeUrl(item.url)}" class="block w-full h-full">
+                                    ${
+                                        item.image
+                                            ? `<img src="${safeUrl(item.image)}" alt="${escapeHtml(item.name)}" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${outOfStock ? 'opacity-60 grayscale' : ''}" />`
+                                            : `<div class="w-full h-full flex items-center justify-center"><span class="material-symbols-outlined text-[28px] text-espresso-muted">inventory_2</span></div>`
+                                    }
+                                </a>
+                                <button type="button" data-fav-toggle="${escapeHtml(item.id)}" aria-label="Remover dos favoritos" class="fav-active absolute top-3 right-3 w-8 h-8 rounded-lg bg-porcelain/95 border hairline flex items-center justify-center text-brand-600 cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px]">favorite</span>
+                                </button>
+                            </div>
+                            <div class="p-4 flex flex-col flex-1">
+                                ${item.category ? `<span class="text-xs text-espresso-muted">${escapeHtml(item.category)}</span>` : ''}
+                                <h3 class="font-display font-medium text-sm sm:text-base text-espresso leading-snug mt-1 line-clamp-2">
+                                    <a href="${safeUrl(item.url)}" class="hover:text-brand-700 transition-colors">${escapeHtml(item.name)}</a>
+                                </h3>
+                                <div class="mt-auto pt-3 flex items-baseline gap-2">
+                                    <span class="tnum font-display font-semibold text-base text-espresso">${escapeHtml(item.price)}</span>
+                                    ${item.regular_price ? `<span class="tnum text-xs text-espresso-muted line-through">${escapeHtml(item.regular_price)}</span>` : ''}
+                                </div>
+                                <div class="mt-4">
+                                    ${
+                                        outOfStock
+                                            ? `<button type="button" disabled class="w-full inline-flex items-center justify-center bg-linen text-espresso-muted font-medium text-sm rounded-lg h-10 cursor-not-allowed">Indisponível</button>`
+                                            : `<button type="button" data-add-cart data-product-id="${escapeHtml(item.id)}" data-product-name="${escapeHtml(item.name)}" data-product-price-cents="${Number(item.price_cents) || 0}" data-product-image="${safeUrl(item.image)}" data-product-url="${safeUrl(item.url)}" class="w-full inline-flex items-center justify-center gap-1.5 bg-espresso hover:bg-[#332D25] text-porcelain font-medium text-sm rounded-lg h-10 transition-colors cursor-pointer"><span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>Adicionar</button>`
+                                    }
+                                </div>
+                            </div>
+                        </article>`;
+                    })
+                    .join('');
+            }
+        } catch {
+            if (subtitleEl) subtitleEl.textContent = 'Não foi possível carregar seus favoritos.';
+        }
+    };
+
+    clearBtn?.addEventListener('click', () => {
+        writeStorage(FAV_KEY, []);
+        document.querySelectorAll('[data-fav-count]').forEach((el) => {
+            el.textContent = '0';
+            el.classList.add('hidden');
+        });
+        loadFavorites();
+        showToast('Lista de favoritos limpa');
+    });
+
+    document.addEventListener('vevey:favs-changed', loadFavorites);
+    loadFavorites();
+}
+
+function initInputMasks() {
+    const formatCpf = (v) => {
+        const d = v.replace(/\D/g, '').slice(0, 11);
+        return d
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    };
+
+    const formatPhone = (v) => {
+        const d = v.replace(/\D/g, '').slice(0, 11);
+        if (d.length <= 10) {
+            return d.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2');
+        }
+        return d.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+    };
+
+    const formatCep = (v) => {
+        const d = v.replace(/\D/g, '').slice(0, 8);
+        return d.replace(/(\d{5})(\d)/, '$1-$2');
+    };
+
+    const bind = (selector, formatter) => {
+        document.querySelectorAll(selector).forEach((el) => {
+            el.addEventListener('input', () => {
+                el.value = formatter(el.value);
+            });
+        });
+    };
+
+    bind('[data-mask="cpf"]', formatCpf);
+    bind('[data-mask="phone"], #customer_phone', formatPhone);
+    bind('[data-mask="cep"], #checkout-cep, #cep-input', formatCep);
 }
 
 function getCsrfToken() {
@@ -239,24 +411,9 @@ function getCsrfToken() {
 
 async function lookupAddressClient(digits) {
     try {
-        const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-        if (res.ok) {
-            const data = await res.json();
-            if (!data.erro) {
-                return {
-                    street: data.logradouro || '',
-                    neighborhood: data.bairro || '',
-                    city: data.localidade || '',
-                    state: data.uf || '',
-                };
-            }
-        }
-    } catch {
-        // Fallback to BrasilAPI
-    }
-
-    try {
-        const res = await fetch(`https://brasilapi.com.br/api/cep/v2/${digits}`);
+        const res = await fetch(`/cep/${encodeURIComponent(digits)}`, {
+            headers: { Accept: 'application/json' },
+        });
         if (res.ok) {
             const data = await res.json();
             return {
@@ -267,7 +424,7 @@ async function lookupAddressClient(digits) {
             };
         }
     } catch {
-        // Ignore
+        // Ignore network errors
     }
 
     return null;
@@ -351,7 +508,7 @@ function initPdpControls() {
                 const qty = Math.max(1, Number(qtyInput?.value || 1));
                 const data = await requestShippingQuote(digits, unitCents * qty);
                 const cityLine = data.address?.city
-                    ? `<div class="text-xs text-espresso-muted pb-2 mb-2 border-b hairline">${data.address.street ? data.address.street + ' · ' : ''}${data.address.city}/${data.address.state}</div>`
+                    ? `<div class="text-xs text-espresso-muted pb-2 mb-2 border-b hairline">${data.address.street ? escapeHtml(data.address.street) + ' · ' : ''}${escapeHtml(data.address.city)}/${escapeHtml(data.address.state)}</div>`
                     : '';
 
                 cepResult.innerHTML =
@@ -361,7 +518,7 @@ function initPdpControls() {
                         .map(
                             (opt) => `
                             <div class="flex justify-between gap-2">
-                                <span>${opt.name} <span class="text-espresso-muted">(${opt.delivery_label})</span></span>
+                                <span>${escapeHtml(opt.name)} <span class="text-espresso-muted">(${escapeHtml(opt.delivery_label)})</span></span>
                                 <span class="tnum font-medium ${opt.price_cents === 0 ? 'text-positive' : 'text-espresso'}">${opt.price_cents === 0 ? 'Grátis' : formatBrl(opt.price_cents)}</span>
                             </div>`
                         )
@@ -442,11 +599,11 @@ function initCheckout() {
                     (item) => `
                     <li class="py-3 flex items-center gap-3">
                         <div class="w-12 h-12 rounded-lg bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
-                            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
+                            ${item.image ? `<img src="${safeUrl(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium text-espresso line-clamp-1">${item.name}</p>
-                            <p class="tnum text-xs text-espresso-muted">${item.qty} × ${formatBrl(item.priceCents)}</p>
+                            <p class="text-xs font-medium text-espresso line-clamp-1">${escapeHtml(item.name)}</p>
+                            <p class="tnum text-xs text-espresso-muted">${Number(item.qty) || 1} × ${formatBrl(item.priceCents)}</p>
                         </div>
                         <span class="tnum text-xs font-medium text-espresso">${formatBrl(item.priceCents * item.qty)}</span>
                     </li>`
@@ -500,10 +657,10 @@ function initCheckout() {
                         (opt, index) => `
                         <label class="flex items-center justify-between gap-3 p-3.5 rounded-xl border hairline-strong bg-paper cursor-pointer has-[:checked]:border-brand-600 has-[:checked]:bg-porcelain transition-colors duration-150">
                             <span class="flex items-center gap-3">
-                                <input type="radio" name="shipping_option" value="${opt.code}" data-price-cents="${opt.price_cents}" ${index === 0 ? 'checked' : ''} class="accent-brand-600" />
+                                <input type="radio" name="shipping_option" value="${escapeHtml(opt.code)}" data-price-cents="${Number(opt.price_cents) || 0}" ${index === 0 ? 'checked' : ''} class="accent-brand-600" />
                                 <span>
-                                    <span class="block text-sm font-medium text-espresso">${opt.name}</span>
-                                    <span class="block text-xs text-espresso-muted">${opt.delivery_label}</span>
+                                    <span class="block text-sm font-medium text-espresso">${escapeHtml(opt.name)}</span>
+                                    <span class="block text-xs text-espresso-muted">${escapeHtml(opt.delivery_label)}</span>
                                 </span>
                             </span>
                             <span class="tnum text-sm font-medium ${opt.price_cents === 0 ? 'text-positive' : 'text-espresso'}">${opt.price_cents === 0 ? 'Grátis' : formatBrl(opt.price_cents)}</span>
@@ -517,7 +674,7 @@ function initCheckout() {
             }
 
             if (cepStatus) {
-                const sourceLabel = data.source === 'melhor_envio' ? 'Cotação via Melhor Envio' : 'Estimativa Correios (configure MELHOR_ENVIO_TOKEN no .env para cotação ao vivo)';
+                const sourceLabel = data.source === 'melhor_envio' ? 'Cotação oficial Correios' : 'Estimativa Correios (SEDEX / PAC)';
                 cepStatus.textContent = data.address?.city ? `${data.address.city}/${data.address.state} · ${sourceLabel}` : sourceLabel;
             }
             renderSummary();
@@ -762,13 +919,13 @@ function initCheckout() {
                 breakdownEl.innerHTML =
                     data.items
                         .map(
-                            (it) => `<div class="flex justify-between"><span>${it.qty}× ${it.name}</span><span class="tnum font-medium text-espresso">${formatBrl(it.line_cents)}</span></div>`
+                            (it) => `<div class="flex justify-between"><span>${Number(it.qty) || 1}× ${escapeHtml(it.name)}</span><span class="tnum font-medium text-espresso">${formatBrl(it.line_cents)}</span></div>`
                         )
                         .join('') +
                     `<div class="pt-3 mt-2 border-t hairline space-y-1.5">` +
                     `<div class="flex justify-between text-espresso-soft"><span>Subtotal</span><span class="tnum">${formatBrl(data.subtotal_cents)}</span></div>` +
                     (data.discount_cents > 0
-                        ? `<div class="flex justify-between text-positive"><span>Desconto Pix</span><span class="tnum">- ${formatBrl(data.discount_cents)}</span></div>`
+                        ? `<div class="flex justify-between text-positive"><span>Descontos</span><span class="tnum">- ${formatBrl(data.discount_cents)}</span></div>`
                         : '') +
                     `<div class="flex justify-between text-espresso-soft"><span>Entrega</span><span class="tnum">${data.shipping_cents === 0 ? 'Grátis' : formatBrl(data.shipping_cents)}</span></div>` +
                     `<div class="flex justify-between font-display font-semibold text-base text-espresso pt-2 border-t hairline"><span>Total</span><span class="tnum">${formatBrl(data.total_cents)}</span></div>` +
@@ -787,7 +944,81 @@ function initCheckout() {
         }
     });
 
+    async function syncCartWithServer() {
+        const cart = getCart();
+        if (cart.length === 0) {
+            return;
+        }
+
+        try {
+            const res = await fetch('/carrinho/validar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    items: cart.map((item) => ({ id: item.id, qty: Math.max(1, Math.min(99, Number(item.qty) || 1)) })),
+                }),
+            });
+
+            if (!res.ok) {
+                return;
+            }
+
+            const data = await res.json();
+            if (Array.isArray(data.items)) {
+                saveCart(data.items);
+                renderSummary();
+            }
+            if (Array.isArray(data.warnings) && data.warnings.length > 0 && errorEl) {
+                errorEl.textContent = data.warnings.join(' ');
+                errorEl.classList.remove('hidden');
+            }
+        } catch {
+            // Keep local cart if offline
+        }
+    }
+
     renderSummary();
+    syncCartWithServer();
+}
+
+function initAccountAddressCep() {
+    const form = document.getElementById('account-address-form');
+    if (!form) {
+        return;
+    }
+
+    const cepInput = form.querySelector('input[name="cep"]');
+    if (!cepInput) {
+        return;
+    }
+
+    cepInput.addEventListener('input', async () => {
+        const digits = cepInput.value.replace(/\D/g, '');
+        if (digits.length !== 8) {
+            return;
+        }
+
+        const addr = await lookupAddressClient(digits);
+        if (!addr) {
+            return;
+        }
+
+        const setField = (name, value) => {
+            const el = form.querySelector(`input[name="${name}"]`);
+            if (el && value) {
+                el.value = value;
+            }
+        };
+
+        setField('street', addr.street);
+        setField('neighborhood', addr.neighborhood);
+        setField('city', addr.city);
+        setField('state', addr.state);
+    });
 }
 
 function initLiveSearch() {
@@ -829,7 +1060,7 @@ function initLiveSearch() {
                 const items = data.items || [];
 
                 if (items.length === 0) {
-                    results.innerHTML = `<div class="px-4 py-3 text-xs text-espresso-muted">Nenhum produto encontrado para "${term}"</div>`;
+                    results.innerHTML = `<div class="px-4 py-3 text-xs text-espresso-muted">Nenhum produto encontrado para "${escapeHtml(term)}"</div>`;
                     results.classList.remove('hidden');
                     return;
                 }
@@ -838,15 +1069,15 @@ function initLiveSearch() {
                     items
                         .map(
                             (item) => `
-                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-paper border-b hairline last:border-b-0 transition-colors duration-150">
+                            <a href="${safeUrl(item.url)}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-paper border-b hairline last:border-b-0 transition-colors duration-150">
                                 <div class="w-10 h-10 rounded-md bg-linen border hairline overflow-hidden shrink-0 flex items-center justify-center">
-                                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
+                                    ${item.image ? `<img src="${safeUrl(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover" />` : `<span class="material-symbols-outlined text-[16px] text-espresso-muted">inventory_2</span>`}
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-espresso truncate">${item.name}</p>
-                                    <p class="text-xs text-espresso-muted">${item.category || item.sku}</p>
+                                    <p class="text-sm font-medium text-espresso truncate">${escapeHtml(item.name)}</p>
+                                    <p class="text-xs text-espresso-muted">${escapeHtml(item.category || item.sku)}</p>
                                 </div>
-                                <span class="tnum text-sm font-medium text-espresso shrink-0">${item.price}</span>
+                                <span class="tnum text-sm font-medium text-espresso shrink-0">${escapeHtml(item.price)}</span>
                             </a>`
                         )
                         .join('') +
@@ -872,11 +1103,33 @@ function initLiveSearch() {
     });
 }
 
+function initLgpdBanner() {
+    const banner = document.getElementById('lgpd-banner');
+    const acceptBtn = document.getElementById('lgpd-accept-btn');
+    if (!banner || !acceptBtn) {
+        return;
+    }
+
+    const accepted = readStorage('vevey_lgpd_ok_v1', false);
+    if (!accepted) {
+        banner.classList.remove('hidden');
+    }
+
+    acceptBtn.addEventListener('click', () => {
+        writeStorage('vevey_lgpd_ok_v1', true);
+        banner.classList.add('hidden');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderCart();
     initFavorites();
+    initFavoritesPage();
+    initInputMasks();
+    initLgpdBanner();
     initPdpControls();
     initCheckout();
+    initAccountAddressCep();
     initLiveSearch();
 
     document.querySelectorAll('[data-open-cart]').forEach((btn) => {

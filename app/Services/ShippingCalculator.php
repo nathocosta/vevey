@@ -73,42 +73,6 @@ final class ShippingCalculator
     }
 
     /**
-     * @return array{street: string, neighborhood: string, city: string, state: string}|null
-     */
-    private function lookupViaCep(string $cep): ?array
-    {
-        if (strlen($cep) !== 8) {
-            return null;
-        }
-
-        try {
-            $response = Http::timeout(4)
-                ->acceptJson()
-                ->get("https://viacep.com.br/ws/{$cep}/json/");
-
-            if (! $response->successful()) {
-                return null;
-            }
-
-            /** @var array<string, mixed> $data */
-            $data = $response->json() ?? [];
-
-            if (($data['erro'] ?? false) === true) {
-                return null;
-            }
-
-            return [
-                'street' => (string) ($data['logradouro'] ?? ''),
-                'neighborhood' => (string) ($data['bairro'] ?? ''),
-                'city' => (string) ($data['localidade'] ?? ''),
-                'state' => (string) ($data['uf'] ?? ''),
-            ];
-        } catch (Throwable) {
-            return null;
-        }
-    }
-
-    /**
      * @return list<array{
      *     code: string,
      *     type: 'delivery',

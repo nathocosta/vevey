@@ -1,5 +1,8 @@
 @props([
     'title' => 'Vevey Doces — Doces, Embalagens e Artigos para Festa',
+    'description' => 'Chocolates, balas, balões metalizados, descartáveis e embalagens de papelão no varejo ou em caixas fechadas. Retire na loja no mesmo dia ou receba pelos Correios.',
+    'ogImage' => null,
+    'ogType' => 'website',
     'navCategories' => collect(),
     'search' => '',
     'activeCategorySlug' => null,
@@ -11,17 +14,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta name="description" content="{{ $description }}" />
+    <meta name="theme-color" content="#E11D48" />
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <meta property="og:site_name" content="Vevey Doces" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:type" content="{{ $ogType }}" />
+    <meta property="og:title" content="{{ $title }}" />
+    <meta property="og:description" content="{{ $description }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:image" content="{{ $ogImage ?: asset('images/hero-vevey-scene.jpg') }}" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>{{ $title }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
+    <link rel="apple-touch-icon" href="{{ asset('images/brand/kit/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ asset('images/brand/kit/site.webmanifest') }}" />
 
     @fonts
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,350,0,0" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen flex flex-col bg-paper text-espresso antialiased selection:bg-brand-100 selection:text-brand-900">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-espresso focus:text-porcelain focus:text-xs focus:font-medium">
+        Pular para o conteúdo principal
+    </a>
 
     <!-- Faixa de condições comerciais -->
-    <div class="bg-espresso-dark text-[#EFE9DF] text-xs">
+    <div class="bg-espresso-dark text-[#EFE9DF] text-xs print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-center sm:justify-between gap-6">
             <span>Frete grátis acima de <span class="tnum font-medium text-porcelain">R$ 150,00</span></span>
             <div class="hidden sm:flex items-center gap-6 text-[#AAA398]">
@@ -32,7 +51,7 @@
     </div>
 
     <!-- Header principal -->
-    <header class="sticky top-0 z-30 bg-porcelain/95 backdrop-blur-sm border-b hairline">
+    <header class="sticky top-0 z-30 bg-porcelain/95 backdrop-blur-sm border-b hairline print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
             <a href="{{ route('store.home') }}" class="inline-flex items-center shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 rounded-md">
                 <x-brand.logo />
@@ -64,8 +83,17 @@
                     Ofertas
                 </a>
 
-                <a href="{{ url('/admin') }}" class="hidden sm:inline-block text-sm font-medium text-espresso-muted hover:text-espresso transition-colors duration-150">
-                    Painel
+                <a href="{{ route('store.track') }}" class="hidden xl:inline-block text-sm font-medium text-espresso-soft hover:text-espresso transition-colors duration-150">
+                    Rastrear pedido
+                </a>
+
+                <a
+                    href="{{ route('store.favorites') }}"
+                    aria-label="Meus favoritos"
+                    class="relative inline-flex items-center justify-center w-10 h-10 rounded-lg border hairline bg-paper hover:bg-linen text-espresso transition-colors duration-150"
+                >
+                    <span class="material-symbols-outlined text-[18px]">favorite</span>
+                    <span data-fav-count class="hidden tnum absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-brand-600 text-white text-[10px] font-semibold">0</span>
                 </a>
 
                 <a
@@ -140,12 +168,12 @@
     </header>
 
     <!-- Conteúdo -->
-    <main class="flex-1">
+    <main id="main-content" class="flex-1">
         {{ $slot }}
     </main>
 
     <!-- Rodapé -->
-    <footer class="bg-espresso-dark text-[#EFE9DF] mt-20">
+    <footer class="bg-espresso-dark text-[#EFE9DF] mt-20 print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div class="space-y-3">
                 <a href="{{ route('store.home') }}" class="inline-flex items-center">
@@ -154,6 +182,7 @@
                 <p class="text-sm text-[#AAA398] leading-relaxed">
                     Caixas de doces, balas, balões, descartáveis e embalagens de papelão no varejo ou em pacotes fechados.
                 </p>
+                <p class="text-xs text-[#8A847A]">contato@veveydoces.com.br · Seg a Sáb, 08h–19h</p>
             </div>
 
             <div>
@@ -168,34 +197,38 @@
             </div>
 
             <div>
-                <h3 class="font-display font-medium text-sm text-porcelain mb-4">Atendimento</h3>
+                <h3 class="font-display font-medium text-sm text-porcelain mb-4">Institucional</h3>
                 <ul class="space-y-2.5 text-sm text-[#AAA398]">
-                    <li>Segunda a sábado, 08h às 19h</li>
-                    <li>Retirada na loja no mesmo dia</li>
-                    <li>Varejo e caixas fechadas para festas</li>
+                    <li><a href="{{ route('store.about') }}" class="hover:text-porcelain transition-colors duration-150">Sobre a Vevey Doces</a></li>
+                    <li><a href="{{ route('store.track') }}" class="hover:text-porcelain transition-colors duration-150">Rastrear meu pedido</a></li>
+                    <li><a href="{{ route('store.returns') }}" class="hover:text-porcelain transition-colors duration-150">Trocas e devoluções</a></li>
+                    <li><a href="{{ route('store.privacy') }}" class="hover:text-porcelain transition-colors duration-150">Privacidade (LGPD)</a></li>
                 </ul>
             </div>
 
             <div>
-                <h3 class="font-display font-medium text-sm text-porcelain mb-4">Pagamento</h3>
+                <h3 class="font-display font-medium text-sm text-porcelain mb-4">Pagamento e segurança</h3>
                 <div class="flex flex-wrap gap-2 text-xs text-[#EFE9DF]">
                     <span class="px-2.5 py-1 rounded-md bg-white/8 border border-white/10">Pix (5% OFF)</span>
                     <span class="px-2.5 py-1 rounded-md bg-white/8 border border-white/10">Crédito</span>
                     <span class="px-2.5 py-1 rounded-md bg-white/8 border border-white/10">Débito</span>
                 </div>
-                <p class="text-xs text-[#8A847A] mt-4">Valores em Reais (BRL) calculados em centavos no servidor</p>
+                <p class="text-xs text-[#8A847A] mt-4 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px] text-emerald-400">verified_user</span>
+                    <span>Compra protegida · Ambiente seguro</span>
+                </p>
             </div>
         </div>
         <div class="border-t border-white/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#8A847A]">
-                <span>© {{ date('Y') }} Vevey Doces</span>
+                <span>© {{ date('Y') }} Vevey Doces · Todos os direitos reservados</span>
                 <a href="{{ url('/admin') }}" class="hover:text-porcelain transition-colors duration-150">Acesso administrativo</a>
             </div>
         </div>
     </footer>
 
     <!-- Drawer de Carrinho -->
-    <div id="cart-drawer" class="hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Carrinho de compras">
+    <div id="cart-drawer" class="hidden fixed inset-0 z-50 print:hidden" role="dialog" aria-modal="true" aria-label="Carrinho de compras">
         <div id="cart-backdrop" data-close-cart class="fixed inset-0 bg-espresso/45 opacity-0 transition-opacity duration-200"></div>
 
         <aside id="cart-panel" class="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-porcelain shadow-[var(--shadow-overlay)] translate-x-full transition-transform duration-200 ease-[var(--ease-ui)] flex flex-col">
@@ -254,6 +287,22 @@
     </div>
 
     <!-- Toast -->
-    <div id="store-toast" class="fixed bottom-5 right-5 z-50 bg-espresso text-porcelain text-xs font-medium px-4 py-3 rounded-lg shadow-[var(--shadow-overlay)] opacity-0 translate-y-2 pointer-events-none transition-[transform,opacity] duration-200 ease-[var(--ease-ui)]"></div>
+    <div id="store-toast" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 bg-espresso text-porcelain text-xs font-medium px-4 py-3 rounded-lg shadow-[var(--shadow-overlay)] opacity-0 translate-y-2 pointer-events-none transition-[transform,opacity] duration-200 ease-[var(--ease-ui)] print:hidden"></div>
+
+    <!-- Aviso de Cookies / LGPD -->
+    <aside id="lgpd-banner" aria-label="Aviso de privacidade e cookies" class="hidden fixed bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-40 bg-porcelain border hairline-strong rounded-2xl p-4 shadow-[var(--shadow-overlay)] print:hidden">
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[20px] text-brand-600 shrink-0 mt-0.5">shield_lock</span>
+            <div class="space-y-2.5 text-xs text-espresso-soft leading-relaxed">
+                <p>
+                    Usamos cookies essenciais e armazenamento local apenas para manter seu carrinho, favoritos e sessão seguros.
+                    <a href="{{ route('store.privacy') }}" class="font-medium text-brand-700 hover:underline">Política de Privacidade (LGPD)</a>.
+                </p>
+                <button type="button" id="lgpd-accept-btn" class="px-4 h-8 rounded-lg bg-espresso hover:bg-[#332D25] text-porcelain text-xs font-medium transition-colors cursor-pointer">
+                    Entendi e continuar
+                </button>
+            </div>
+        </div>
+    </aside>
 </body>
 </html>

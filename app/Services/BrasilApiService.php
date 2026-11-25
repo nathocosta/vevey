@@ -25,55 +25,65 @@ final class BrasilApiService
             return null;
         }
 
-        return Cache::remember("vevey:cep:{$cep}", now()->addHours(24), function () use ($cep): ?array {
-            // 1. Primary: BrasilAPI CEP v2
-            try {
-                $response = Http::timeout(4)
-                    ->acceptJson()
-                    ->get("https://brasilapi.com.br/api/cep/v2/{$cep}");
+        $cacheKey = "vevey:cep:{$cep}";
+        $cached = Cache::get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
 
-                if ($response->successful()) {
-                    /** @var array<string, mixed> $data */
-                    $data = $response->json() ?? [];
-                    if (! empty($data['city']) || ! empty($data['street'])) {
-                        return [
-                            'street' => (string) ($data['street'] ?? ''),
-                            'neighborhood' => (string) ($data['neighborhood'] ?? ''),
-                            'city' => (string) ($data['city'] ?? ''),
-                            'state' => (string) ($data['state'] ?? ''),
-                            'provider' => 'brasilapi',
-                        ];
-                    }
+        // 1. Primary: BrasilAPI CEP v2
+        try {
+            $response = Http::timeout(4)
+                ->acceptJson()
+                ->get("https://brasilapi.com.br/api/cep/v2/{$cep}");
+
+            if ($response->successful()) {
+                /** @var array<string, mixed> $data */
+                $data = $response->json() ?? [];
+                if (! empty($data['city']) || ! empty($data['street'])) {
+                    $resolved = [
+                        'street' => (string) ($data['street'] ?? ''),
+                        'neighborhood' => (string) ($data['neighborhood'] ?? ''),
+                        'city' => (string) ($data['city'] ?? ''),
+                        'state' => (string) ($data['state'] ?? ''),
+                        'provider' => 'brasilapi',
+                    ];
+                    Cache::put($cacheKey, $resolved, now()->addHours(24));
+
+                    return $resolved;
                 }
-            } catch (Throwable) {
-                // Fall through to ViaCEP
             }
+        } catch (Throwable) {
+            // Fall through to ViaCEP
+        }
 
-            // 2. Fallback: ViaCEP
-            try {
-                $response = Http::timeout(4)
-                    ->acceptJson()
-                    ->get("https://viacep.com.br/ws/{$cep}/json/");
+        // 2. Fallback: ViaCEP
+        try {
+            $response = Http::timeout(4)
+                ->acceptJson()
+                ->get("https://viacep.com.br/ws/{$cep}/json/");
 
-                if ($response->successful()) {
-                    /** @var array<string, mixed> $data */
-                    $data = $response->json() ?? [];
-                    if (($data['erro'] ?? false) !== true) {
-                        return [
-                            'street' => (string) ($data['logradouro'] ?? ''),
-                            'neighborhood' => (string) ($data['bairro'] ?? ''),
-                            'city' => (string) ($data['localidade'] ?? ''),
-                            'state' => (string) ($data['uf'] ?? ''),
-                            'provider' => 'viacep',
-                        ];
-                    }
+            if ($response->successful()) {
+                /** @var array<string, mixed> $data */
+                $data = $response->json() ?? [];
+                if (($data['erro'] ?? false) !== true) {
+                    $resolved = [
+                        'street' => (string) ($data['logradouro'] ?? ''),
+                        'neighborhood' => (string) ($data['bairro'] ?? ''),
+                        'city' => (string) ($data['localidade'] ?? ''),
+                        'state' => (string) ($data['uf'] ?? ''),
+                        'provider' => 'viacep',
+                    ];
+                    Cache::put($cacheKey, $resolved, now()->addHours(24));
+
+                    return $resolved;
                 }
-            } catch (Throwable) {
-                // Both providers unavailable
             }
+        } catch (Throwable) {
+            // Both providers unavailable
+        }
 
-            return null;
-        });
+        return null;
     }
 
     /**

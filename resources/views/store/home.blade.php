@@ -8,11 +8,18 @@
 >
     <!-- Hero Editorial Scene (foto em largura total com área limpa à esquerda para tipografia) -->
     <section class="relative overflow-hidden border-b hairline bg-[#EFE7DA]">
-        <img
-            src="{{ asset('images/hero-vevey-scene.jpg') }}"
-            alt="Caixas de chocolates, balas, embalagens de confeitaria e balões metalizados da Vevey Doces"
-            class="absolute inset-0 w-full h-full object-cover object-right lg:object-center select-none pointer-events-none"
-        />
+        <picture>
+            <source srcset="{{ asset('images/hero-vevey-scene.webp') }}" type="image/webp" />
+            <img
+                src="{{ asset('images/hero-vevey-scene.jpg') }}"
+                alt="Caixas de chocolates, balas, embalagens de confeitaria e balões metalizados da Vevey Doces"
+                width="1376"
+                height="768"
+                fetchpriority="high"
+                decoding="async"
+                class="absolute inset-0 w-full h-full object-cover object-right lg:object-center select-none pointer-events-none"
+            />
+        </picture>
         <!-- Scrim suave apenas no mobile/tablet para garantir contraste 100% -->
         <div class="absolute inset-0 bg-gradient-to-r from-[#F5EFE4]/95 via-[#F5EFE4]/80 to-transparent lg:from-[#F5EFE4]/65 lg:via-transparent lg:to-transparent pointer-events-none"></div>
 
@@ -106,20 +113,26 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 @foreach ($navCategories as $category)
                     @php
-                        $deptImage = match ($category->slug) {
-                            'festa' => asset('images/produtos/bal-met-9-az.jpg'),
-                            'doces' => asset('images/produtos/doc-kitkat-cx24.jpg'),
-                            'embalagens-e-papeloes' => asset('images/produtos/emb-pap-doce-25.jpg'),
-                            default => asset('images/produtos/prt-desc-az.jpg'),
+                        $deptBase = match ($category->slug) {
+                            'festa' => 'images/produtos/bal-met-9-az',
+                            'doces' => 'images/produtos/doc-kitkat-cx24',
+                            'embalagens-e-papeloes' => 'images/produtos/emb-pap-doce-25',
+                            default => 'images/produtos/prt-desc-az',
                         };
                     @endphp
                     <div class="group relative rounded-2xl overflow-hidden border hairline bg-espresso-dark aspect-[16/10] flex flex-col justify-end p-5 shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-float)] transition-shadow duration-200">
-                        <img
-                            src="{{ $deptImage }}"
-                            alt="{{ $category->name }}"
-                            loading="lazy"
-                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                        />
+                        <picture>
+                            <source srcset="{{ asset($deptBase . '.webp') }}" type="image/webp" />
+                            <img
+                                src="{{ asset($deptBase . '.jpg') }}"
+                                alt="{{ $category->name }}"
+                                width="900"
+                                height="900"
+                                loading="lazy"
+                                decoding="async"
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                            />
+                        </picture>
                         <div class="absolute inset-0 bg-gradient-to-t from-espresso-dark/90 via-espresso-dark/35 to-transparent"></div>
 
                         <div class="relative z-10 space-y-2.5">
@@ -218,8 +231,8 @@
             </div>
         @else
             <div class="bg-porcelain border hairline rounded-xl p-10 text-center space-y-2">
-                <p class="font-display font-medium text-base text-espresso">Nenhum produto ativo encontrado</p>
-                <p class="text-sm text-espresso-soft">Execute as migrations e o seed do catálogo para popular a vitrine.</p>
+                <p class="font-display font-medium text-base text-espresso">Vitrine em atualização</p>
+                <p class="text-sm text-espresso-soft">Novos produtos estão sendo preparados para você. Volte em breve!</p>
             </div>
         @endif
     </section>

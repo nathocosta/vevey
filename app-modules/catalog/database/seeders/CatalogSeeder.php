@@ -48,26 +48,30 @@ final class CatalogSeeder extends Seeder
             ['sku' => 'DOC-BIS-CX20', 'name' => 'Caixa Lacta Bis Ao Leite 100,8g (20 unidades)', 'description' => 'Caixa fechada no atacado com 20 bandejas de Lacta Bis Ao Leite (100,8g cada). Excelente custo-benefício para festas, eventos corporativos e pontos de revenda.', 'price' => 11900, 'promo' => 10490, 'categories' => [$chocolates], 'values' => []],
             ['sku' => 'DOC-BALA-FINI-500', 'name' => 'Balas Fini Beijos de Morango (pacote 500g)', 'description' => 'Pacote de 500g de balas de gelatina Fini Beijos sabor morango com nata. Textura macia e sabor marcante para potes de mesa e kits de lembrancinha.', 'price' => 2690, 'categories' => [$candies], 'values' => []],
             ['sku' => 'DOC-PIRU-SORT-50', 'name' => 'Pirulito Pop Sortido (pacote com 50 unidades)', 'description' => 'Pacote econômico com 50 pirulitos sortidos nos sabores morango, uva, maçã verde e tutti-frutti. Embalados individualmente, prontos para saquinhos surpresa.', 'price' => 2190, 'categories' => [$candies], 'values' => []],
+            ['sku' => 'DOC-OURO-PC1KG', 'name' => 'Bombom Lacta Ouro Branco (pacote 1kg)', 'description' => 'Pacote de 1kg com bombons Lacta Ouro Branco (aprox. 50 unidades). Recheio cremoso de chocolate branco com flocos crocantes e cobertura branca irresistível — clássico das festas brasileiras.', 'price' => 6290, 'promo' => 5490, 'categories' => [$chocolates], 'values' => []],
             ['sku' => 'EMB-PAP-DOCE-25', 'name' => 'Caixa de papelão kraft para doces e kits (25 unidades)', 'description' => 'Pacote com 25 caixas desmontadas em papelão kraft reforçado de montagem rápida por encaixe. Ideal para entrega de doces, brownies, kits festa e confeitaria.', 'price' => 3890, 'categories' => [$packaging, $party], 'values' => []],
         ];
 
         foreach ($products as $data) {
-            $product = Product::query()->create([
-                'sku' => $data['sku'],
-                'barcode' => $data['barcode'] ?? null,
-                'name' => $data['name'],
-                'slug' => Str::slug($data['name']),
-                'description' => $data['description'],
-                'price_cents' => Money::ofMinor($data['price'], MoneyCast::CURRENCY),
-                'promo_price_cents' => isset($data['promo']) ? Money::ofMinor($data['promo'], MoneyCast::CURRENCY) : null,
-                'is_active' => $data['active'] ?? true,
-            ]);
+            $product = Product::withTrashed()->updateOrCreate(
+                ['sku' => $data['sku']],
+                [
+                    'barcode' => $data['barcode'] ?? null,
+                    'name' => $data['name'],
+                    'slug' => Str::slug($data['name']),
+                    'description' => $data['description'],
+                    'price_cents' => Money::ofMinor($data['price'], MoneyCast::CURRENCY),
+                    'promo_price_cents' => isset($data['promo']) ? Money::ofMinor($data['promo'], MoneyCast::CURRENCY) : null,
+                    'is_active' => $data['active'] ?? true,
+                ],
+            );
 
-            $product->categories()->attach(array_map(fn (Category $category): string => $category->id, $data['categories']));
-            $product->attributeValues()->attach(array_map(fn (string $key): string => $values[$key]->id, $data['values']));
+            $product->categories()->syncWithoutDetaching(array_map(fn (Category $category): string => $category->id, $data['categories']));
+            $product->attributeValues()->syncWithoutDetaching(array_map(fn (string $key): string => $values[$key]->id, $data['values']));
         }
 
-        Product::query()->where('sku', 'BAL-MET-9-DR')->sole()->delete();
+        $softDeleted = Product::query()->where('sku', 'BAL-MET-9-DR')->first();
+        $softDeleted?->delete();
     }
 
     /**
@@ -79,10 +83,16 @@ final class CatalogSeeder extends Seeder
         $values = [];
 
         foreach ($attributes as $name => $attributeValues) {
-            $attribute = Attribute::query()->create(['name' => $name, 'slug' => Str::slug($name)]);
+            $attribute = Attribute::query()->firstOrCreate(
+                ['slug' => Str::slug($name)],
+                ['name' => $name],
+            );
 
             foreach ($attributeValues as $value) {
-                $values["{$name}:{$value}"] = $attribute->values()->create(['value' => $value, 'slug' => Str::slug($value)]);
+                $values["{$name}:{$value}"] = $attribute->values()->firstOrCreate(
+                    ['slug' => Str::slug($value)],
+                    ['value' => $value],
+                );
             }
         }
 
@@ -91,11 +101,13 @@ final class CatalogSeeder extends Seeder
 
     private function category(string $name, ?Category $parent = null, int $position = 0): Category
     {
-        return Category::query()->create([
-            'parent_id' => $parent?->id,
-            'name' => $name,
-            'slug' => Str::slug($name),
-            'position' => $position,
-        ]);
+        return Category::query()->firstOrCreate(
+            ['slug' => Str::slug($name)],
+            [
+                'parent_id' => $parent?->id,
+                'name' => $name,
+                'position' => $position,
+            ],
+        );
     }
 }

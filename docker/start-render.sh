@@ -1,8 +1,24 @@
 #!/usr/bin/env sh
 set -e
 
+# Render's generateValue creates a random string without Laravel's "base64:" prefix.
+# Deterministically normalize any non-standard APP_KEY into a valid 32-byte AES-256 key.
+if [ -n "${APP_KEY:-}" ]; then
+    APP_KEY="$(php -r '
+        $k = getenv("APP_KEY") ?: "";
+        if (str_starts_with($k, "base64:")) {
+            $raw = base64_decode(substr($k, 7), true);
+            if ($raw !== false && strlen($raw) === 32) { echo $k; exit(0); }
+        }
+        if (strlen($k) === 32) { echo $k; exit(0); }
+        echo "base64:" . base64_encode(hash("sha256", $k, true));
+    ')"
+    export APP_KEY
+fi
+
 php artisan config:clear
 php artisan view:clear
+php artisan storage:link || true
 
 # Run migrations and idempotent seeds on boot
 php artisan migrate --force
